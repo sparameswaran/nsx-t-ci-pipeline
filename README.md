@@ -5,6 +5,8 @@ NOTE: The tool and scripts don't install the full VMware NSX-T or automate creat
 
 The tools in this repo only help in automating the install of [Concourse](http://concourse.ci/), followed by install of [Pivotal Ops Mr and PCF/PAS](https://network.pivotal.io) on [VMware NSX-T](https://docs.vmware.com/en/VMware-NSX-T/index.html) managed network infrastructure. The Pivotal Cloud Foundry or Application service (PAS) would use NSX-T for the CNI implementation, instead of the default Silk as CNI.
 
+![](docs/nsx-t-ci-pipeline.png)
+
 ## Installing Concourse
 
 Edit the scripts and templates under Concourse to setup a BOSH Director and use that to deploy Concourse.
