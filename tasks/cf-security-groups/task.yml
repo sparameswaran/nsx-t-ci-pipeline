@@ -1,0 +1,15 @@
+---
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/deploy-light }
+
+platform: linux
+
+params: {}
+
+inputs:
+  - name: integration-config
+  - name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/cf-security-groups/task.sh

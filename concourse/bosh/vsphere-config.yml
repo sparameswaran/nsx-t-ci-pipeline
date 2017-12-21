@@ -1,0 +1,15 @@
+director_name: bosh-director
+internal_cidr: 10.1.1.0/24
+internal_gw: 10.1.1.1
+internal_ip: 10.1.1.55 # BOSH_DIRECTOR_IP
+network_name: "VM Network"
+vcenter_cluster: Cluster1
+vcenter_dc: Datacenter
+vcenter_disks: test_env_disks
+vcenter_ds: "datastore"
+vcenter_ip: 10.1.1.10
+vcenter_password: "aassa!"
+vcenter_rp: concourse
+vcenter_templates: test/template
+vcenter_user: administrator@vsphere.local
+vcenter_vms: test/vm

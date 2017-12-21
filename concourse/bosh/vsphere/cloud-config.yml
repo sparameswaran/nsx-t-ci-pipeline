@@ -1,0 +1,82 @@
+---
+azs:
+- name: Cluster1
+  cloud_properties:
+    datacenters:
+    - name: Datacenter
+      clusters:
+      - { Cluster1: { resource_pool: concourse }}
+
+vm_types:
+- name: default
+  cloud_properties:
+    cpu: 2
+    ram: 2048
+    disk: 4096
+- name: concourse-web
+  cloud_properties:
+    cpu: 2
+    ram: 8192
+    disk: 50_000
+    nested_hardware_virtualization: true
+- name: concourse-db
+  cloud_properties:
+    cpu: 4
+    ram: 8192
+    disk: 10_000
+    nested_hardware_virtualization: true
+- name: concourse-workers
+  cloud_properties:
+    cpu: 2
+    ram: 8192
+    disk: 500_000
+    nested_hardware_virtualization: true
+- name: docker-registry
+  cloud_properties:
+    cpu: 1
+    ram: 2048
+    disk: 150_000
+- name: dhcpd
+  cloud_properties:
+    cpu: 1
+    ram: 2048
+    disk: 8192
+- name: teamspeak
+  cloud_properties:
+    cpu: 1
+    ram: 2048
+    disk: 20480
+
+disk_types:
+- name: default
+  disk_size: 3000
+- name: provisioner
+  disk_size: 10000
+- name: dhcpd
+  disk_size: 16
+- name: docker-registry
+  disk_size: 512_000
+- name: concourse-db
+  disk_size: 200_000
+
+networks:
+- name: Cluster1
+  type: manual
+  subnets:
+  - range: 10.1.1.0/24
+    gateway: 10.1.1.1
+    static:
+    - 10.1.1.60
+    reserved:
+    - 10.1.1.2 - 10.1.1.50
+    - 10.1.1.80 - 10.1.1.230
+    az: Cluster1
+    dns: [10.1.1.2]
+    cloud_properties:
+      name: "VM Network"
+compilation:
+  workers: 5
+  reuse_compilation_vms: true
+  az: Cluster1
+  vm_type: default
+  network: Cluster1

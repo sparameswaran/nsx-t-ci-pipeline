@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: cloudfoundry/cf-routing-pipeline }
+
+inputs:
+  - name: nsx-t-ci-pipeline
+  - name: routing-release
+  - name: integration-config
+
+params: {}
+
+run:
+  path: nsx-t-ci-pipeline/tasks/rats/task.sh

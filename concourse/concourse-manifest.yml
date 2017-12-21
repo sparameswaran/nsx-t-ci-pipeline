@@ -1,0 +1,117 @@
+---
+name: ((deployment_name))
+
+variables:
+  - name: concourse_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: concourse.test-cf-app.com
+  - name: concourse
+    type: certificate
+    options:
+      ca: concourse_ca
+      common_name: concourse.test-cf-app.com
+      extended_key_usage:
+        - server_auth
+
+releases:
+- name: concourse
+  version: 3.6.0
+  url: https://github.com/concourse/concourse/releases/download/v3.6.0/concourse-3.6.0.tgz
+  sha1: b98ce4f7cf6931af3c48cf6e6fad353030dab240
+- name: garden-runc
+  version: 1.9.0
+  url: https://github.com/concourse/concourse/releases/download/v3.8.0/garden-runc-1.9.0.tgz
+  sha1: 77bfe8bdb2c3daec5b40f5116a6216badabd196c
+- name: postgres
+  url: https://bosh.io/d/github.com/cloudfoundry/postgres-release?v=21
+  version: 21
+  sha1: b37916b709fb45ac7de3e195456301cb01a1ae22
+
+stemcells:
+- alias: trusty
+  os: ubuntu-trusty
+  version: latest
+
+
+update:
+  serial: false
+  canaries: 1
+  canary_watch_time: 30000 - 600000
+  update_watch_time: 30000 - 600000
+  max_in_flight: 20
+
+instance_groups:
+  - name: web
+    instances: 1
+    stemcell: trusty
+    vm_type: concourse-web
+    azs: ((concourse_azs))
+    networks:
+    - name: ((network_name))
+      static_ips: [&web-ip ((web_ip))]
+    jobs:
+    - name: atc
+      release: concourse
+      properties:
+        postgresql:
+          database: atc
+          role:
+            name: atc
+            password: dummy-password
+        github_auth:
+          authorize:
+          - organization: ((github_org))
+            teams:
+            - ((github_team))
+          client_id: ((github_team_client_id))
+          client_secret: ((github_team_client_secret))
+
+        bind_port: 8080
+        tls_bind_port: 443
+        external_url:  https://((web_name))
+        tls_cert: ((concourse.certificate))
+        tls_key: ((concourse.private_key))
+    - name: tsa
+      release: concourse
+
+  - name: postgres
+    instances: 1
+    stemcell: trusty
+    vm_type: concourse-db
+    persistent_disk_type: concourse-db
+    azs: ((concourse_azs))
+    networks: ((networks))
+    jobs:
+    - name: postgres
+      release: postgres
+      properties:
+        databases:
+          port: 5432
+          databases:
+          - name: atc
+          roles:
+          - name: atc
+            password: dummy-password
+
+
+  - name: ((worker_name))
+    instances: 2
+    vm_type: concourse-workers
+    stemcell: trusty
+    azs: ((concourse_azs))
+    networks: ((networks))
+    jobs:
+      - name: groundcrew
+        release: concourse
+      - name: baggageclaim
+        release: concourse
+      - name: garden
+        release: garden-runc
+        properties:
+          garden:
+            listen_network: tcp
+            listen_address: 0.0.0.0:7777
+            btrfs_store_size_mb: 144_000
+            allow_host_access: true

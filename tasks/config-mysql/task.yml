@@ -1,0 +1,29 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/cflinuxfs2
+
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPS_MGR_USR:
+  OPS_MGR_PWD:
+  NETWORK_NAME:
+  MYSQL_SINGLETON_JOB_AZ:
+  DEPLOYMENT_NW_AZS:
+  TILE_MYSQL_PROXY_IPS:
+  TILE_MYSQL_PROXY_VIP:
+  TILE_MYSQL_MONITOR_EMAIL:
+  TILE_MYSQL_PROXY_INSTANCES:
+  TILE_MYSQL_BACKUP_PREPARE_INSTANCES:
+  TILE_MYSQL_MONITORING_INSTANCES:
+  TILE_MYSQL_BROKER_INSTANCES:
+
+inputs:
+  - name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/config-mysql/task.sh

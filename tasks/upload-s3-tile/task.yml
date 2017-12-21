@@ -1,0 +1,21 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: czero/cflinuxfs2}
+
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPS_MGR_USR:
+  OPS_MGR_PWD:
+  NO_PROXY:
+  OM_IP:
+
+inputs:
+  - name: s3-tile
+  - name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/upload-s3-tile/task.sh

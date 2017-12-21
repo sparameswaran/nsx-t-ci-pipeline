@@ -1,0 +1,109 @@
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+
+resources:
+- name: nsx-t-ci-pipeline
+  type: git
+  source:
+    uri: git@github.com:pivotal-cf/nsx-t-ci-pipeline.git
+    branch: master
+    
+- name: routing-release
+  type: git
+  source:    
+    uri: git://github.com/cloudfoundry-incubator/routing-release
+    branch: master
+
+- name: cf-networking
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/cf-networking-release
+    branch: nsxt-tests
+
+- name: cats-concourse-task
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/cats-concourse-task
+    branch: master
+
+- name: cf-acceptance-tests
+  type: git
+  source:
+    uri: git://github.com/cf-container-networking/cf-acceptance-tests.git
+    branch: nsxt    
+
+jobs:
+
+- name: run-rats
+  plan:
+    - aggregate:
+        - get: nsx-t-ci-pipeline
+        - get: routing-release
+          #trigger: true
+    - task: get-cf-rats-config
+      file: nsx-t-ci-pipeline/tasks/gen-config-with-creds/task.yml
+      params:
+        CONFIG: {{rats_config}}
+        APPS_DOMAIN: {{apps_domain}}
+        SYSTEM_DOMAIN: {{system_domain}}
+        OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+        OPSMAN_USERNAME: {{opsman_admin_username}}
+        OPSMAN_PASSWORD: {{opsman_admin_password}}
+        PRODUCT_NAME: cf
+        PRODUCT_CREDENTIAL_REFERENCES: {{cf_uaa_credential_references}}
+    - task: run-rats
+      file: nsx-t-ci-pipeline/tasks/rats/task.yml
+
+- name: run-cats
+  plan:
+    - aggregate:
+        - get: nsx-t-ci-pipeline
+        - get: cats-concourse-task
+        - get: cf-acceptance-tests
+          #trigger: true
+    - task: get-cf-cats-config
+      file: nsx-t-ci-pipeline/tasks/gen-config-with-creds/task.yml
+      params:
+        CONFIG: {{cats_config}}
+        APPS_DOMAIN: {{apps_domain}}
+        SYSTEM_DOMAIN: {{system_domain}}
+        OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+        OPSMAN_USERNAME: {{opsman_admin_username}}
+        OPSMAN_PASSWORD: {{opsman_admin_password}}
+        PRODUCT_NAME: cf
+        PRODUCT_CREDENTIAL_REFERENCES: {{cf_uaa_credential_references}}
+    - task: setup-security-groups
+      file: nsx-t-ci-pipeline/tasks/cf-security-groups/task.yml
+    - task: enable-docker-diego
+      file: nsx-t-ci-pipeline/tasks/enable-diego-docker/task.yml
+    - task: run-cats
+      file: cats-concourse-task/task.yml
+      params:
+        NODES: 8
+
+- name: run-nats
+  plan:
+    - aggregate:
+        - get: nsx-t-ci-pipeline
+        - get: cf-networking
+          #trigger: true
+    - task: get-cf-nats-config
+      file: nsx-t-ci-pipeline/tasks/gen-config-with-creds/task.yml
+      params:
+        CONFIG: {{nats_config}}
+        APPS_DOMAIN: {{apps_domain}}
+        SYSTEM_DOMAIN: {{system_domain}}
+        OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+        OPSMAN_USERNAME: {{opsman_admin_username}}
+        OPSMAN_PASSWORD: {{opsman_admin_password}}
+        PRODUCT_NAME: cf
+        PRODUCT_CREDENTIAL_REFERENCES: {{cf_uaa_credential_references}}
+    - task: setup-security-groups
+      file: nsx-t-ci-pipeline/tasks/cf-security-groups/task.yml
+    - task: run-nats
+      file: nsx-t-ci-pipeline/tasks/nats/task.yml
+

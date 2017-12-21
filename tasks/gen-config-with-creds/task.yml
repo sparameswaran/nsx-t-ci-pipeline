@@ -1,0 +1,26 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: czero/cflinuxfs2 }
+
+params:
+  CONFIG:
+  APPS_DOMAIN:
+  SYSTEM_DOMAIN:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPSMAN_USERNAME:
+  OPSMAN_PASSWORD:
+  PRODUCT_NAME:
+  PRODUCT_CREDENTIAL_REFERENCES:
+
+
+inputs:
+  - name: nsx-t-ci-pipeline
+
+outputs:
+  - name: integration-config
+
+run:
+  path: nsx-t-ci-pipeline/tasks/gen-config-with-creds/task.sh

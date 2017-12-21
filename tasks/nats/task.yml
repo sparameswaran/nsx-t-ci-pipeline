@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: c2cnetworking/dev-postgres }
+
+inputs:
+  - name: nsx-t-ci-pipeline
+  - name: cf-networking
+  - name: integration-config
+
+outputs:
+  - name: network-stats
+
+params: {}
+
+run:
+  path: nsx-t-ci-pipeline/tasks/nats/task.sh

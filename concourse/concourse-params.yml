@@ -1,0 +1,15 @@
+---
+# EDIT all the fields
+concourse_azs: [ Cluster1 ]
+networks: [{ name: Cluster1 }]
+network_name: Cluster1
+web_ip: 10.1.1.60                       
+web_name: concourse.test-cf-app.com
+worker_name: concourse-worker
+deployment_name: concourse
+
+# Edit following github related name & ids
+github_org: test-org
+github_team: integrations
+github_team_client_id: asdfsaf
+github_team_client_secret: asdfasf

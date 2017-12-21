@@ -1,0 +1,29 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/cflinuxfs2
+
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPS_MGR_USR:
+  OPS_MGR_PWD:
+  NETWORK_NAME:
+  SERVICE_NETWORK_NAME:
+  RABBITMQ_SINGLETON_JOB_AZ:
+  DEPLOYMENT_NW_AZS:
+  RABBITMQ_TILE_STATIC_IPS:
+  TILE_RABBIT_ADMIN_USER:
+  TILE_RABBIT_ADMIN_PASSWD:
+  TILE_RABBIT_PROXY_INSTANCES:
+  TILE_RABBIT_SERVER_INSTANCES:
+  RABBITMQ_TILE_LBR_IP:
+
+inputs:
+  - name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/config-rabbitmq/task.sh

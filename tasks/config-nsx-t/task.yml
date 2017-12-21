@@ -1,0 +1,33 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/cflinuxfs2
+
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPS_MGR_USR:
+  OPS_MGR_PWD:    
+  NSX_API_MANAGERS:
+  NSX_API_USER:
+  NSX_API_PASSWORD:
+  NSX_API_CA_CERT:
+  NSX_SUBNET_PREFIX:
+  NSX_EXTERNAL_SUBNET_PREFIX:
+  NSX_LOG_DROPPED_TRAFFIC:
+  NSX_ENABLE_SNAT:
+  NSX_PRODUCT_TILE_NAME:
+  NSX_FOUNDATION_NAME:
+  NSX_NCP_DEBUG_LOG:     
+  NSX_AUTH_TYPE:
+  NSX_CLIENT_CERT_CERT:
+  NSX_CLIENT_CERT_PRIVATE_KEY:
+
+inputs:
+  - name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/config-nsx-t/task.sh
