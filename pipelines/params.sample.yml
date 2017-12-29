@@ -7,16 +7,6 @@ scs_major_minor_version: ^1\.4\..*$
 mysql_major_minor_version: ^1\.10\..*$
 rabbitmq_major_minor_version: ^1\.10\..*$
 
-# Careful with the indent and the | for multi-line input
-git_private_key: |
-  -----BEGIN RSA PRIVATE KEY-----
-  MIIJKQIBAAKCAgsafasdfassGDIuW5aitp0pabjBazY2mewjQ
-  zNA0vEau1KWZc4UvMT80Q7vsfsdafasfdsafdasUtD02ZbrxJgI30X
-  ...............
-  ...............
-  as324sadafadfOGg8ez34RU25FyWqasfasfadsdfddgdfpF3ie5o00
-  -----END RSA PRIVATE KEY-----
-
 # vCenter configuration
 vcenter_host: 10.1.1.10            # vCenter host or IP
 vcenter_usr: administrator@vsphere.local             # vCenter username. If user is tied to a domain, then escape the \, example `domain\\user`

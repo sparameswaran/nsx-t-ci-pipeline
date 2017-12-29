@@ -11,14 +11,12 @@ resources:
   source:
     uri: git@github.com:pivotal-cf/pcf-pipelines.git
     branch: master
-    private_key: {{git_private_key}}
 
 - name: nsx-t-ci-pipeline
   type: git
   source:
     uri: git@github.com:pivotal-cf/nsx-t-ci-pipeline.git
     branch: master
-    private_key: {{git_private_key}}
 
 - name: pcf-ops-manager
   type: pivnet
