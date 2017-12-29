@@ -52,6 +52,30 @@ resources:
     product_version: {{nsxt_major_minor_version}}
     sort_by: semver   
 
+- name: pcf-scs
+  type: pivnet
+  source:
+    api_token: {{pivnet_token}}
+    product_slug: p-spring-cloud-services
+    product_version: {{scs_major_minor_version}}
+    sort_by: semver
+
+- name: pcf-rabbitmq
+  type: pivnet
+  source:
+    api_token: {{pivnet_token}}
+    product_slug: p-rabbitmq
+    product_version: {{rabbitmq_major_minor_version}}
+    sort_by: semver
+
+- name: pcf-mysql
+  type: pivnet
+  source:
+    api_token: {{pivnet_token}}
+    product_slug: p-mysql
+    product_version: {{mysql_major_minor_version}}
+    sort_by: semver
+
 
 jobs:
 - name: deploy-opsman
@@ -425,6 +449,179 @@ jobs:
       ERRANDS_TO_DISABLE: {{ert_errands_to_disable}}
 
   - task: deploy-ert
+    file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+
+- name: upload-mysql
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+    - get: pivnet-product
+      resource: pcf-mysql
+      params: {globs: ["*.pivotal"]}
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-director]
+      trigger: true
+
+  - task: upload-tile
+    file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml
+    params:
+      IAAS: "vsphere"
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      PIVNET_API_TOKEN: {{pivnet_token}}
+      NO_PROXY: {{company_proxy_domain}}
+      OM_IP: {{om_ip}}
+
+- name: upload-rabbitmq
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+    - get: pivnet-product
+      resource: pcf-rabbitmq
+      params: {globs: ["*.pivotal"]}
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-director]
+      trigger: true
+
+  - task: upload-tile
+    file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml
+    params:
+      IAAS: "vsphere"
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      PIVNET_API_TOKEN: {{pivnet_token}}
+      NO_PROXY: {{company_proxy_domain}}
+      OM_IP: {{om_ip}}
+
+- name: upload-scs
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+    - get: pivnet-product
+      resource: pcf-scs
+      params: {globs: ["*.pivotal"]}
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-director]
+      trigger: true
+
+  - task: upload-tile
+    file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml
+    params:
+      IAAS: "vsphere"
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      PIVNET_API_TOKEN: {{pivnet_token}}
+      NO_PROXY: {{company_proxy_domain}}
+      OM_IP: {{om_ip}}
+
+- name: install-mysql
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pcf-pipelines
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-ert, upload-mysql]
+      trigger: true
+
+  - task: configure
+    file: nsx-t-ci-pipeline/tasks/config-mysql/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      MYSQL_SINGLETON_JOB_AZ: {{mysql_singleton_job_az}}
+      DEPLOYMENT_NW_AZS: {{deployment_nw_azs}}
+      NETWORK_NAME: {{services_network_name}}
+      TILE_MYSQL_PROXY_IPS: {{tile_mysql_proxy_ips}}
+      TILE_MYSQL_PROXY_VIP: {{tile_mysql_proxy_vip}}
+      TILE_MYSQL_MONITOR_EMAIL: {{tile_mysql_monitor_email}}
+      TILE_MYSQL_PROXY_INSTANCES: 1
+      TILE_MYSQL_BACKUP_PREPARE_INSTANCES: 1
+      TILE_MYSQL_MONITORING_INSTANCES: 1
+      TILE_MYSQL_BROKER_INSTANCES: 1
+
+- name: install-rabbitmq
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pcf-pipelines
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-ert, upload-rabbitmq]
+      trigger: true
+    - get: pivnet-product
+      resource: pcf-rabbitmq
+      params: {globs: ["*.pivotal"]}
+
+  - task: configure
+    file: nsx-t-ci-pipeline/tasks/config-rabbitmq/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      RABBITMQ_SINGLETON_JOB_AZ: {{rabbitmq_singleton_job_az}}
+      DEPLOYMENT_NW_AZS: {{deployment_nw_azs}}
+      SERVICE_NETWORK_NAME: {{dynamic_services_network_name}}
+      NETWORK_NAME: {{services_network_name}}
+      TILE_RABBIT_PROXY_IPS: {{tile_rabbit_proxy_ips}}
+      TILE_RABBIT_ADMIN_USER: {{tile_rabbit_admin_user}}
+      TILE_RABBIT_ADMIN_PASSWD: {{tile_rabbit_admin_passwd}}
+      TILE_RABBIT_PROXY_INSTANCES: {{tile_rabbit_proxy_instances}}
+      TILE_RABBIT_SERVER_INSTANCES: {{tile_rabbit_server_instances}}
+      TILE_RABBIT_RABBITMQ_HAPROXY_SECURITY_GROUP: {{tile_rabbit_haproxy_security_group}}
+      RABBITMQ_TILE_LBR_IP: {{tile_rabbit_lbr_ip}}
+
+- name: deploy-services
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-ert, install-mysql, install-rabbitmq]
+      trigger: true
+    
+  - task: deploy
+    file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+
+- name: deploy-scs
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pcf-pipelines
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-services, upload-scs]
+      trigger: true
+    - get: pivnet-product
+      resource: pcf-scs
+      params: {globs: ["*.pivotal"]}
+
+  - task: configure
+    file: nsx-t-ci-pipeline/tasks/config-scs/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      SCS_SINGLETON_JOB_AZ: {{scs_singleton_job_az}}
+      DEPLOYMENT_NW_AZS: {{deployment_nw_azs}}
+      NETWORK_NAME: {{deployment_network_name}}
+   
+  - task: deploy
     file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}

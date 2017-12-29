@@ -9,13 +9,13 @@ resources:
 - name: nsx-t-ci-pipeline
   type: git
   source:
-    uri: git@github.com:pivotal-cf/nsx-t-ci-pipeline.git
+    uri: https://github.com/sparameswaran/nsx-t-ci-pipeline.git
     branch: master
     
 - name: routing-release
   type: git
   source:    
-    uri: git://github.com/cloudfoundry-incubator/routing-release
+    uri: https://github.com/cloudfoundry-incubator/routing-release
     branch: master
 
 - name: cf-networking
@@ -33,7 +33,7 @@ resources:
 - name: cf-acceptance-tests
   type: git
   source:
-    uri: git://github.com/cf-container-networking/cf-acceptance-tests.git
+    uri: https://github.com/cf-container-networking/cf-acceptance-tests.git
     branch: nsxt    
 
 jobs:

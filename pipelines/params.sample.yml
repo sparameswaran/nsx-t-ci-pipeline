@@ -133,16 +133,6 @@ dynamic_services_nw_dns: 10.1.1.2             # Dynamic Services network DNS
 dynamic_services_nw_gateway: 192.168.28.1         # Dynamic Services network Gateway
 dynamic_services_nw_azs: az1,az2,az3              # Comma separated list of AZ's to be associated with this network
 
-
-isozone_network_name: "ISOZONE-01"
-is_service_network: true  # Required select service network option in Ops man true or false
-isozone_vsphere_network: isolation-zone1    # vCenter Dynamic Services network name
-isozone_nw_cidr: 192.168.32.0/22            # Dynamic Services network CIDR, ex: 10.0.0.0/22
-isozone_excluded_range: 192.168.32.0-192.168.32.10     # Dynamic Services network exclusion range
-isozone_nw_dns: 10.1.1.2             # Dynamic Services network DNS
-isozone_nw_gateway: 192.168.32.1         # Dynamic Services network Gateway
-isozone_nw_azs: az1,az2,az3              # Comma separated list of AZ's to be associated with this network
-
 # NSX-T Related portion
 nsx_subnet_prefix: 24
 nsx_log_dropped_traffic: false           # default false
