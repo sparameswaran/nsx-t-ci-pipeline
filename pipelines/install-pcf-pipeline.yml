@@ -176,7 +176,7 @@ jobs:
 - name: deploy-director
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [configure-director]
@@ -234,7 +234,6 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-pipelines
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [upload-nsx]
@@ -267,7 +266,7 @@ jobs:
 - name: upload-ert
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pivnet-product
       resource: elastic-runtime
       params: {globs: ["cf*.pivotal"]}
@@ -430,7 +429,6 @@ jobs:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
-
 
 - name: wipe-env
   plan:

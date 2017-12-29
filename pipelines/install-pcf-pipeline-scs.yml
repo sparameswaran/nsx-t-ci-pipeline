@@ -200,7 +200,7 @@ jobs:
 - name: deploy-director
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [configure-director]
@@ -258,7 +258,6 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-pipelines
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [upload-nsx]
@@ -291,7 +290,7 @@ jobs:
 - name: upload-ert
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pivnet-product
       resource: elastic-runtime
       params: {globs: ["cf*.pivotal"]}
@@ -458,7 +457,7 @@ jobs:
 - name: upload-mysql
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pivnet-product
       resource: pcf-mysql
       params: {globs: ["*.pivotal"]}
@@ -481,7 +480,7 @@ jobs:
 - name: upload-rabbitmq
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pivnet-product
       resource: pcf-rabbitmq
       params: {globs: ["*.pivotal"]}
@@ -504,7 +503,7 @@ jobs:
 - name: upload-scs
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pivnet-product
       resource: pcf-scs
       params: {globs: ["*.pivotal"]}
@@ -528,7 +527,6 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-pipelines
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [deploy-ert, upload-mysql]
@@ -555,7 +553,6 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-pipelines
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [deploy-ert, upload-rabbitmq]
@@ -585,7 +582,7 @@ jobs:
 - name: deploy-services
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [deploy-ert, install-mysql, install-rabbitmq]
@@ -602,7 +599,6 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-pipelines
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [deploy-services, upload-scs]
