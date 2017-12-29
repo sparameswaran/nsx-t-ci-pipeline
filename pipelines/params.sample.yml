@@ -3,6 +3,11 @@ pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet
 opsman_major_minor_version: ^2\.0\.0$   # PCF Ops Manager minor version to track
 ert_major_minor_version: ^2\.0\.0$      # PCF Elastic Runtime minor version to track
 nsxt_major_minor_version: ^2\.1\.0.*$   # PCF Elastic Runtime minor version to track
+scs_major_minor_version: ^1\.4\..*$
+mysql_major_minor_version: ^1\.10\..*$
+rabbitmq_major_minor_version: ^1\.10\..*$
+
+# Careful with the indent and the | for multi-line input
 git_private_key: |
   -----BEGIN RSA PRIVATE KEY-----
   MIIJKQIBAAKCAgsafasdfassGDIuW5aitp0pabjBazY2mewjQ
@@ -91,6 +96,8 @@ nsx_mode: nsx-t                           # Valid values: nsx-t, nsx-v
 nsx_address: nsx-t-mgr.test-domain.com    # address of nsx mgr
 nsx_username: admin                       # username for nsx access
 nsx_password: 23..d!                # password for nsx access
+
+# Careful with the indent and the | for multi-line input
 nsx_ca_certificate: |                     # cert for nsx
   -----BEGIN CERTIFICATE-----
   MIIDjDCCAnSasfasdfsfd324242342UAMIG3232GMS4wLAYDVQQD
@@ -376,11 +383,22 @@ rats_config: |
     "tcp_router_group": "default-tcp"
   }
 
-mysql_major_minor_version: ^1\.10\..*$
+
+rabbitmq_singleton_job_az: az1
+tile_rabbit_proxy_ips: 192.168.24.155
+tile_rabbit_admin_user: admin
+tile_rabbit_admin_passwd: R1xWasfasfsfasfgoJdekTP3
+tile_rabbit_proxy_instances: 1
+tile_rabbit_server_instances: 1
+tile_rabbit_haproxy_security_group:
+tile_rabbit_lbr_ip:
+
 mysql_singleton_job_az: az1
 tile_mysql_proxy_vip:
 tile_mysql_proxy_ips: 192.168.24.160
 tile_mysql_monitor_email: admin.pcf@something
+
+scs_singleton_job_az: az1
 
 # Use this for downloading tile from a s3 bucket
 s3_bucket: nsx-tile-s3              # Required for S3. ID of the AWS S3 bucket to upload Pivotal releases to

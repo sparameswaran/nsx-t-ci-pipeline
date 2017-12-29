@@ -24,8 +24,8 @@ This concourse install would be used later to install Pivotal Ops Mgr 2.0, NSX-T
 
 ## Installing Pivotal Ops Mgr and Cloud Foundry Deployment
 * Create a params.yml using the piplines/params.sample.yml as template (under pipelines or other folder)
-* Edit the values for the various tile versions, vcenter endpoints, network segments, creds etc.
-* Edit the install-pcf-pipeline.yml if needed (it installs MySQL, RabbitMQ and Spring Cloud Service in addition to PAS/ERT tile)
+* Edit the values for the various tile versions, vcenter endpoints, network segments, creds etc. The pipeline expects 4 different network configs (for Infra, Ert, Services and Dynamic Services) based on PCF reference deployment arch (based on NSX-V, NSX-T yet to come up).
+* Edit the install-pcf-pipeline.yml if needed (uncomment the installation of MySQL, RabbitMQ and Spring Cloud Service if needed)
 * Edit the setup.sh script (changing the url for the concourse web endpoint, name of the pipeline, path to the params file etc.)
 * Run `source setup.sh`
 * Run `fly-s` to register the pipeline
