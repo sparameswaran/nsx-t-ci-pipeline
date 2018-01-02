@@ -213,29 +213,29 @@ EOF
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   --skip-ssl-validation \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
   curl -p '/api/v0/staged/director/properties' \
   -x PUT -d  "$wrapped_iaas_config"
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   --skip-ssl-validation \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
   configure-bosh \
   --director-configuration "$director_config"
 
 
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPS_MGR_USR -p $OPS_MGR_PWD \
+om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD \
   curl -p "/api/v0/staged/director/availability_zones" \
   -x PUT -d "$az_configuration"
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   --skip-ssl-validation \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
   configure-bosh \
   --networks-configuration "$network_configuration" \
   --network-assignment "$network_assignment" \

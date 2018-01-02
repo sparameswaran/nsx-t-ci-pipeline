@@ -7,7 +7,7 @@ echo "Apply changes"
 om-linux \
   --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
   --skip-ssl-validation \
-  --username "${OPS_MGR_USR}" \
-  --password "${OPS_MGR_PWD}" \
+  --username "${OPSMAN_USERNAME}" \
+  --password "${OPSMAN_PASSWORD}" \
   apply-changes \
   --ignore-warnings

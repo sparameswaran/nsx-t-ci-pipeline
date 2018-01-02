@@ -37,16 +37,16 @@ fi
 
 # Generate CredHub passwd
 if [ "$CREDHUB_PASSWORD" == "" ]; then
-  CREDHUB_PASSWORD=$(echo $OPS_MGR_PWD{,,,,} | sed -e 's/ //g' | cut -c1-25)
+  CREDHUB_PASSWORD=$(echo $OPSMAN_PASSWORD{,,,,} | sed -e 's/ //g' | cut -c1-25)
 fi
 
 
-TILE_RELEASE=`om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPS_MGR_USR -p $OPS_MGR_PWD -k available-products | grep cf`
+TILE_RELEASE=`om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k available-products | grep cf`
 
 PRODUCT_NAME=`echo $TILE_RELEASE | cut -d"|" -f2 | tr -d " "`
 PRODUCT_VERSION=`echo $TILE_RELEASE | cut -d"|" -f3 | tr -d " "`
 
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPS_MGR_USR -p $OPS_MGR_PWD -k stage-product -p $PRODUCT_NAME -v $PRODUCT_VERSION
+om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k stage-product -p $PRODUCT_NAME -v $PRODUCT_VERSION
 
 
 cf_properties=$(
@@ -686,8 +686,8 @@ cf_resources=$(
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
   --skip-ssl-validation \
   configure-product \
   --product-name cf \

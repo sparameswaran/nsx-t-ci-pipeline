@@ -15,7 +15,7 @@ source nsx-t-ci-pipeline/functions/upload_stemcell.sh
 upload_stemcells "$STEMCELL_VERSION_FROM_TILE"
 
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-         -u $OPS_MGR_USR \
-         -p $OPS_MGR_PWD \
+         -u $OPSMAN_USERNAME \
+         -p $OPSMAN_PASSWORD \
          -k --request-timeout 3600 \
          upload-product -p $FILE_PATH

@@ -12,8 +12,8 @@ function upload_stemcells() (
       diagnostic_report=$(
         om-linux \
           --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-          --username $OPS_MGR_USR \
-          --password $OPS_MGR_PWD \
+          --username $OPSMAN_USERNAME \
+          --password $OPSMAN_PASSWORD \
           --skip-ssl-validation \
           curl --silent --path "/api/v0/diagnostic_report"
       )
@@ -64,7 +64,7 @@ function upload_stemcells() (
           exit 1
         fi
 
-        om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPS_MGR_USR -p $OPS_MGR_PWD -k upload-stemcell -s $SC_FILE_PATH
+        om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k upload-stemcell -s $SC_FILE_PATH
       fi
     fi
 

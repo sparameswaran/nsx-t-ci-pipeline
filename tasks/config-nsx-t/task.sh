@@ -112,8 +112,8 @@ nsx_t_properties=$(
 
 
 TILE_RELEASE=$(om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-                          -u $OPS_MGR_USR \
-                          -p $OPS_MGR_PWD \
+                          -u $OPSMAN_USERNAME \
+                          -p $OPSMAN_PASSWORD \
                           -k available-products \
                           | grep -e "nsx-cf-cni\|VMware-NSX-T")
 
@@ -121,8 +121,8 @@ PRODUCT_NAME=`echo $TILE_RELEASE | cut -d"|" -f2 | tr -d " "`
 PRODUCT_VERSION=`echo $TILE_RELEASE | cut -d"|" -f3 | tr -d " "`
 
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-      -u $OPS_MGR_USR \
-      -p $OPS_MGR_PWD \
+      -u $OPSMAN_USERNAME \
+      -p $OPSMAN_PASSWORD \
       -k stage-product \
       -p $PRODUCT_NAME \
       -v $PRODUCT_VERSION
@@ -130,8 +130,8 @@ om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
   --skip-ssl-validation \
   configure-product \
   --product-name $PRODUCT_NAME \

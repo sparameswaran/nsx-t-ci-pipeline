@@ -33,16 +33,16 @@ PROPERTIES=$(cat <<-EOF
 EOF
 )
 
-TILE_RELEASE=`om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPS_MGR_USR -p $OPS_MGR_PWD -k available-products | grep p-spring-cloud-services`
+TILE_RELEASE=`om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k available-products | grep p-spring-cloud-services`
 
 PRODUCT_NAME=`echo $TILE_RELEASE | cut -d"|" -f2 | tr -d " "`
 PRODUCT_VERSION=`echo $TILE_RELEASE | cut -d"|" -f3 | tr -d " "`
 
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPS_MGR_USR -p $OPS_MGR_PWD -k stage-product -p $PRODUCT_NAME -v $PRODUCT_VERSION
+om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k stage-product -p $PRODUCT_NAME -v $PRODUCT_VERSION
 
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPS_MGR_USR -p $OPS_MGR_PWD -k configure-product -n $PRODUCT_NAME -p "$PROPERTIES"  -pn "$NETWORK"
+om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k configure-product -n $PRODUCT_NAME -p "$PROPERTIES"  -pn "$NETWORK"
 
-PRODUCT_GUID=$(om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPS_MGR_USR -p $OPS_MGR_PWD \
+PRODUCT_GUID=$(om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD \
                      curl -p "/api/v0/staged/products" -x GET \
                      | jq '.[] | select(.installation_name | contains("p-spring-cloud-services")) | .guid' | tr -d '"')
 
@@ -58,6 +58,6 @@ SCS_ERRANDS=$(cat <<-EOF
 EOF
 )
 
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPS_MGR_USR -p $OPS_MGR_PWD \
+om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD \
                           curl -p "/api/v0/staged/products/$PRODUCT_GUID/errands" \
                           -x PUT -d "$SCS_ERRANDS"
