@@ -26,7 +26,7 @@ possible_opsmans=$(govc find $resource_pool_path -type m -guest.ipAddress ${OPSM
 
 for opsman in ${possible_opsmans}; do
   network="$(govc vm.info -r=true -json ${opsman} | jq -r '.VirtualMachines[0].Guest.Net[0].Network')"
-  if [[ ${network} == ${GOVC_NETWORK} ]]; then
+  if [[ ${network} == ${GOVC_NETWORK} -o ${network} == "" ]]; then
     echo "Powering off and removing ${opsman}..."
     set +e
     govc vm.power -vm.ipath=${opsman} -off
