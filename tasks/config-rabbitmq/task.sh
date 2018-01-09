@@ -88,6 +88,14 @@ RESOURCES=$(cat <<-EOF
 EOF
 )
 
+om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
+  -k configure-product \
+  -n $PRODUCT_NAME \
+  -pn "$NETWORK" \
+  -pr "$RESOURCES"
+
 
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   -u $OPSMAN_USERNAME \
@@ -95,8 +103,6 @@ om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   -k configure-product \
   -n $PRODUCT_NAME \
   -p "$PROPERTIES" \
-  -pn "$NETWORK" \
-  -pr "$RESOURCES"
 
 PRODUCT_GUID=$(om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD \
                      curl -p "/api/v0/staged/products" -x GET \
