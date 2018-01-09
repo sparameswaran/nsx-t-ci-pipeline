@@ -221,7 +221,7 @@ jobs:
   - aggregate:
     - get: nsx-t-ci-pipeline
     - get: s3-tile
-      resource: s3-nsx-t-add-on-tile
+      resource: nsx-t-add-on-tile
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [deploy-director]
