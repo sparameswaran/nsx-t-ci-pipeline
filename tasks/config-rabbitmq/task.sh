@@ -58,10 +58,10 @@ PROPERTIES=$(cat <<-EOF
   ".properties.syslog_selector": {
     "value": "disabled"
   },
-  ".properties.on_demand_broker_dedicated_single_node_plan_rabbitmq_az_placement": {
+  ".properties.on_demand_broker_plan_1_rabbitmq_az_placement": {
     "value": ["$RABBITMQ_SINGLETON_JOB_AZ"]
   },
-  ".properties.on_demand_broker_dedicated_single_node_plan_disk_limit_acknowledgement": {
+  ".properties.on_demand_broker_plan_1_disk_limit_acknowledgement": {
     "value": ["acknowledge"]
   },
   ".properties.disk_alarm_threshold": {
