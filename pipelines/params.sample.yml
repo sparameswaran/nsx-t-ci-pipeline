@@ -255,6 +255,7 @@ mysql_backups_s3_access_key_id:
 mysql_backups_s3_secret_access_key:
 mysql_backups_s3_cron_schedule:
 
+
 ## Default resource configuration
 ## these resources can take any parameter made available in
 ## the ops manager API ( https://<your-ops-man/docs#configuring-resources-for-a-job )
@@ -278,7 +279,7 @@ loggregator_traffic_controller_instances: 3
 syslog_adapter_instances: 3
 doppler_instances: 3
 tcp_router_instances: 2
-
+ert_errands_to_run_on_change: all
 internet_connected: true
 
 # leave nsx fields empty if you are not leveraging the nsx features for a given component
@@ -373,13 +374,16 @@ tile_rabbit_server_instances: 1
 tile_rabbit_haproxy_security_group:
 tile_rabbit_on_demand_plan_1_instance_quota: 20
 tile_rabbit_lbr_ip:
+tile_rabbit_errands_to_run_on_change: all
 
 mysql_singleton_job_az: az1
 tile_mysql_proxy_vip:
 tile_mysql_proxy_ips: 192.168.24.160
 tile_mysql_monitor_email: admin.pcf@something
+tile_mysql_errands_to_run_on_change: all
 
 scs_singleton_job_az: az1
+scs_errands_to_run_on_change: all
 
 # Use this for downloading tile from a s3 bucket
 s3_bucket: nsx-tile-s3              # Required for S3. ID of the AWS S3 bucket to upload Pivotal releases to

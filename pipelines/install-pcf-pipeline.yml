@@ -416,14 +416,14 @@ jobs:
       CONTAINER_NETWORKING_INTERFACE_PLUGIN: {{container_networking_interface_plugin}}
       CREDHUB_PASSWORD: {{credhub_password}}
 
-  - task: disable-errands
-    file: pcf-pipelines/tasks/disable-errands/task.yml
+  - task: configure-errands
+    file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
     params:
       PRODUCT_NAME: cf
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
-      ERRANDS_TO_DISABLE: {{ert_errands_to_disable}}
+      ERRANDS_TO_RUN_ON_CHANGE: {{ert_errands_to_run_on_change}}
 
   - task: deploy-ert
     file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml

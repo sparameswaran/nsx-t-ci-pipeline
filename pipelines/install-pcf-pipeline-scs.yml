@@ -440,14 +440,14 @@ jobs:
       CONTAINER_NETWORKING_INTERFACE_PLUGIN: {{container_networking_interface_plugin}}
       CREDHUB_PASSWORD: {{credhub_password}}
 
-  - task: disable-errands
-    file: pcf-pipelines/tasks/disable-errands/task.yml
+  - task: configure-errands
+    file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
     params:
       PRODUCT_NAME: cf
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
-      ERRANDS_TO_DISABLE: {{ert_errands_to_disable}}
+      ERRANDS_TO_RUN_ON_CHANGE: {{ert_errands_to_run_on_change}}
 
   - task: deploy-ert
     file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
@@ -551,6 +551,15 @@ jobs:
       TILE_MYSQL_MONITORING_INSTANCES: 1
       TILE_MYSQL_BROKER_INSTANCES: 1
 
+  - task: configure-errands
+    file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
+    params:
+      PRODUCT_NAME: p-mysql
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+      ERRANDS_TO_RUN_ON_CHANGE: {{tile_mysql_errands_to_run_on_change}}
+
 - name: install-rabbitmq
   plan:
   - aggregate:
@@ -581,6 +590,15 @@ jobs:
       TILE_RABBIT_RABBITMQ_HAPROXY_SECURITY_GROUP: {{tile_rabbit_haproxy_security_group}}
       TILE_RABBIT_ON_DEMAND_PLAN_1_INSTANCE_QUOTA: {{tile_rabbit_on_demand_plan_1_instance_quota}}
       RABBITMQ_TILE_LBR_IP: {{tile_rabbit_lbr_ip}}
+
+  - task: configure-errands
+    file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
+    params:
+      PRODUCT_NAME: p-rabbitmq
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+      ERRANDS_TO_RUN_ON_CHANGE: {{tile_rabbit_errands_to_run_on_change}}
 
 - name: deploy-services
   plan:
@@ -619,13 +637,23 @@ jobs:
       SCS_SINGLETON_JOB_AZ: {{scs_singleton_job_az}}
       DEPLOYMENT_NW_AZS: {{deployment_nw_azs}}
       NETWORK_NAME: {{deployment_network_name}}
-   
+
+  - task: configure-errands
+    file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
+    params:
+      PRODUCT_NAME: p-spring-cloud-services
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+      ERRANDS_TO_RUN_ON_CHANGE: {{scs_errands_to_run_on_change}}
+
   - task: deploy
     file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+
 
 
 - name: wipe-env
