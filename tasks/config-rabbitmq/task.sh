@@ -58,6 +58,12 @@ PROPERTIES=$(cat <<-EOF
   ".properties.syslog_selector": {
     "value": "disabled"
   },
+  ".properties.on_demand_broker_plan_1_cf_service_access": {
+    "value": "enable"
+  },
+  ".properties.on_demand_broker_plan_1_instance_quota": {
+    "value": 10
+  },
   ".properties.on_demand_broker_plan_1_rabbitmq_az_placement": {
     "value": ["$RABBITMQ_SINGLETON_JOB_AZ"]
   },

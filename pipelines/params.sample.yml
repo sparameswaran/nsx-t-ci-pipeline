@@ -3,9 +3,9 @@ pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet
 opsman_major_minor_version: ^2\.0\.0$   # PCF Ops Manager minor version to track
 ert_major_minor_version: ^2\.0\.0$      # PCF Elastic Runtime minor version to track
 nsxt_major_minor_version: ^2\.1\.0.*$   # PCF Elastic Runtime minor version to track
-scs_major_minor_version: ^1\.4\..*$
+scs_major_minor_version: ^1\.5\..*$
 mysql_major_minor_version: ^1\.10\..*$
-rabbitmq_major_minor_version: ^1\.10\..*$
+rabbitmq_major_minor_version: ^1\.11\..*$
 
 # vCenter configuration
 vcenter_host: 10.1.1.10            # vCenter host or IP
@@ -371,6 +371,7 @@ tile_rabbit_admin_passwd: R1xWasfasfsfasfgoJdekTP3
 tile_rabbit_proxy_instances: 1
 tile_rabbit_server_instances: 1
 tile_rabbit_haproxy_security_group:
+tile_rabbit_on_demand_plan_1_instance_quota: 20
 tile_rabbit_lbr_ip:
 
 mysql_singleton_job_az: az1
