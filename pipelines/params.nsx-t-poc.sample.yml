@@ -275,8 +275,8 @@ diego_brain_nsx_lb_port:
 
 # Use this for downloading tile from a s3 bucket in concourse,
 # in the absence of the tile from network.pivotal.io
-s3_bucket: nsx-tile-s3                          # Required for S3. ID of the AWS S3 bucket to upload Pivotal releases to
-s3_creds_access_key_id: AAa23....asdfZA         # Required for S3. Access key of the AWS S3 bucket
+s3_bucket: nsx-tile-s3              # Required for S3. ID of the AWS S3 bucket to download Pivotal releases from
+s3_creds_access_key_id: AAa23....asdfZA       # Required for S3. Access key of the AWS S3 bucket
 s3_creds_secret_access_key: s6A234...asfsadUL   # Required for S3. Secret access key of the AWS S3 bucket
-s3_region: us-west-2                            # The region the bucket is in. Leave it blank if not applicable (e.g. for Minio)
-s3_nsx_t_tile_path: VMware-NSX-T-(.*).pivotal   # Custom endpoint for S3 compatible provider. Leave it blank if not applicable (e.g. for AWS)
+s3_region: us-west-2                 # The region the bucket is in. Leave it blank if not applicable (e.g. for Minio)
+s3_nsx_t_tile_path: VMware-NSX-T-(.*).pivotal    # file path name to the tile in the s3 bucket
