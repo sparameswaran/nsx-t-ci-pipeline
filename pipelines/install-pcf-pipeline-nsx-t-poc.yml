@@ -145,6 +145,9 @@ jobs:
       AZ_2: {{az_2_name}}
       AZ_2_CLUSTER_NAME: {{az_2_cluster_name}}
       AZ_2_RP_NAME: {{az_2_rp_name}}
+      AZ_3: {{az_3_name}}
+      AZ_3_CLUSTER_NAME: {{az_3_cluster_name}}
+      AZ_3_RP_NAME: {{az_3_rp_name}}
       NTP_SERVERS: {{ntp_servers}}
       OPS_DIR_HOSTNAME: {{ops_dir_hostname}}
       ENABLE_VM_RESURRECTOR: {{enable_vm_resurrector}}

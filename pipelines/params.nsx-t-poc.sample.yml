@@ -50,12 +50,15 @@ trusted_certificates:         # Trusted certificates to be deployed along with a
 vm_disk_type: "thick"         # Disk type for BOSH provisioned VM. (thick|thin)
 
 # AZ configuration for Ops Director
-az_1_name: bosh-az               # Logical name of availability zone for BOSH. No spaces or special characters.
-az_1_cluster_name: Cluster1      # Name of cluster in vCenter for Bosh AZ
+az_1_name: az1                   # Logical name of availability zone 1. No spaces or special characters.
+az_1_cluster_name: Cluster1      # Name of cluster in vCenter for AZ 1
 az_1_rp_name:         # Resource pool name in vCenter for AZ1
-az_2_name: ert-az                   # Logical name of availability zone for ERT. No spaces or special characters.
-az_2_cluster_name: Cluster2      # Name of cluster in vCenter for ERT AZ
+az_2_name: az2                   # Logical name of availability zone 2. No spaces or special characters.
+az_2_cluster_name: Cluster2      # Name of cluster in vCenter for AZ 2
 az_2_rp_name: 
+az_3_name: az3                   # Logical name of availability zone 3. No spaces or special characters.
+az_3_cluster_name: Cluster3      # Name of cluster in vCenter for AZ 3
+az_3_rp_name: 
 
 ntp_servers: us.pool.ntp.org                 # Comma-separated list of NTP servers to use for VMs deployed by BOSH
 ops_dir_hostname:                            # Optional DNS name for Ops Director. Should be reachable from all networks.
@@ -71,7 +74,7 @@ infra_nw_cidr: 192.168.10.0/26            # Infrastructure network CIDR, ex: 10.
 infra_excluded_range: 192.168.10.0-192.168.10.9,192.168.10.25-192.168.10.254       # Infrastructure network exclusion range
 infra_nw_dns: 10.1.1.2                    # Infrastructure network DNS
 infra_nw_gateway: 192.168.10.1            # Infrastructure network Gateway
-infra_nw_azs: bosh-az                     # Comma separated list of AZ's to be associated with this network
+infra_nw_azs: az1,az2,az3                 # Comma separated list of AZ's to be associated with this network
 nsx_networking_enabled: true              # (true|false) to use nsx networking feature
 nsx_mode: nsx-t                           # Valid values: nsx-t, nsx-v
 nsx_address: nsx-t-mgr.test-domain.com    # address of nsx mgr
@@ -104,7 +107,7 @@ deployment_nw_cidr: 192.168.20.0/22        # Deployment network CIDR, ex: 10.0.0
 deployment_excluded_range: 192.168.20.0-192.168.20.10  # Deployment network exclusion range
 deployment_nw_dns: 10.1.1.2                # Deployment network DNS
 deployment_nw_gateway: 192.168.20.1        # Deployment network Gateway
-deployment_nw_azs: ert-az                  # Comma separated list of AZ's to be associated with this network
+deployment_nw_azs: az1,az2,az3                  # Comma separated list of AZ's to be associated with this network
 
 # NSX-T Related portion
 nsx_subnet_prefix: 24
@@ -119,7 +122,7 @@ nsx_client_cert_cert:
 nsx_client_cert_private_key:
 
 # ERT config
-ert_singleton_job_az: ert-az        # AZ to use for deployment of ERT Singleton jobs
+ert_singleton_job_az: az1        # AZ to use for deployment of ERT Singleton jobs
 ert_errands_to_disable:       # Comma-separated list of errand names to disable before deploy
 
 loggregator_endpoint_port:    # Loggegrator Port. Default is 443

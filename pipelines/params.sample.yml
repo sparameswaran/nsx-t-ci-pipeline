@@ -54,17 +54,11 @@ az_1_name: az1                   # Logical name of availability zone. No spaces 
 az_1_cluster_name: Cluster1      # Name of cluster in vCenter for AZ1
 az_1_rp_name: rpcluster-1        # Resource pool name in vCenter for AZ1
 az_2_name: az2                   # Logical name of availability zone. No spaces or special characters.
-az_2_cluster_name: Cluster2      # Name of cluster in vCenter for AZ1
+az_2_cluster_name: Cluster2      # Name of cluster in vCenter for AZ2
 az_2_rp_name: rpcluster-2
 az_3_name: az3                   # Logical name of availability zone. No spaces or special characters.
-az_3_cluster_name: Cluster3      # Name of cluster in vCenter for AZ1
+az_3_cluster_name: Cluster3      # Name of cluster in vCenter for AZ3
 az_3_rp_name: rpcluster-3
-# az_2_name:                    # Logical name of availability zone. No spaces or special characters.
-# az_2_cluster_name:            # Name of cluster in vCenter for AZ2
-# az_2_rp_name:                 # Resource pool name in vCenter for AZ2
-# az_3_name:                    # Logical name of availability zone. No spaces or special characters.
-# az_3_cluster_name:            # Name of cluster in vCenter for AZ3
-# az_3_rp_name:                 # Resource pool name in vCenter for AZ3
 
 ntp_servers: us.pool.ntp.org                 # Comma-separated list of NTP servers to use for VMs deployed by BOSH
 ops_dir_hostname:                            # Optional DNS name for Ops Director. Should be reachable from all networks.
