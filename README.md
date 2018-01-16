@@ -28,6 +28,7 @@ This concourse install would be used later to install Pivotal Ops Mgr 2.0, NSX-T
 * There needs to be a T0 Router that has a tag scope `ncp/cluster` and a value that can be used for Cloud Foundry install. The value (sample value of `ncp/cluster` scoped tag is `pcf2.0` on a given T0Router) should match with the foundation name specified for the NSX-T Tile configuration. Same for the overlay network, container ip pools, external mapped ip pools etc.
 * There needs to be minimum of 2 networks (logical switches) in NSX-T - one for BOSH & Ops Mgr (named infra) and one for PAS (named ert). The names need not match exactly, just ensure the params file is correctly specifying the logical switch names.
   * Sample setup
+ 
   | Logical Switch | Sample Subnet | Sample Static ips           | Description                 |
   | -------------- |:-------------:|:---------------------------:|:----------------------------|
   | infra          |192.168.10.0/26|192.168.10.5|used by Ops Mgr|
