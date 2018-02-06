@@ -21,7 +21,7 @@ if [[ $opsman_available == "available" ]]; then
 fi
 
 # Delete Active OpsMan
-resource_pool_path=$(govc find . -name ${GOVC_RESOURCE_POOL} )
+resource_pool_path=$(govc find . -name ${GOVC_RESOURCE_POOL} | grep -i resource )
 possible_opsmans=$(govc find $resource_pool_path -type m -guest.ipAddress ${OPSMAN_IP} -runtime.powerState poweredOn)
 
 for opsman in ${possible_opsmans}; do

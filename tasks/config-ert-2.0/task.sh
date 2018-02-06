@@ -2,7 +2,10 @@
 
 set -eu
 
-source nsx-t-ci-pipeline/functions/generate_cert.sh
+export ROOT_DIR=`pwd`
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
 
 if [[ -z "$SSL_CERT" ]]; then
   domains=(
@@ -41,12 +44,18 @@ if [ "$CREDHUB_PASSWORD" == "" ]; then
 fi
 
 
-TILE_RELEASE=`om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k available-products | grep cf`
+check_bosh_version
+check_available_product_version "cf"
 
-PRODUCT_NAME=`echo $TILE_RELEASE | cut -d"|" -f2 | tr -d " "`
-PRODUCT_VERSION=`echo $TILE_RELEASE | cut -d"|" -f3 | tr -d " "`
-
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k stage-product -p $PRODUCT_NAME -v $PRODUCT_VERSION
+om-linux \
+    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+    -u $OPSMAN_USERNAME \
+    -p $OPSMAN_PASSWORD \
+    -k stage-product \
+    -p $PRODUCT_NAME \
+    -v $PRODUCT_VERSION
+  
+check_staged_product_guid "cf-"
 
 
 cf_properties=$(
@@ -547,44 +556,6 @@ cf_resources=$(
     --arg diego_brain_nsx_lb_security_group "${DIEGO_BRAIN_NSX_LB_SECURITY_GROUP}" \
     --arg diego_brain_nsx_lb_port "${DIEGO_BRAIN_NSX_LB_PORT}" \
     '
-    if $iaas == "azure" then
-
-    {
-      "consul_server": { "instances": $consul_server_instances, "internet_connected": $internet_connected },
-      "nats": { "instances": $nats_instances, "internet_connected": $internet_connected },
-      "nfs_server": { "instances": $nfs_server_instances, "internet_connected": $internet_connected },
-      "mysql_proxy": { "instances": $mysql_proxy_instances, "internet_connected": $internet_connected },
-      "mysql": { "instances": $mysql_instances, "internet_connected": $internet_connected },
-      "backup-prepare": { "instances": $backup_prepare_instances, "internet_connected": $internet_connected },
-      "diego_database": { "instances": $diego_database_instances, "internet_connected": $internet_connected },
-      "uaa": { "instances": $uaa_instances, "internet_connected": $internet_connected },
-      "cloud_controller": { "instances": $cloud_controller_instances, "internet_connected": $internet_connected },
-      "ha_proxy": { "instances": $ha_proxy_instances, "internet_connected": $internet_connected },
-      "router": { "instances": $router_instances, "internet_connected": $internet_connected },
-      "mysql_monitor": { "instances": $mysql_monitor_instances, "internet_connected": $internet_connected },
-      "clock_global": { "instances": $clock_global_instances, "internet_connected": $internet_connected },
-      "cloud_controller_worker": { "instances": $cloud_controller_worker_instances, "internet_connected": $internet_connected },
-      "diego_brain": { "instances": $diego_brain_instances, "internet_connected": $internet_connected },
-      "diego_cell": { "instances": $diego_cell_instances, "internet_connected": $internet_connected },
-      "loggregator_trafficcontroller": { "instances": $loggregator_tc_instances, "internet_connected": $internet_connected },
-      "tcp_router": { "instances": $tcp_router_instances, "internet_connected": $internet_connected },
-      "syslog_adapter": { "instances": $syslog_adapter_instances, "internet_connected": $internet_connected },
-      "syslog_scheduler": {"internet_connected": $internet_connected},
-      "doppler": { "instances": $doppler_instances, "internet_connected": $internet_connected },
-      "smoke-tests": {"internet_connected": $internet_connected},
-      "push-apps-manager": {"internet_connected": $internet_connected},
-      "notifications": {"internet_connected": $internet_connected},
-      "notifications-ui": {"internet_connected": $internet_connected},
-      "push-pivotal-account": {"internet_connected": $internet_connected},
-      "autoscaling": {"internet_connected": $internet_connected},
-      "autoscaling-register-broker": {"internet_connected": $internet_connected},
-      "nfsbrokerpush": {"internet_connected": $internet_connected},
-      "bootstrap": {"internet_connected": $internet_connected},
-      "mysql-rejoin-unsafe": {"internet_connected": $internet_connected}
-    }
-
-    else
-
     {
       "consul_server": { "instances": $consul_server_instances },
       "nats": { "instances": $nats_instances },
@@ -608,9 +579,7 @@ cf_resources=$(
       "doppler": { "instances": $doppler_instances }
     }
 
-    end
-
-    |
+    +
 
     if $ha_proxy_elb_name != "" then
       .ha_proxy |= . + { "elb_names": [ $ha_proxy_elb_name ] }
@@ -618,7 +587,7 @@ cf_resources=$(
       .
     end
 
-    |
+    +
 
     if $ha_proxy_floating_ips != "" then
       .ha_proxy |= . + { "floating_ips": $ha_proxy_floating_ips }
@@ -626,7 +595,7 @@ cf_resources=$(
       .
     end
 
-    |
+    +
 
     # NSX LBs
 
@@ -646,7 +615,7 @@ cf_resources=$(
       .
     end
 
-    |
+    +
 
     if $router_nsx_lb_edge_name != "" then
       .router |= . + {
@@ -664,7 +633,7 @@ cf_resources=$(
       .
     end
 
-    |
+    +
 
     if $diego_brain_nsx_lb_edge_name != "" then
       .diego_brain |= . + {
@@ -685,12 +654,36 @@ cf_resources=$(
 )
 
 om-linux \
-  --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  --username $OPSMAN_USERNAME \
-  --password $OPSMAN_PASSWORD \
+  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
   configure-product \
   --product-name cf \
   --product-properties "$cf_properties" \
   --product-network "$cf_network" \
   --product-resources "$cf_resources"
+
+
+  
+ERT_ERRANDS=$(cat <<-EOF
+{"errands":[
+  {"name":"smoke_tests","post_deploy":"when-changed"},
+  {"name":"push-usage-service","post_deploy":"when-changed"},
+  {"name":"push-apps-manager","post_deploy":"when-changed"},
+  {"name":"deploy-notifications","post_deploy":"when-changed"},
+  {"name":"deploy-notifications-ui","post_deploy":"when-changed"},
+  {"name":"push-pivotal-account","post_deploy":"when-changed"},
+  {"name":"deploy-autoscaling","post_deploy":"when-changed"},
+  {"name":"register-broker","post_deploy":"when-changed"},
+  {"name":"nfsbrokerpush","post_deploy":"when-changed"}
+]}
+EOF
+)
+
+om-linux \
+      -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+      -u $OPSMAN_USERNAME \
+      -p $OPSMAN_PASSWORD \
+      -k curl -p "/api/v0/staged/products/$PRODUCT_GUID/errands" \
+      -x PUT -d "$ERT_ERRANDS"

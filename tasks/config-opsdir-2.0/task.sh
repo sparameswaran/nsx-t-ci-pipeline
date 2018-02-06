@@ -164,8 +164,8 @@ network_configuration=$(
 director_config=$(cat <<-EOF
 {
   "ntp_servers_string": "$NTP_SERVERS",
-  "resurrector_enabled": $ENABLE_VM_RESURRECTOR,
-  "max_threads": $MAX_THREADS,
+  "resurrector_enabled": true,
+  "max_threads": null,
   "database_type": "internal",
   "blobstore_type": "local",
   "director_hostname": "$OPS_DIR_HOSTNAME"
@@ -183,14 +183,14 @@ security_configuration=$(
     }'
 )
 
-network_assignment=$(
+network_az_assignment=$(
 jq -n \
   --arg infra_availability_zones "$INFRA_NW_AZS" \
   --arg network "$INFRA_NETWORK_NAME" \
   '
   {
-    "singleton_availability_zone": ($infra_availability_zones | split(",") | .[0]),
-    "network": $network
+    "singleton_availability_zone": { "name": ($infra_availability_zones | split(",") | .[0]) },
+    "network": { "name": $network }
   }'
 )
 
@@ -208,6 +208,26 @@ wrapped_iaas_config=$(cat << EOF
 }
 EOF
 )
+# om-linux has issues with handling boolean types 
+# wrapped as string for uknown flags like nsx_networking_enabled
+# Error: configuring iaas specific options for bosh tile
+# could not execute "configure-bosh": 
+# could not decode json: 
+# json: cannot unmarshal string into Go value of type bool
+wrapped_iaas_config=$(cat << EOF
+{
+   "iaas_configuration" : $iaas_configuration
+}
+EOF
+)
+
+
+wrapped_network_az_assignment=$(cat << EOF
+{
+   "network_and_az" : $network_az_assignment
+}
+EOF
+)
 
 # So split the configure steps into iaas that uses curl to PUT and normal path for director config
 om-linux \
@@ -217,6 +237,11 @@ om-linux \
   --password $OPSMAN_PASSWORD \
   curl -p '/api/v0/staged/director/properties' \
   -x PUT -d  "$wrapped_iaas_config"
+# Check for errors
+if [ $? != 0 ]; then
+  echo "IaaS configuration failed!!"
+  exit 1
+fi
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
@@ -225,11 +250,11 @@ om-linux \
   --password $OPSMAN_PASSWORD \
   configure-bosh \
   --director-configuration "$director_config"
-
-
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD \
-  curl -p "/api/v0/staged/director/availability_zones" \
-  -x PUT -d "$az_configuration"
+# Check for errors
+if [ $? != 0 ]; then
+  echo "Bosh Director configuration failed!!"
+  exit 1
+fi
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
@@ -237,6 +262,50 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   configure-bosh \
-  --networks-configuration "$network_configuration" \
-  --network-assignment "$network_assignment" \
   --security-configuration "$security_configuration"
+# Check for errors
+if [ $? != 0 ]; then
+  echo "Bosh Security configuration failed!!"
+  exit 1
+fi
+
+om-linux \
+  --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  --skip-ssl-validation \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
+  curl -p "/api/v0/staged/director/availability_zones" \
+  -x PUT -d "$az_configuration"
+# Check for errors
+if [ $? != 0 ]; then
+  echo "Availability Zones configuration failed!!"
+  exit 1
+fi
+
+om-linux \
+  --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  --skip-ssl-validation \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
+  -k curl -p "/api/v0/staged/director/networks" \
+  -x PUT -d "$network_configuration" \
+# Check for errors
+if [ $? != 0 ]; then
+  echo "Networks configuration failed!!"
+  exit 1
+fi
+
+# Having trouble with om-cli with new network_assignment structure 
+# that wraps single_az and network inside json structure instead of string
+om-linux \
+  --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  --skip-ssl-validation \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
+  -k curl -p "/api/v0/staged/director/network_and_az" \
+  -x PUT -d "$wrapped_network_az_assignment" \
+# Check for errors
+if [ $? != 0 ]; then
+  echo "Networks configuration and AZ assignment failed!!"
+  exit 1
+fi

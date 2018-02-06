@@ -128,7 +128,7 @@ dynamic_services_nw_gateway: 192.168.28.1         # Dynamic Services network Gat
 dynamic_services_nw_azs: az1,az2,az3              # Comma separated list of AZ's to be associated with this network
 
 # NSX-T Related portion
-nsx_subnet_prefix: 24
+nsx_subnet_prefix: 24                    # default 24 - 256 addresses in a given org
 nsx_log_dropped_traffic: false           # default false
 nsx_enable_snat: true                    # earlier used to be "enable" or "disable"
 nsx_external_subnet_prefix: 24           # Check value from NSX-T
@@ -359,8 +359,8 @@ rats_config: |
   }
 
 
-rabbitmq_singleton_job_az: az1
-tile_rabbit_proxy_ips: 192.168.24.155
+tile_rabbit_singleton_job_az: az1
+tile_rabbit_static_ips: 192.168.24.155
 tile_rabbit_admin_user: admin
 tile_rabbit_admin_passwd: R1xWasfasfsfasfgoJdekTP3
 tile_rabbit_proxy_instances: 1
@@ -368,7 +368,38 @@ tile_rabbit_server_instances: 1
 tile_rabbit_haproxy_security_group:
 tile_rabbit_on_demand_plan_1_instance_quota: 20
 tile_rabbit_lbr_ip:
+# vsphere vm types
+# Need to provide vm type and disk size for rabbitmq default plan1
+# -----------------------------------------
+# name        |  ram  |cpu|ephemeral_disk |
+# -----------------------------------------
+# nano        |    512| 1 |     8192      |
+# micro       |   1024| 1 |     8192      |
+# micro.ram   |   1024| 2 |     8192      |
+# small       |   2048| 1 |     8192      |
+# small.disk  |   2048| 1 |    16384      |
+# medium      |   4096| 2 |     8192      |
+# medium.mem  |   8192| 1 |     8192      |
+# medium.disk |   4096| 2 |    32768      |
+# medium.cpu  |   2048| 4 |     8192      |
+# large       |   8192| 2 |    16384      |       
+# large.mem   |  16384| 1 |    16384      |
+# large.disk  |   8192| 2 |    65536      |
+# large.cpu   |   4096| 4 |    16384      |
+# xlarge      |  16384| 4 |    32768      |
+# xlarge.mem  |  32768| 2 |    32768      |
+# xlarge.disk |  16384| 4 |   131072      |   
+# xlarge.cpu  |   8192| 8 |    32768      |
+# 2xlarge     |  32768| 8 |    65536      |
+# 2xlarge.mem |  65536| 4 |    65536      |  
+# 2xlarge.disk|  32768| 8 |   262144      |
+# 2xlarge.cpu |  16384|16 |    65536      |       
+# -----------------------------------------
+# Disk sizes (in mbs): 1024,2048,5012,10240,20480,30720,40960,50120,76800,102400..
+tile_rabbit_on_demand_plan_1_vm_type: medium.cpu
+tile_rabbit_on_demand_plan_1_persistent_disk_type: 10240
 tile_rabbit_errands_to_run_on_change: all
+
 
 mysql_singleton_job_az: az1
 tile_mysql_proxy_vip:

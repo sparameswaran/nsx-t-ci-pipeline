@@ -6,7 +6,7 @@ network_name: Cluster1
 web_ip: 10.1.1.60                       
 web_name: concourse.test-cf-app.com
 worker_name: concourse-worker
-deployment_name: concourse
+deployment_name: concourse-test
 
 # Edit following github related name & ids
 github_org: test-org

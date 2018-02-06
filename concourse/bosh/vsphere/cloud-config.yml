@@ -70,8 +70,8 @@ networks:
     reserved:
     - 10.1.1.2 - 10.1.1.50
     - 10.1.1.80 - 10.1.1.230
-    az: Cluster1
-    dns: [10.1.1.2]
+    az: Cluster1   # EDIT ME
+    dns: [8.8.8.8]
     cloud_properties:
       name: "VM Network"
 compilation:

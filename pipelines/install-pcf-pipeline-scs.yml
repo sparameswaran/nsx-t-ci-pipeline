@@ -578,18 +578,21 @@ jobs:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
-      RABBITMQ_SINGLETON_JOB_AZ: {{rabbitmq_singleton_job_az}}
+      TILE_RABBIT_SINGLETON_JOB_AZ: {{tile_rabbit_singleton_job_az}}
       DEPLOYMENT_NW_AZS: {{deployment_nw_azs}}
       SERVICE_NETWORK_NAME: {{dynamic_services_network_name}}
       NETWORK_NAME: {{services_network_name}}
       TILE_RABBIT_PROXY_IPS: {{tile_rabbit_proxy_ips}}
+      TILE_RABBIT_STATIC_IPS: {[tile_rabbit_static_ips]}
       TILE_RABBIT_ADMIN_USER: {{tile_rabbit_admin_user}}
       TILE_RABBIT_ADMIN_PASSWD: {{tile_rabbit_admin_passwd}}
       TILE_RABBIT_PROXY_INSTANCES: {{tile_rabbit_proxy_instances}}
       TILE_RABBIT_SERVER_INSTANCES: {{tile_rabbit_server_instances}}
       TILE_RABBIT_RABBITMQ_HAPROXY_SECURITY_GROUP: {{tile_rabbit_haproxy_security_group}}
       TILE_RABBIT_ON_DEMAND_PLAN_1_INSTANCE_QUOTA: {{tile_rabbit_on_demand_plan_1_instance_quota}}
-      RABBITMQ_TILE_LBR_IP: {{tile_rabbit_lbr_ip}}
+      TILE_RABBIT_LBR_IP: {{tile_rabbit_lbr_ip}}
+      TILE_RABBIT_TILE_RABBIT_ON_DEMAND_PLAN_1_VM_TYPE: {{tile_rabbit_on_demand_plan_1_vm_type}}
+      TILE_RABBIT_ON_DEMAND_PLAN_1_PERSISTENT_DISK_TYPE: {{tile_rabbit_on_demand_plan_1_persistent_disk_type}}
 
   - task: configure-errands
     file: nsx-t-ci-pipeline/tasks/config-errands/task.yml

@@ -20,6 +20,7 @@ export STEMCELL_VERSION="3468.1"
 #bosh -e $BOSH_ENV upload-release \
 #   https://github.com/concourse/concourse/releases/download/v${CONCOURSE_VERSION}/concourse-${CONCOURSE_VERSION}.tgz
 
+echo "Edit the Cloud config before deploy"
 bosh -e $BOSH_ENV upload-stemcell \
  https://s3.amazonaws.com/bosh-core-stemcells/vsphere/bosh-stemcell-${STEMCELL_VERSION}-vsphere-esxi-ubuntu-trusty-go_agent.tgz
 

@@ -12,7 +12,7 @@ export SCRIPTS_DIR=$(cd $BOSH_DIR/../../scripts && pwd)
 source $SCRIPTS_DIR/setup.sh
 
 # Get the Bosh Director IP from vsphere-config.yml
-BOSH_DIRECTOR_IP=$(grep internal_ip $BOSH_DIR/vpshere-config.yml | awk '{print $2}' )
+BOSH_DIRECTOR_IP=$(grep internal_ip $BOSH_DIR/vsphere-config.yml | awk '{print $2}' )
 echo "Using Bosh Director IP: $BOSH_DIRECTOR_IP"
 
 netcat_check=$(nc  -z -G 2 -w 3 -v $BOSH_DIRECTOR_IP 25555 &> /dev/null && echo "Online" || echo "Offline")
@@ -37,6 +37,17 @@ export BOSH_CLIENT_SECRET=`bosh int $CUR_SCRIPT_DIR/creds.yml --path /admin_pass
 export BOSH_CA_CERT=$CUR_SCRIPT_DIR/ca-certs.yml
 
 bosh -e $BOSH_ENV --ca-cert $CUR_SCRIPT_DIR/ca-certs.yml login
+
+echo "Finish editing the Cloud config ($BOSH_DIR/vsphere/cloud-config.yml) before updating cloud config "
+echo " --- Particularly the AZ, Cluster, Network name, gateways, DNS, IP allocations!!"
+
+echo "Proceed with update of cloud-config? [y/n]:"
+read answer
+if [ "$answer" != "y" ]; then
+	exit 1
+fi
+
+echo ""
 bosh -e $BOSH_ENV update-cloud-config $BOSH_DIR/vsphere/cloud-config.yml
 
 echo "Logged in and updated cloud-config"
