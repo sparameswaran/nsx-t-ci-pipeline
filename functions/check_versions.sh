@@ -2,7 +2,7 @@
 
 function check_bosh_version {  
 
-  export BOSH_PRODUCT_VERSION=$(om \
+  export BOSH_PRODUCT_VERSION=$(om-linux \
                                   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                                   -u $OPSMAN_USERNAME \
                                   -p $OPSMAN_PASSWORD \
@@ -19,7 +19,7 @@ function check_bosh_version {
 function check_available_product_version {
 
   local product_code="$1"
-  TILE_RELEASE=$(om \
+  TILE_RELEASE=$(om-linux \
                     -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                     -u $OPSMAN_USERNAME \
                     -p $OPSMAN_PASSWORD \
@@ -38,7 +38,7 @@ function check_staged_product_guid {
 
   local product_code="$1"
   # jq contains does not appear to be able to use env variable
-  # export PRODUCT_GUID=$(om \
+  # export PRODUCT_GUID=$(om-linux \
   #                 -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   #                 -u $OPSMAN_USERNAME \
   #                 -p $OPSMAN_PASSWORD \
@@ -47,7 +47,7 @@ function check_staged_product_guid {
   #                 | jq --arg product_code $product_code '.[] | select(.installation_name | contains("$product_code")) | .guid' \
   #                 | tr -d '"')
 
-  export PRODUCT_GUID=$(om \
+  export PRODUCT_GUID=$(om-linux \
                   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                   -u $OPSMAN_USERNAME \
                   -p $OPSMAN_PASSWORD \
@@ -56,7 +56,7 @@ function check_staged_product_guid {
                   | grep "guid" | grep "\"$product_code" \
                   | awk -F '"' '{print $4}' )
 
-   export STAGED_PRODUCT_PROPERTIES=$(om \
+   export STAGED_PRODUCT_PROPERTIES=$(om-linux \
                             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                             -u $OPSMAN_USERNAME \
                             -p $OPSMAN_PASSWORD -k \
@@ -68,7 +68,7 @@ function check_staged_product_guid {
 
 function check_installed_cf_version {
 
-  export CF_PRODUCT_VERSION=$(om \
+  export CF_PRODUCT_VERSION=$(om-linux \
                             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                             -u $OPSMAN_USERNAME \
                             -p $OPSMAN_PASSWORD -k \
@@ -86,7 +86,7 @@ function check_installed_cf_version {
 
 function check_installed_srt_version {
 
-  export SRT_PRODUCT_VERSION=$(om \
+  export SRT_PRODUCT_VERSION=$(om-linux \
                             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                             -u $OPSMAN_USERNAME \
                             -p $OPSMAN_PASSWORD -k \

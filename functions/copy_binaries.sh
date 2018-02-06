@@ -10,7 +10,7 @@ function copy_binaries {
 
 function handle_om {
     set +e
-		om_cli=$(find . -name om-linux)
+		om_cli=$(find / -name om-linux 2>/dev/null)
 		if [ "$om_cli" != "" ]; then
 			chmod +x $om_cli
 			cp $om_cli /usr/bin/om
@@ -20,7 +20,7 @@ function handle_om {
 
 function handle_pivnet_cli {
     set +e
-		pivnet_cli=$(find . -name "pivnet-linux-amd64*")
+		pivnet_cli=$(find / -name "pivnet-linux-amd64*" 2>/dev/null)
 		if [ "$pivnet_cli" != "" ]; then
 			chmod +x $pivnet_cli
 			cp $pivnet_cli /usr/bin/pivnet-cli
@@ -30,12 +30,12 @@ function handle_pivnet_cli {
 
 function handle_govc {
     set +e
-		govc_gz=$(find . -name govc_linux_amd64.gz)
+		govc_gz=$(find / -name govc_linux_amd64.gz 2>/dev/null)
 		if [ "$govc_gz" != "" ]; then
 			gunzip $govc_gz
 		fi
 		
-		govc=$(find . -name govc_linux_amd64)
+		govc=$(find / -name govc_linux_amd64 2>/dev/null)
 		if [ "$govc" != "" ]; then			
 			chmod +x $govc
 			cp $govc /usr/bin/govc

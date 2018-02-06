@@ -366,7 +366,6 @@ tile_rabbit_admin_passwd: R1xWasfasfsfasfgoJdekTP3
 tile_rabbit_proxy_instances: 1
 tile_rabbit_server_instances: 1
 tile_rabbit_haproxy_security_group:
-tile_rabbit_on_demand_plan_1_instance_quota: 20
 tile_rabbit_lbr_ip:
 # vsphere vm types
 # Need to provide vm type and disk size for rabbitmq default plan1
@@ -396,6 +395,7 @@ tile_rabbit_lbr_ip:
 # 2xlarge.cpu |  16384|16 |    65536      |       
 # -----------------------------------------
 # Disk sizes (in mbs): 1024,2048,5012,10240,20480,30720,40960,50120,76800,102400..
+tile_rabbit_on_demand_plan_1_instance_quota: 20
 tile_rabbit_on_demand_plan_1_vm_type: medium.cpu
 tile_rabbit_on_demand_plan_1_persistent_disk_type: 10240
 tile_rabbit_errands_to_run_on_change: all
