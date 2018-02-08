@@ -23,7 +23,7 @@ STEMCELL_VERSION_FROM_PRODUCT_METADATA=$(
 )
 
 tile_metadata=$(unzip -l pivnet-product/*.pivotal | grep "metadata" | grep "ml$" | awk '{print $NF}')
-STEMCELL_VERSION_FROM_TILE=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A4 stemcell | grep version: \
+STEMCELL_VERSION_FROM_TILE=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A4 stemcell_criteria: | grep version: \
                                                       | grep -Ei "[0-9]+{4}" | awk '{print $NF}' | sed "s/'//g" )
 
 source nsx-t-ci-pipeline/functions/upload_stemcell.sh
