@@ -35,22 +35,22 @@ resources:
     sort_by: semver
 
 #Use s3 till nsx-t tile is on pivnet...
-- name: nsx-t-add-on-tile
-  type: s3
-  source:
-    access_key_id: ((s3_creds_access_key_id))
-    secret_access_key: ((s3_creds_secret_access_key))
-    bucket: ((s3_bucket))
-    regexp: ((s3_nsx_t_tile_path)) #nsx-t/VMware-NSX-T-2.1.0.0.0.7113533.pivotal
-    region_name: ((s3_region))
-
 # - name: nsx-t-add-on-tile
-#   type: pivnet
+#   type: s3
 #   source:
-#     api_token: {{pivnet_token}}
-#     product_slug: elastic-runtime
-#     product_version: {{nsxt_major_minor_version}}
-#     sort_by: semver   
+#     access_key_id: ((s3_creds_access_key_id))
+#     secret_access_key: ((s3_creds_secret_access_key))
+#     bucket: ((s3_bucket))
+#     regexp: ((s3_nsx_t_tile_path)) #nsx-t/VMware-NSX-T-2.1.0.0.0.7113533.pivotal
+#     region_name: ((s3_region))
+
+- name: nsx-t-add-on-tile
+  type: pivnet
+  source:
+    api_token: {{pivnet_token}}
+    product_slug: elastic-runtime
+    product_version: {{nsxt_major_minor_version}}
+    sort_by: semver   
 
 
 jobs:
