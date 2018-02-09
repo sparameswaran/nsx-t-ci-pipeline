@@ -48,7 +48,7 @@ resources:
   type: pivnet
   source:
     api_token: {{pivnet_token}}
-    product_slug: elastic-runtime
+    product_slug: vmware-nsx-t
     product_version: {{nsxt_major_minor_version}}
     sort_by: semver   
 
