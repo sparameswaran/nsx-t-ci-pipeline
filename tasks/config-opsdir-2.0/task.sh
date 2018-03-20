@@ -66,6 +66,25 @@ az_configuration=$(cat <<-EOF
 EOF
 )
 
+# Add additional AZ for PKS
+
+if [ "$AZ_4" != "" ]; then 
+  az_configuration=$(echo $az_configuration | jq \
+    --arg az4_name "$AZ_4" \
+    --arg az4_cluster "$AZ_4_CLUSTER_NAME" \
+    --arg az4_rp "$AZ_4_RP_NAME" \
+' .availability_zones +=     
+        [{
+          "name": $az4_name,
+          "cluster": $az4_cluster,
+          "resource_pool": $az4_rp
+        }]
+'
+)
+
+fi
+
+
 network_configuration=$(
   jq -n \
     --argjson icmp_checks_enabled $ICMP_CHECKS_ENABLED \
@@ -120,7 +139,7 @@ network_configuration=$(
 )
 
 if [ "$SERVICES_VCENTER_NETWORK" != "" ]; then 
-  network_configuration=$(echo $network_configuration | jq -n \
+  network_configuration=$(echo $network_configuration | jq \
     --arg services_network_name "$SERVICES_NETWORK_NAME" \
     --arg services_vcenter_network "$SERVICES_VCENTER_NETWORK" \
     --arg services_network_cidr "$SERVICES_NW_CIDR" \
@@ -149,7 +168,7 @@ if [ "$SERVICES_VCENTER_NETWORK" != "" ]; then
 fi
 
 if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" ]; then 
-  network_configuration=$(echo $network_configuration | jq -n \
+  network_configuration=$(echo $network_configuration | jq \
     --arg dynamic_services_network_name "$DYNAMIC_SERVICES_NETWORK_NAME" \
     --arg dynamic_services_vcenter_network "$DYNAMIC_SERVICES_VCENTER_NETWORK" \
     --arg dynamic_services_network_cidr "$DYNAMIC_SERVICES_NW_CIDR" \
@@ -178,7 +197,7 @@ if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" ]; then
 fi
 
 if [ "$PKS_VCENTER_NETWORK" != "" ]; then 
-  network_configuration=$(echo $network_configuration | jq -n \
+  network_configuration=$(echo $network_configuration | jq \
     --arg pks_network_name "$PKS_NETWORK_NAME" \
     --arg pks_vcenter_network "$PKS_VCENTER_NETWORK" \
     --arg pks_network_cidr "$PKS_NW_CIDR" \
@@ -188,16 +207,16 @@ if [ "$PKS_VCENTER_NETWORK" != "" ]; then
     --arg pks_availability_zones "$PKS_NW_AZS" \
 ' .networks +=     
         [{
-          "name": $pks_services_network_name,
+          "name": $pks_network_name,
           "service_network": false,
           "subnets": [
             {
-              "iaas_identifier": $pks_services_vcenter_network,
-              "cidr": $pks_services_network_cidr,
-              "reserved_ip_ranges": $pks_services_reserved_ip_ranges,
-              "dns": $pks_services_dns,
-              "gateway": $pks_services_gateway,
-              "availability_zone_names": ($pks_services_availability_zones | split(","))
+              "iaas_identifier": $pks_vcenter_network,
+              "cidr": $pks_network_cidr,
+              "reserved_ip_ranges": $pks_reserved_ip_ranges,
+              "dns": $pks_dns,
+              "gateway": $pks_gateway,
+              "availability_zone_names": ($pks_availability_zones | split(","))
             }
           ]
         }]
@@ -211,6 +230,8 @@ director_config=$(cat <<-EOF
 {
   "ntp_servers_string": "$NTP_SERVERS",
   "resurrector_enabled": true,
+  "post_deploy_enabled": true,
+  "bosh_recreate_on_next_deploy": true,
   "max_threads": null,
   "database_type": "internal",
   "blobstore_type": "local",

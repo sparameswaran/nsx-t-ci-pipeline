@@ -60,6 +60,11 @@ az_3_name: az3                   # Logical name of availability zone. No spaces 
 az_3_cluster_name: Cluster3      # Name of cluster in vCenter for AZ3
 az_3_rp_name: rpcluster-3
 
+# Add an additional az for PKS - set to empty quote for az_4_name if its not required
+az_4_name: az4                   # Logical name of availability zone for PKS. No spaces or special characters. Set to empty quote if not required
+az_4_cluster_name: Cluster2      # Name of cluster in vCenter for AZ4
+az_4_rp_name: rpcluster-4
+
 ntp_servers: us.pool.ntp.org                 # Comma-separated list of NTP servers to use for VMs deployed by BOSH
 ops_dir_hostname:                            # Optional DNS name for Ops Director. Should be reachable from all networks.
 enable_vm_resurrector: true   # Whether to enable BOSH VM resurrector
@@ -109,6 +114,7 @@ deployment_nw_dns: 10.1.1.2           # Deployment network DNS
 deployment_nw_gateway: 192.168.20.1        # Deployment network Gateway
 deployment_nw_azs: az1,az2,az3            # Comma separated list of AZ's to be associated with this network
 
+# Additional network for PKS - set to empty "" string for the vsphere network if its not required
 pks_network_name: "PKS"             # Logical switch for PKS deployment
 pks_vsphere_network: "pks"             # vCenter Deployment network name for PKS - if empty quotes, then this network would be skipped
 pks_nw_cidr: 192.168.40.0/22        # Deployment network CIDR, ex: 10.0.0.0/22
