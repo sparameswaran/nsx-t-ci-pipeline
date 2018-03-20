@@ -208,7 +208,7 @@ if [ "$PKS_VCENTER_NETWORK" != "" ]; then
 ' .networks +=     
         [{
           "name": $pks_network_name,
-          "service_network": false,
+          "service_network": true,
           "subnets": [
             {
               "iaas_identifier": $pks_vcenter_network,
