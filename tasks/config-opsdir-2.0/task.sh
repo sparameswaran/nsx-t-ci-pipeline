@@ -83,20 +83,6 @@ network_configuration=$(
     --arg deployment_dns "$DEPLOYMENT_NW_DNS" \
     --arg deployment_gateway "$DEPLOYMENT_NW_GATEWAY" \
     --arg deployment_availability_zones "$DEPLOYMENT_NW_AZS" \
-    --arg services_network_name "$SERVICES_NETWORK_NAME" \
-    --arg services_vcenter_network "$SERVICES_VCENTER_NETWORK" \
-    --arg services_network_cidr "$SERVICES_NW_CIDR" \
-    --arg services_reserved_ip_ranges "$SERVICES_EXCLUDED_RANGE" \
-    --arg services_dns "$SERVICES_NW_DNS" \
-    --arg services_gateway "$SERVICES_NW_GATEWAY" \
-    --arg services_availability_zones "$SERVICES_NW_AZS" \
-    --arg dynamic_services_network_name "$DYNAMIC_SERVICES_NETWORK_NAME" \
-    --arg dynamic_services_vcenter_network "$DYNAMIC_SERVICES_VCENTER_NETWORK" \
-    --arg dynamic_services_network_cidr "$DYNAMIC_SERVICES_NW_CIDR" \
-    --arg dynamic_services_reserved_ip_ranges "$DYNAMIC_SERVICES_EXCLUDED_RANGE" \
-    --arg dynamic_services_dns "$DYNAMIC_SERVICES_NW_DNS" \
-    --arg dynamic_services_gateway "$DYNAMIC_SERVICES_NW_GATEWAY" \
-    --arg dynamic_services_availability_zones "$DYNAMIC_SERVICES_NW_AZS" \
     '
     {
       "icmp_checks_enabled": $icmp_checks_enabled,
@@ -128,8 +114,22 @@ network_configuration=$(
               "availability_zone_names": ($deployment_availability_zones | split(","))
             }
           ]
-        },
-        {
+        }
+      ]
+    }'
+)
+
+if [ "$SERVICES_VCENTER_NETWORK" != "" ]; then 
+  network_configuration=$(echo $network_configuration | jq -n \
+    --arg services_network_name "$SERVICES_NETWORK_NAME" \
+    --arg services_vcenter_network "$SERVICES_VCENTER_NETWORK" \
+    --arg services_network_cidr "$SERVICES_NW_CIDR" \
+    --arg services_reserved_ip_ranges "$SERVICES_EXCLUDED_RANGE" \
+    --arg services_dns "$SERVICES_NW_DNS" \
+    --arg services_gateway "$SERVICES_NW_GATEWAY" \
+    --arg services_availability_zones "$SERVICES_NW_AZS" \
+' .networks +=     
+        [{
           "name": $services_network_name,
           "service_network": false,
           "subnets": [
@@ -142,8 +142,23 @@ network_configuration=$(
               "availability_zone_names": ($services_availability_zones | split(","))
             }
           ]
-        },
-        {
+        }]
+'
+)
+
+fi
+
+if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" ]; then 
+  network_configuration=$(echo $network_configuration | jq -n \
+    --arg dynamic_services_network_name "$DYNAMIC_SERVICES_NETWORK_NAME" \
+    --arg dynamic_services_vcenter_network "$DYNAMIC_SERVICES_VCENTER_NETWORK" \
+    --arg dynamic_services_network_cidr "$DYNAMIC_SERVICES_NW_CIDR" \
+    --arg dynamic_services_reserved_ip_ranges "$DYNAMIC_SERVICES_EXCLUDED_RANGE" \
+    --arg dynamic_services_dns "$DYNAMIC_SERVICES_NW_DNS" \
+    --arg dynamic_services_gateway "$DYNAMIC_SERVICES_NW_GATEWAY" \
+    --arg dynamic_services_availability_zones "$DYNAMIC_SERVICES_NW_AZS" \
+' .networks +=     
+        [{
           "name": $dynamic_services_network_name,
           "service_network": true,
           "subnets": [
@@ -156,10 +171,41 @@ network_configuration=$(
               "availability_zone_names": ($dynamic_services_availability_zones | split(","))
             }
           ]
-        }
-      ]
-    }'
+        }]
+'
 )
+
+fi
+
+if [ "$PKS_VCENTER_NETWORK" != "" ]; then 
+  network_configuration=$(echo $network_configuration | jq -n \
+    --arg pks_network_name "$PKS_NETWORK_NAME" \
+    --arg pks_vcenter_network "$PKS_VCENTER_NETWORK" \
+    --arg pks_network_cidr "$PKS_NW_CIDR" \
+    --arg pks_reserved_ip_ranges "$PKS_EXCLUDED_RANGE" \
+    --arg pks_dns "$PKS_NW_DNS" \
+    --arg pks_gateway "$PKS_NW_GATEWAY" \
+    --arg pks_availability_zones "$PKS_NW_AZS" \
+' .networks +=     
+        [{
+          "name": $pks_services_network_name,
+          "service_network": false,
+          "subnets": [
+            {
+              "iaas_identifier": $pks_services_vcenter_network,
+              "cidr": $pks_services_network_cidr,
+              "reserved_ip_ranges": $pks_services_reserved_ip_ranges,
+              "dns": $pks_services_dns,
+              "gateway": $pks_services_gateway,
+              "availability_zone_names": ($pks_services_availability_zones | split(","))
+            }
+          ]
+        }]
+'
+)
+
+fi
+
 
 director_config=$(cat <<-EOF
 {

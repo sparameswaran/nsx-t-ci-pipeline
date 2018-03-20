@@ -163,8 +163,14 @@ jobs:
       DEPLOYMENT_NW_DNS: {{deployment_nw_dns}}
       DEPLOYMENT_NW_GATEWAY: {{deployment_nw_gateway}}
       DEPLOYMENT_NW_AZS: {{deployment_nw_azs}}
+      PKS_NETWORK_NAME: {{pks_network_name}}
+      PKS_VCENTER_NETWORK: {{pks_vsphere_network}}
+      PKS_NW_CIDR: {{pks_nw_cidr}}
+      PKS_EXCLUDED_RANGE: {{pks_excluded_range}}
+      PKS_NW_DNS: {{pks_nw_dns}}
+      PKS_NW_GATEWAY: {{pks_nw_gateway}}
+      PKS_NW_AZS: {{pks_nw_azs}}
       SERVICES_NETWORK_NAME: {{services_network_name}}
-      IS_SERVICE_NETWORK: {{is_service_network}}
       SERVICES_VCENTER_NETWORK: {{services_vsphere_network}}
       SERVICES_NW_CIDR: {{services_nw_cidr}}
       SERVICES_EXCLUDED_RANGE: {{services_excluded_range}}

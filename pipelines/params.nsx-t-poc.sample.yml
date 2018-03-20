@@ -109,6 +109,14 @@ deployment_nw_dns: 10.1.1.2                # Deployment network DNS
 deployment_nw_gateway: 192.168.20.1        # Deployment network Gateway
 deployment_nw_azs: az1,az2,az3                  # Comma separated list of AZ's to be associated with this network
 
+pks_network_name: "PKS"             # Logical switch for PKS deployment
+pks_vsphere_network: "pks"             # vCenter Deployment network name for PKS - if empty quotes, then this network would be skipped
+pks_nw_cidr: 192.168.40.0/22        # Deployment network CIDR, ex: 10.0.0.0/22
+pks_excluded_range: 192.168.40.0-192.168.40.10  # Deployment network exclusion range
+pks_nw_dns: 10.1.1.2                # Deployment network DNS
+pks_nw_gateway: 192.168.40.1        # Deployment network Gateway
+pks_nw_azs: az1,az2,az3                  # Comma separated list of AZ's to be associated with this network
+
 # NSX-T Related portion
 nsx_subnet_prefix: 24                    # default 24 - 256 addresses in a given org
 nsx_log_dropped_traffic: false           # default false
