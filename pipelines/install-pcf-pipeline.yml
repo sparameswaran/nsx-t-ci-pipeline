@@ -173,7 +173,6 @@ jobs:
       AZ_4_CLUSTER_NAME: {{az_4_cluster_name}}
       AZ_4_RP_NAME: {{az_4_rp_name}}
       NTP_SERVERS: {{ntp_servers}}
-      OPS_DIR_HOSTNAME: {{ops_dir_hostname}}
       ENABLE_VM_RESURRECTOR: {{enable_vm_resurrector}}
       MAX_THREADS: {{max_threads}}
       TRUSTED_CERTIFICATES: {{trusted_certificates}}

@@ -234,8 +234,7 @@ director_config=$(cat <<-EOF
   "bosh_recreate_on_next_deploy": true,
   "max_threads": null,
   "database_type": "internal",
-  "blobstore_type": "local",
-  "director_hostname": "$OPS_DIR_HOSTNAME"
+  "blobstore_type": "local"
 }
 EOF
 )
