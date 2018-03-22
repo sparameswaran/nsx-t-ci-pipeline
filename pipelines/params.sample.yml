@@ -168,6 +168,10 @@ container_networking_nw_cidr: 10.255.0.0/16 # c2c networking network cidr
 # Enable external or silk as CNI plugin
 container_networking_interface_plugin: external # Default to use "silk"
 
+# Following entry should be updated to include the subnet for the PAS vms
+# Cloud Controller wont be able to reach and talk back to the blobstore if the subnet is not correctly included
+blobstore_internal_access_subnet: 'allow 10.0.0.0/8;,allow 172.16.0.0/12;,allow 192.168.0.0/16;' # EDIT and make sure the subnet for the PAS is added here
+
 ## Syslog endpoint configuration goes here
 # Optional. If syslog_host is specified, syslog_port, syslog_protocol,
 # syslog_drain_buffer_size, and enable_security_event_logging must be set.

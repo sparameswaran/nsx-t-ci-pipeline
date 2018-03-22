@@ -57,6 +57,7 @@ om-linux \
   
 check_staged_product_guid "cf-"
 
+has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nfs_server\.blobstore_internal_access_subnet" | wc -l || true)
 
 cf_properties=$(
   jq -n \
@@ -127,6 +128,8 @@ cf_properties=$(
     --arg container_networking_nw_cidr "$CONTAINER_NETWORKING_NW_CIDR" \
     --arg credhub_password "$CREDHUB_PASSWORD" \
     --arg container_networking_interface_plugin "$CONTAINER_NETWORKING_INTERFACE_PLUGIN" \
+    --arg has_blobstore_internal_access_subnet "$has_blobstore_internal_access_subnet" \
+    --arg blobstore_internal_access_subnet "$BLOBSTORE_INTERNAL_ACCESS_SUBNET" \
     '
     {
       ".properties.system_blobstore": {
@@ -181,6 +184,19 @@ cf_properties=$(
         "value": $ssh_static_ips
       }
     }
+
+    +
+    
+    # Blobstore access subnet
+    if $has_blobstore_internal_access_subnet != "0" then
+    {
+        ".nfs_server.blobstore_internal_access_rules": {
+        "value": $blobstore_internal_access_subnet
+      }
+    }
+    else
+    .
+    end
 
     +
 

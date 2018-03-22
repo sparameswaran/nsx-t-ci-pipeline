@@ -423,6 +423,7 @@ jobs:
       HAPROXY_FLOATING_IPS: ""
       CONTAINER_NETWORKING_INTERFACE_PLUGIN: {{container_networking_interface_plugin}}
       CREDHUB_PASSWORD: {{credhub_password}}
+      BLOBSTORE_INTERNAL_ACCESS_SUBNET: {{blobstore_internal_access_subnet}}
 
   - task: configure-errands
     file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
