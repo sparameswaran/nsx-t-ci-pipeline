@@ -57,7 +57,7 @@ om-linux \
   
 check_staged_product_guid "cf-"
 
-has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nfs_server\.blobstore_internal_access_subnet" | wc -l || true)
+has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nfs_server\.blobstore_internal_access_rules" | wc -l || true)
 
 cf_properties=$(
   jq -n \
