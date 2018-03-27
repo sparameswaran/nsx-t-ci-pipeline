@@ -132,7 +132,7 @@ cf_properties=$(
     --arg has_blobstore_internal_access_subnet "$has_blobstore_internal_access_subnet" \
     --arg blobstore_internal_access_subnet "$BLOBSTORE_INTERNAL_ACCESS_SUBNET" \
     --arg has_grootfs "$has_grootfs" \
-    --arg enable_grootfs "${ENABLE_GROOTFS:true}" \
+    --arg enable_grootfs "${ENABLE_GROOTFS}" \
     '
     {
       ".properties.system_blobstore": {
