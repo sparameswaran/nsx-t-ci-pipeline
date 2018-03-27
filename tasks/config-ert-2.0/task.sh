@@ -58,6 +58,7 @@ om-linux \
 check_staged_product_guid "cf-"
 
 has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nfs_server\.blobstore_internal_access_rules" | wc -l || true)
+has_grootfs=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties\.enable_grootfs" | wc -l || true)
 
 cf_properties=$(
   jq -n \
@@ -130,6 +131,8 @@ cf_properties=$(
     --arg container_networking_interface_plugin "$CONTAINER_NETWORKING_INTERFACE_PLUGIN" \
     --arg has_blobstore_internal_access_subnet "$has_blobstore_internal_access_subnet" \
     --arg blobstore_internal_access_subnet "$BLOBSTORE_INTERNAL_ACCESS_SUBNET" \
+    --arg has_grootfs "$has_grootfs" \
+    --arg enable_grootfs "${ENABLE_GROOTFS:true}" \
     '
     {
       ".properties.system_blobstore": {
@@ -192,6 +195,19 @@ cf_properties=$(
     {
         ".nfs_server.blobstore_internal_access_rules": {
         "value": $blobstore_internal_access_subnet
+      }
+    }
+    else
+    .
+    end
+
+    +
+
+    # Grootfs option
+    if $has_grootfs != "0" then
+    {
+        ".properties.enable_grootfs": {
+        "value": $enable_grootfs
       }
     }
     else

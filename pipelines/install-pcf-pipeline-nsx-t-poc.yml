@@ -48,7 +48,7 @@ resources:
   type: pivnet
   source:
     api_token: {{pivnet_token}}
-    product_slug: vmware-nsx-t        
+    product_slug: vmware-nsx-t
     product_version: {{nsxt_major_minor_version}}
     sort_by: semver   
 
@@ -146,20 +146,6 @@ jobs:
       PKS_NW_DNS: {{pks_nw_dns}}
       PKS_NW_GATEWAY: {{pks_nw_gateway}}
       PKS_NW_AZS: {{pks_nw_azs}}
-      SERVICES_NETWORK_NAME: {{services_network_name}}
-      SERVICES_VCENTER_NETWORK: {{services_vsphere_network}}
-      SERVICES_NW_CIDR: {{services_nw_cidr}}
-      SERVICES_EXCLUDED_RANGE: {{services_excluded_range}}
-      SERVICES_NW_DNS: {{services_nw_dns}}
-      SERVICES_NW_GATEWAY: {{services_nw_gateway}}
-      SERVICES_NW_AZS: {{services_nw_azs}}
-      DYNAMIC_SERVICES_NETWORK_NAME: {{dynamic_services_network_name}}
-      DYNAMIC_SERVICES_VCENTER_NETWORK: {{dynamic_services_vsphere_network}}
-      DYNAMIC_SERVICES_NW_CIDR: {{dynamic_services_nw_cidr}}
-      DYNAMIC_SERVICES_EXCLUDED_RANGE: {{dynamic_services_excluded_range}}
-      DYNAMIC_SERVICES_NW_DNS: {{dynamic_services_nw_dns}}
-      DYNAMIC_SERVICES_NW_GATEWAY: {{dynamic_services_nw_gateway}}
-      DYNAMIC_SERVICES_NW_AZS: {{dynamic_services_nw_azs}}
       AZ_1: {{az_1_name}}
       AZ_1_CLUSTER_NAME: {{az_1_cluster_name}}
       AZ_1_RP_NAME: {{az_1_rp_name}}
@@ -169,10 +155,8 @@ jobs:
       AZ_3: {{az_3_name}}
       AZ_3_CLUSTER_NAME: {{az_3_cluster_name}}
       AZ_3_RP_NAME: {{az_3_rp_name}}
-      AZ_4: {{az_4_name}}
-      AZ_4_CLUSTER_NAME: {{az_4_cluster_name}}
-      AZ_4_RP_NAME: {{az_4_rp_name}}
       NTP_SERVERS: {{ntp_servers}}
+      OPS_DIR_HOSTNAME: {{ops_dir_hostname}}
       ENABLE_VM_RESURRECTOR: {{enable_vm_resurrector}}
       MAX_THREADS: {{max_threads}}
       TRUSTED_CERTIFICATES: {{trusted_certificates}}
