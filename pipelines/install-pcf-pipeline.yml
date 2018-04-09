@@ -199,30 +199,12 @@ jobs:
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
 
-# Use s3 if the tile bit is not available on Pivnet
-- name: upload-nsx
-  plan:
-  - aggregate:
-    - get: nsx-t-ci-pipeline
-    - get: s3-tile
-      resource: nsx-t-add-on-tile
-    - get: pcf-ops-manager
-      params: {globs: []}
-      passed: [deploy-director]
-      trigger: true
-
-  - task: upload-nsx-tile
-    file: nsx-t-ci-pipeline/tasks/upload-s3-tile/task.yml
-    params:
-      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_USERNAME: {{opsman_admin_username}}
-      OPSMAN_PASSWORD: {{opsman_admin_password}}
-
+# # Use s3 if the tile bit is not available on Pivnet
 # - name: upload-nsx
 #   plan:
 #   - aggregate:
 #     - get: nsx-t-ci-pipeline
-#     - get: pivnet-product
+#     - get: s3-tile
 #       resource: nsx-t-add-on-tile
 #     - get: pcf-ops-manager
 #       params: {globs: []}
@@ -230,15 +212,33 @@ jobs:
 #       trigger: true
 
 #   - task: upload-nsx-tile
-#     file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml
+#     file: nsx-t-ci-pipeline/tasks/upload-s3-tile/task.yml
 #     params:
-#       IAAS: "vsphere"
 #       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
 #       OPSMAN_USERNAME: {{opsman_admin_username}}
 #       OPSMAN_PASSWORD: {{opsman_admin_password}}
-#       PIVNET_API_TOKEN: {{pivnet_token}}
-#       NO_PROXY: {{company_proxy_domain}}
-#       OM_IP: {{om_ip}}
+
+- name: upload-nsx
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pivnet-product
+      resource: nsx-t-add-on-tile
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-director]
+      trigger: true
+
+  - task: upload-nsx-tile
+    file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml
+    params:
+      IAAS: "vsphere"
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+      PIVNET_API_TOKEN: {{pivnet_token}}
+      NO_PROXY: {{company_proxy_domain}}
+      OM_IP: {{om_ip}}
 
 - name: configure-nsx
   plan:
