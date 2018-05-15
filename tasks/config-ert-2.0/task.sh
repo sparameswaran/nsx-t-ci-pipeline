@@ -288,8 +288,11 @@ cf_properties=$(
       ".properties.routing_tls_termination": {
         "value": "router"
       }
-    } 
-    
+    }
+    else
+      .
+    end 
+
     +
 
     # SABHA - Credhub integration
