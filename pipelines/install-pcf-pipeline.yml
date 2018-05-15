@@ -182,9 +182,6 @@ jobs:
       NSX_USERNAME: {{nsx_username}}
       NSX_PASSWORD: {{nsx_password}}
       NSX_CA_CERTIFICATE: {{nsx_ca_certificate}}
-      NSX_T_OVERLAY_TRANSPORT_ZONE: {{nsx_t_overlay_transport_zone}}
-      NSX_T_T0ROUTER_NAME: {{nsx_t_t0router_name}}
-      NSX_T_CONTAINER_IP_BLOCK_SPEC: {{nsx_t_container_ip_block_spec}}
 
 - name: deploy-director
   plan:
@@ -275,6 +272,9 @@ jobs:
       NSX_AUTH_TYPE: {{nsx_auth_type}}
       NSX_CLIENT_CERT_CERT: {{nsx_client_cert_cert}}
       NSX_CLIENT_CERT_PRIVATE_KEY: {{nsx_client_cert_private_key}}
+      NSX_T_OVERLAY_TRANSPORT_ZONE: {{nsx_t_overlay_transport_zone}}
+      NSX_T_T0ROUTER_NAME: {{nsx_t_t0router_name}}
+      NSX_T_CONTAINER_IP_BLOCK_SPEC: {{nsx_t_container_ip_block_spec}}
 
 - name: upload-ert
   plan:
