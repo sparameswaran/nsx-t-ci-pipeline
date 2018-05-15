@@ -187,11 +187,13 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
                       >> /tmp/ip_block.json
 
   echo "}" >> /tmp/ip_block.json
-
+  echo "Ip Block NSX configs:"
+  cat /tmp/ip_block.json
   cat /tmp/base_nsx_t_router_config.json /tmp/ip_block.json \
     | jq -s add > /tmp/nsx_t_additional_config.json
 
   nsx_t_additional_config=$(cat /tmp/nsx_t_additional_config.json)
+  echo "Additional NSX configs: ${nsx_t_additional_config}"
 
   om-linux \
     --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
