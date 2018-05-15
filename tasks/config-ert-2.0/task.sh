@@ -696,26 +696,12 @@ om-linux \
   --product-network "$cf_network" \
   --product-resources "$cf_resources"
 
-
-  
-ERT_ERRANDS=$(cat <<-EOF
-{"errands":[
-  {"name":"smoke_tests","post_deploy":"when-changed"},
-  {"name":"push-usage-service","post_deploy":"when-changed"},
-  {"name":"push-apps-manager","post_deploy":"when-changed"},
-  {"name":"deploy-notifications","post_deploy":"when-changed"},
-  {"name":"deploy-notifications-ui","post_deploy":"when-changed"},
-  {"name":"push-pivotal-account","post_deploy":"when-changed"},
-  {"name":"deploy-autoscaling","post_deploy":"when-changed"},
-  {"name":"register-broker","post_deploy":"when-changed"},
-  {"name":"nfsbrokerpush","post_deploy":"when-changed"}
-]}
-EOF
-)
-
-om-linux \
-      -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-      -u $OPSMAN_USERNAME \
-      -p $OPSMAN_PASSWORD \
-      -k curl -p "/api/v0/staged/products/$PRODUCT_GUID/errands" \
-      -x PUT -d "$ERT_ERRANDS"
+for ERRAND in $(om-linux --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" -k \
+                  --username "${OPSMAN_USERNAME}" \
+                  --password "${OPSMAN_USERNAME}" \
+                  errands --product-name cf | egrep "true|when-changed" | cut -d "|" -f 2)
+  do om-linux --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" -k \
+              --username "${OPSMAN_USERNAME}" \
+              --password "${OPSMAN_USERNAME}" \
+              set-errand-state -p cf -e $ERRAND --post-deploy-state when-changed
+done
