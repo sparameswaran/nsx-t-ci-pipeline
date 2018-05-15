@@ -178,9 +178,7 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
           "value": $nsx_tier0_router
         },
         ".properties.container_ip_blocks": {
-          "value": {
-              $container_ip_blocks
-          }
+          "value": $container_ip_blocks
         }
       }'
     )
