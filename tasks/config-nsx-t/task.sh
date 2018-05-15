@@ -168,7 +168,7 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
     jq -n \
       --arg nsx_overlay_tz "$NSX_T_OVERLAY_TRANSPORT_ZONE" \
       --arg nsx_tier0_router "$NSX_T_T0ROUTER_NAME" \
-      --arg container_ip_blocks "$container_ip_blocks" \
+      --arg container_ip_blocks $container_ip_blocks \
       '
       {
         ".properties.overlay_tz": {
