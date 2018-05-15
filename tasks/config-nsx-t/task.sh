@@ -157,43 +157,35 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
   # Set .properties.container_ip_blocks[index][name]
   # Set .properties.container_ip_blocks[index][cidr] -> optional
 
-  nsx_t_router_properties=$(
-  jq -n \
-    --arg nsx_overlay_tz "$NSX_T_OVERLAY_TRANSPORT_ZONE" \
-    --arg nsx_tier0_router "$NSX_T_T0ROUTER_NAME" \
-    '
-    {
-      ".properties.overlay_tz": {
-        "value": $nsx_overlay_tz
-      },      
-      ".properties.tier0_router": {
-        "value": $nsx_tier0_router
-      }
-    }'
-  )
-
-  echo "$nsx_t_router_properties" > /tmp/base_nsx_t_router_config.json
-
-  # Create an additional json file with ip blocks
-  echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" > /tmp/ip_block_config.yml
-  echo '{ ".properties.container_ip_blocks": { "value": ' > /tmp/ip_block.json
-
   # Convert yaml to json using yaml2json function
   # strip off the tags
-  echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" \
+  container_ip_blocks=$(echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" \
                       | yaml2json \
                       | jq '.container_ip_blocks' \
-                      | jq 'del(.[].tags)' \
-                      >> /tmp/ip_block.json
+                      | jq 'del(.[].tags)' )
 
-  echo "} }" >> /tmp/ip_block.json
-  echo "Ip Block NSX configs:"
-  cat /tmp/ip_block.json
-  cat /tmp/base_nsx_t_router_config.json /tmp/ip_block.json \
-    | jq -s add > /tmp/nsx_t_additional_config.json
+  nsx_t_additional_configs=$(
+    jq -n \
+      --arg nsx_overlay_tz "$NSX_T_OVERLAY_TRANSPORT_ZONE" \
+      --arg nsx_tier0_router "$NSX_T_T0ROUTER_NAME" \
+      --arg container_ip_blocks "$container_ip_blocks" \
+      '
+      {
+        ".properties.overlay_tz": {
+          "value": $nsx_overlay_tz
+        },      
+        ".properties.tier0_router": {
+          "value": $nsx_tier0_router
+        },
+        ".properties.container_ip_blocks": {
+          "value": {
+              "$container_ip_blocks"
+          }
+        }
+      }'
+    )
 
-  nsx_t_additional_config=$(cat /tmp/nsx_t_additional_config.json)
-  echo "Additional NSX configs: ${nsx_t_additional_config}"
+  echo "Additional NSX 2.1.3 configs: ${nsx_t_additional_configs}"
 
   om-linux \
     --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
@@ -202,6 +194,6 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
     --skip-ssl-validation \
     configure-product \
     --product-name $PRODUCT_NAME \
-    --product-properties "$nsx_t_additional_config"
+    --product-properties "${nsx_t_additional_configs}"
 
 fi
