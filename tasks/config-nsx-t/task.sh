@@ -2,6 +2,12 @@
 
 set -eu
 
+export ROOT_DIR=`pwd`
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
+
 openssl s_client  -servername $NSX_API_MANAGERS \
                   -connect ${NSX_API_MANAGERS}:443 \
                   </dev/null 2>/dev/null \
@@ -36,6 +42,7 @@ export NSX_API_CA_CERT=$(cat /tmp/nsx_manager_edited_cacert.log)
 if [ "$NSX_PRODUCT_TILE_NAME" == "" ]; then
   export NSX_PRODUCT_TILE_NAME="nsx-cf-cni"
 fi
+
 
 nsx_t_properties=$(
   jq -n \
@@ -136,3 +143,64 @@ om-linux \
   configure-product \
   --product-name $PRODUCT_NAME \
   --product-properties "$nsx_t_properties"
+
+
+
+check_available_product_version "VMware-NSX-T"
+if [[ "$PRODUCT_VERSION" =~ "2.1.0" ]]; then
+  return
+fi
+
+if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
+  # Set .properties.overlay_tz
+  # Set .properties.tier0_router
+  # Set .properties.container_ip_blocks[index][name]
+  # Set .properties.container_ip_blocks[index][cidr] -> optional
+
+  nsx_t_router_properties=$(
+  jq -n \
+    --arg nsx_overlay_tz "$NSX_T_OVERLAY_TRANSPORT_ZONE" \
+    --arg nsx_tier0_router "$NSX_T_T0ROUTER_NAME" \
+    '
+    {
+      ".properties.overlay_tz": {
+        "value": $nsx_overlay_tz
+      },      
+      ".properties.tier0_router": {
+        "value": $nsx_tier0_router
+      }
+    }'
+  )
+
+  echo "$nsx_t_router_properties" > /tmp/base_nsx_t_router_config.json
+
+  # Create an additional json file with ip blocks
+  echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" > /tmp/ip_block_config.yml
+  echo "{ \".properties.container_ip_blocks\": " > /tmp/ip_block.json
+
+
+  # Convert yaml to json using yaml2json function
+  # strip off the tags
+  echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" \
+                      | yaml2json \
+                      | jq '.container_ip_blocks' \
+                      | jq 'del(.[].tags)' \
+                      >> /tmp/ip_block.json
+
+  echo "}" >> /tmp/ip_block.json
+
+  cat /tmp/base_nsx_t_router_config.json /tmp/ip_block.json \
+    | jq -s add > /tmp/nsx_t_additional_config.json
+
+  nsx_t_additional_config=$(cat /tmp/nsx_t_additional_config.json)
+
+  om-linux \
+    --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+    --username $OPSMAN_USERNAME \
+    --password $OPSMAN_PASSWORD \
+    --skip-ssl-validation \
+    configure-product \
+    --product-name $PRODUCT_NAME \
+    --product-properties "$nsx_t_additional_config"
+
+fi
