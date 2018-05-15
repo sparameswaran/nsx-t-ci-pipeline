@@ -176,7 +176,7 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
 
   # Create an additional json file with ip blocks
   echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" > /tmp/ip_block_config.yml
-  echo '{ ".properties.container_ip_blocks": { "type": "collection" , "value": ' > /tmp/ip_block.json
+  echo '{ ".properties.container_ip_blocks": { "value": ' > /tmp/ip_block.json
 
   # Convert yaml to json using yaml2json function
   # strip off the tags
@@ -186,7 +186,7 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
                       | jq 'del(.[].tags)' \
                       >> /tmp/ip_block.json
 
-  echo "}" >> /tmp/ip_block.json
+  echo "} }" >> /tmp/ip_block.json
   echo "Ip Block NSX configs:"
   cat /tmp/ip_block.json
   cat /tmp/base_nsx_t_router_config.json /tmp/ip_block.json \
