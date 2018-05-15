@@ -60,6 +60,14 @@ check_staged_product_guid "cf-"
 has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nfs_server\.blobstore_internal_access_rules" | wc -l || true)
 has_grootfs=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties\.enable_grootfs" | wc -l || true)
 
+# Check if product is older 2.0 or not
+if [[ "$PRODUCT_VERSION" =~ "2.0" ]]; then
+  product_version=2.0
+else
+  product_version=2.1
+fi
+
+
 cf_properties=$(
   jq -n \
     --arg tcp_routing "$TCP_ROUTING" \
@@ -133,6 +141,7 @@ cf_properties=$(
     --arg blobstore_internal_access_subnet "$BLOBSTORE_INTERNAL_ACCESS_SUBNET" \
     --arg has_grootfs "$has_grootfs" \
     --arg enable_grootfs "${ENABLE_GROOTFS}" \
+    --arg product_version "$product_version" \
     '
     {
       ".properties.system_blobstore": {
@@ -272,6 +281,15 @@ cf_properties=$(
       }
     }
 
+    +
+    # PAS 2.1 has new flag for routing tls temrination: .properties.routing_tls_termination
+    if $product_version != "2.0" then 
+    {
+      ".properties.routing_tls_termination": {
+        "value": "router"
+      }
+    } 
+    
     +
 
     # SABHA - Credhub integration
@@ -698,7 +716,10 @@ om-linux \
 
 
   
-ERT_ERRANDS=$(cat <<-EOF
+
+
+if [[ "$PRODUCT_VERSION" =~ "2.0" ]]; then
+  ERT_ERRANDS=$(cat <<-EOF
 {"errands":[
   {"name":"smoke_tests","post_deploy":"when-changed"},
   {"name":"push-usage-service","post_deploy":"when-changed"},
@@ -711,7 +732,23 @@ ERT_ERRANDS=$(cat <<-EOF
   {"name":"nfsbrokerpush","post_deploy":"when-changed"}
 ]}
 EOF
-)
+  )
+else 
+  ERT_ERRANDS=$(cat <<-EOF
+{"errands":[
+  {"name":"smoke_tests","post_deploy":"when-changed"},
+  {"name":"push-usage-service","post_deploy":"when-changed"},
+  {"name":"push-apps-manager","post_deploy":"when-changed"},
+  {"name":"deploy-notifications","post_deploy":"when-changed"},
+  {"name":"deploy-notifications-ui","post_deploy":"when-changed"},
+  {"name":"push-pivotal-account","post_deploy":"when-changed"},
+  {"name":"deploy-autoscaler","post_deploy":"when-changed"},
+  {"name":"test-autoscaling","post_deploy":"when-changed"},
+  {"name":"nfsbrokerpush","post_deploy":"when-changed"}
+]}
+EOF
+  )
+fi  
 
 om-linux \
       -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
