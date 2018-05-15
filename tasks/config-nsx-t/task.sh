@@ -179,7 +179,7 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
         },
         ".properties.container_ip_blocks": {
           "value": {
-              "$container_ip_blocks"
+              $container_ip_blocks
           }
         }
       }'
