@@ -28,6 +28,7 @@ params:
   NSX_T_OVERLAY_TRANSPORT_ZONE:
   NSX_T_T0ROUTER_NAME:
   NSX_T_CONTAINER_IP_BLOCK_SPEC:
+  NSX_T_EXTERNAL_IP_POOL_SPEC:
 
 inputs:
   - name: nsx-t-ci-pipeline

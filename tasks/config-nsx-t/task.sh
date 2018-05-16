@@ -164,11 +164,17 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
                       | jq '.container_ip_blocks' \
                       | jq 'del(.[].tags)' )
 
+  external_ip_pools=$(echo "$NSX_T_EXTERNAL_IP_POOL_SPEC" \
+                      | yaml2json \
+                      | jq '.external_ip_pools' \
+                      | jq 'del(.[].tags)' )
+
   nsx_t_additional_configs=$(
     jq -n \
       --arg nsx_overlay_tz "$NSX_T_OVERLAY_TRANSPORT_ZONE" \
       --arg nsx_tier0_router "$NSX_T_T0ROUTER_NAME" \
       --argjson container_ip_blocks "$container_ip_blocks" \
+      --argjson external_ip_pools "$external_ip_pools" \
       '
       {
         ".properties.overlay_tz": {
@@ -179,6 +185,9 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
         },
         ".properties.container_ip_blocks": {
           "value": $container_ip_blocks
+        },
+        ".properties.external_ip_pools": {
+          "value": $external_ip_pools
         }
       }'
     )

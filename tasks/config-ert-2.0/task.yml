@@ -124,6 +124,7 @@ params:
   CREDHUB_PASSWORD:
   BLOBSTORE_INTERNAL_ACCESS_SUBNET:
   ENABLE_GROOTFS:
+  ROUTING_SSL_TERMINATOR:
 
 inputs:
   - name: nsx-t-ci-pipeline

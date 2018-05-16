@@ -155,6 +155,9 @@ jobs:
       AZ_3: {{az_3_name}}
       AZ_3_CLUSTER_NAME: {{az_3_cluster_name}}
       AZ_3_RP_NAME: {{az_3_rp_name}}
+      AZ_4: {{az_4_name}}
+      AZ_4_CLUSTER_NAME: {{az_4_cluster_name}}
+      AZ_4_RP_NAME: {{az_4_rp_name}}
       NTP_SERVERS: {{ntp_servers}}
       OPS_DIR_HOSTNAME: {{ops_dir_hostname}}
       ENABLE_VM_RESURRECTOR: {{enable_vm_resurrector}}
@@ -256,6 +259,10 @@ jobs:
       NSX_AUTH_TYPE: {{nsx_auth_type}}
       NSX_CLIENT_CERT_CERT: {{nsx_client_cert_cert}}
       NSX_CLIENT_CERT_PRIVATE_KEY: {{nsx_client_cert_private_key}}
+      NSX_T_OVERLAY_TRANSPORT_ZONE: {{nsx_t_overlay_transport_zone}}
+      NSX_T_T0ROUTER_NAME: {{nsx_t_t0router_name}}
+      NSX_T_CONTAINER_IP_BLOCK_SPEC: {{nsx_t_container_ip_block_spec}}
+      NSX_T_EXTERNAL_IP_POOL_SPEC: {{nsx_t_external_ip_pool_spec}}
 
 - name: upload-ert
   plan:
@@ -409,6 +416,7 @@ jobs:
       CREDHUB_PASSWORD: {{credhub_password}}
       BLOBSTORE_INTERNAL_ACCESS_SUBNET: {{blobstore_internal_access_subnet}}
       ENABLE_GROOTFS: {{enable_grootfs}}
+      ROUTING_SSL_TERMINATOR: {{routing_ssl_terminator}}
 
   - task: configure-errands
     file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
