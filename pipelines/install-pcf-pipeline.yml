@@ -16,7 +16,7 @@ resources:
   type: git
   source:
     uri: https://github.com/sparameswaran/nsx-t-ci-pipeline.git
-    branch: test2.1
+    branch: master
 
 - name: pcf-ops-manager
   type: pivnet
