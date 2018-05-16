@@ -1,6 +1,6 @@
 # nsx-t-ci-pipeline
 
-Install Concourse and Pivotal PAS/PCF 2.0 with VMware NSX-T (Add-on) Tile for PCF.
+Install Concourse and Pivotal PAS/PCF 2.1.x (also supported 2.0) with VMware NSX-T (Add-on) Tile for PCF.
 NOTE: The tool and scripts don't install the full VMware NSX-T or automate creation of NSX-T Routers or Logical switches.
 
 The tools in this repo only help in automating the install of [Concourse](http://concourse.ci/), followed by install of [Pivotal Ops Mr and PCF/PAS](https://network.pivotal.io) on [VMware NSX-T](https://docs.vmware.com/en/VMware-NSX-T/index.html) managed network infrastructure. The Pivotal Cloud Foundry or Application service (PAS) would use NSX-T for the CNI implementation, instead of the default Silk as CNI.
@@ -66,4 +66,11 @@ This concourse install would be used later to install Pivotal Ops Mgr 2.0, NSX-T
 * Hit unpause on pipeline in the Concourse UI (referred as the web ui endpoint for concourse) or using ```fly -t <target> unpause-pipeline -p <pipeline-name>```
 * Check on progress using `fly ... watch` or `fly-h <build-no>`
 
+## Updates
+The pipeline has been tested with following version:
 
+* Ops Mgr 2.1.2
+* NSX-T Tile 2.1.3
+* PAS Tile 2.1.4
+
+Tweak the versions in the params file.

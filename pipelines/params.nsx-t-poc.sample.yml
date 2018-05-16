@@ -140,7 +140,7 @@ nsx_t_container_ip_block_spec: |
   container_ip_blocks:
   - name: container-ip-block
     # cidr needs to be specified for new container ip blocks
-    cidr: 10.100.0.0/16
+    cidr: 10.0.0.0/16
 
 nsx_t_external_ip_pool_spec: |
   external_ip_pools:
