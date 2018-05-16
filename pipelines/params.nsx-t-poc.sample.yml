@@ -136,11 +136,13 @@ nsx_t_t0router_name: DefaultT0Router     # T0Router
 nsx_t_container_ip_block_spec: |
   container_ip_blocks:
   - name: container-ip-block
-    cidr: 10.100.0.0/16  
+    # cidr needs to be specified for new container ip blocks
+    cidr: 10.100.0.0/16
 
 nsx_t_external_ip_pool_spec: |
   external_ip_pools:
   - name: external-ip-pool-for-pas
+    # cidr and allocation_ranges need to be specified for new external ip pools
     cidr: 151.10.0.0/24
     allocation_ranges: 151.10.0.10-151.10.0.200  # should not include gateway, set of ranges separated by commas, no spaces
 
