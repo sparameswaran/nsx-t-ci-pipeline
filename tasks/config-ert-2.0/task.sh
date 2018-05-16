@@ -147,7 +147,7 @@ cf_properties=$(
     --arg has_grootfs "$has_grootfs" \
     --arg enable_grootfs "${ENABLE_GROOTFS}" \
     --arg product_version "$product_version" \
-    --arg routing_tls_terminator "$ROUTING_SSL_TERMINATOR"
+    --arg routing_tls_terminator "$ROUTING_SSL_TERMINATOR" \
     '
     {
       ".properties.system_blobstore": {
