@@ -192,7 +192,7 @@ if [[ "$PRODUCT_VERSION" >= "2.1.3" ]]; then
       }'
     )
 
-  echo "Additional NSX 2.1.3 configs: ${nsx_t_additional_configs}"
+  echo "Additional NSX-T configs: ${nsx_t_additional_configs}"
 
   om-linux \
     --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
