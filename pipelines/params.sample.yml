@@ -9,6 +9,7 @@ nsxt_major_minor_version: ^2\.1\.3.*$   # PCF Elastic Runtime minor version to t
 scs_major_minor_version: ^1\.5\..*$
 mysql_major_minor_version: ^1\.10\..*$
 rabbitmq_major_minor_version: ^1\.11\..*$
+pks_major_minor_version: ^1\.0\..*$
 
 # vCenter configuration
 vcenter_host: 10.1.1.10            # vCenter host or IP
@@ -338,6 +339,87 @@ diego_brain_nsx_lb_security_group:
 diego_brain_nsx_lb_port:
 
 
+## PKS section
+
+pks_system_domain: pks.test.corp.com
+pks_uaa_domain_prefix: api # Would be used for UAA as api.${pks_system_domain}
+pks_cli_user: pksadmin
+pks_cli_password: pksadmin123
+pks_cli_email: pksadmin@corp.com
+pks_cert_pem: # Would be generated or provide
+#cert_pem: |
+  # -----BEGIN CERTIFICATE-----
+  # MIIDjDCCAnSasfasdfsfd324242342UAMIG3232GMS4wLAYDVQQD
+  # asfsafsafasf
+  # .............
+  # -----END CERTIFICATE-----
+
+pks_private_key_pem: # Would be generated
+
+pks_vcenter_host: EDIT_ME
+pks_vcenter_usr: EDIT_ME
+pks_vcenter_pwd: EDIT_ME
+pks_vcenter_data_center: EDIT_ME
+pks_vcenter_cluster: EDIT_ME
+pks_vcenter_datastore: EDIT_ME
+pks_vm_folder: EDIT_ME
+
+pks_singleton_job_az: az1 # Check
+pks_nw_azs: az1,az2,az3
+pks_network_name: INFRASTRUCTURE # Can be any network created already
+pks_service_network_name: PKS # Should match the PKS network created already
+
+nsx_skip_ssl_verification: true # can be true or false
+pks_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
+pks_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used for PKS
+pks_floating_ip_pool_ids: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
+pks_syslog_migration_enabled: disabled # can be enabled
+pks_syslog_address: #101.10.10.10
+pks_syslog_port: # 0
+pks_syslog_transport_protocol: #tcp
+pks_syslog_tls_enabled: # true
+pks_syslog_peer: # *.test.corp.com
+pks_syslog_ca_cert:
+
+pks_plan_details:
+- plan_detail:
+    name: "small"  # the name that appears for end users to choose
+    plan_selector: plan1_selector # Dont change the value of selector - Needs to be planN_selector
+    is_active: true
+    description: "Small plan"
+    az_placement: az1  # Specify the AZ in which the cluster will be created
+    authorization_mode: rbac    # rbac - Default Cluster Authorization Mode
+    master_vm_type: medium
+    master_persistent_disk_type: "10240"
+    worker_vm_type: medium
+    persistent_disk_type: "10240"
+    worker_instances: 3    # The number of K8s worker instances
+    errand_vm_type: micro
+    addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
+    allow_privileged_containers: false  # Privileged containers run with host-like permissions. Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles. Use with caution."
+- plan_detail:
+    name: "medium"  # the name that appears for end users to choose
+    is_active: false
+    plan_selector: plan2_selector # Dont change the value of selector - Needs to be planN_selector
+    description: "Medium plan"
+    az_placement: az1  # Specify the AZ in which the cluster will be created
+    authorization_mode: rbac    # rbac or abac - Default Cluster Authorization Mode
+    master_vm_type: medium
+    master_persistent_disk_type: "10240"
+    worker_vm_type: medium
+    persistent_disk_type: "10240"
+    worker_instances: 5    # The number of K8s worker instances
+    errand_vm_type: micro
+    addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
+    allow_privileged_containers: false  # Privileged containers run with host-like permissions. Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles. Use with caution."
+- plan_detail:
+    name: "large"  # the name that appears for end users to choose
+    is_active: false
+    plan_selector: plan3_selector # Dont change the value of selector - Needs to be planN_selector
+    # other fields not considered if its not active
+
+
+
 cf_uaa_credential_references: ".uaa.admin_credentials,.uaa.admin_client_credentials,.uaa.tcp_emitter_credentials"
 
 cats_config: |
@@ -425,18 +507,18 @@ tile_rabbit_lbr_ip:
 # medium.mem  |   8192| 1 |     8192      |
 # medium.disk |   4096| 2 |    32768      |
 # medium.cpu  |   2048| 4 |     8192      |
-# large       |   8192| 2 |    16384      |       
+# large       |   8192| 2 |    16384      |
 # large.mem   |  16384| 1 |    16384      |
 # large.disk  |   8192| 2 |    65536      |
 # large.cpu   |   4096| 4 |    16384      |
 # xlarge      |  16384| 4 |    32768      |
 # xlarge.mem  |  32768| 2 |    32768      |
-# xlarge.disk |  16384| 4 |   131072      |   
+# xlarge.disk |  16384| 4 |   131072      |
 # xlarge.cpu  |   8192| 8 |    32768      |
 # 2xlarge     |  32768| 8 |    65536      |
-# 2xlarge.mem |  65536| 4 |    65536      |  
+# 2xlarge.mem |  65536| 4 |    65536      |
 # 2xlarge.disk|  32768| 8 |   262144      |
-# 2xlarge.cpu |  16384|16 |    65536      |       
+# 2xlarge.cpu |  16384|16 |    65536      |
 # -----------------------------------------
 # Disk sizes (in mbs): 1024,2048,5012,10240,20480,30720,40960,50120,76800,102400..
 tile_rabbit_on_demand_plan_1_instance_quota: 20
