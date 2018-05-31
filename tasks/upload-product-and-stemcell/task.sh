@@ -1,10 +1,5 @@
 #!/bin/bash -eu
 
-if [[ -n "$NO_PROXY" ]]; then
-  echo "$OM_IP $OPSMAN_DOMAIN_OR_IP_ADDRESS" >> /etc/hosts
-fi
-
-
 STEMCELL_VERSION_FROM_PRODUCT_METADATA=$(
   cat ./pivnet-product/metadata.json |
   jq --raw-output \
@@ -36,5 +31,3 @@ om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
          -p $OPSMAN_PASSWORD \
          -k --request-timeout 3600 \
          upload-product -p $FILE_PATH
-
-
