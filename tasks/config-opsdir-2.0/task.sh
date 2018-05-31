@@ -68,12 +68,12 @@ EOF
 
 # Add additional AZ for PKS
 
-if [ "$AZ_4" != "" ]; then 
+if [ "$AZ_4" != "" -a "$AZ_4" != "null" ]; then
   az_configuration=$(echo $az_configuration | jq \
     --arg az4_name "$AZ_4" \
     --arg az4_cluster "$AZ_4_CLUSTER_NAME" \
     --arg az4_rp "$AZ_4_RP_NAME" \
-' .availability_zones +=     
+' .availability_zones +=
         [{
           "name": $az4_name,
           "cluster": $az4_cluster,
@@ -138,7 +138,7 @@ network_configuration=$(
     }'
 )
 
-if [ "$SERVICES_VCENTER_NETWORK" != "" ]; then 
+if [ "$SERVICES_VCENTER_NETWORK" != "" -a "$SERVICES_VCENTER_NETWORK" != "null" ]; then
   network_configuration=$(echo $network_configuration | jq \
     --arg services_network_name "$SERVICES_NETWORK_NAME" \
     --arg services_vcenter_network "$SERVICES_VCENTER_NETWORK" \
@@ -147,7 +147,7 @@ if [ "$SERVICES_VCENTER_NETWORK" != "" ]; then
     --arg services_dns "$SERVICES_NW_DNS" \
     --arg services_gateway "$SERVICES_NW_GATEWAY" \
     --arg services_availability_zones "$SERVICES_NW_AZS" \
-' .networks +=     
+' .networks +=
         [{
           "name": $services_network_name,
           "service_network": false,
@@ -167,7 +167,7 @@ if [ "$SERVICES_VCENTER_NETWORK" != "" ]; then
 
 fi
 
-if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" ]; then 
+if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" -a "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "null" ]; then
   network_configuration=$(echo $network_configuration | jq \
     --arg dynamic_services_network_name "$DYNAMIC_SERVICES_NETWORK_NAME" \
     --arg dynamic_services_vcenter_network "$DYNAMIC_SERVICES_VCENTER_NETWORK" \
@@ -176,7 +176,7 @@ if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" ]; then
     --arg dynamic_services_dns "$DYNAMIC_SERVICES_NW_DNS" \
     --arg dynamic_services_gateway "$DYNAMIC_SERVICES_NW_GATEWAY" \
     --arg dynamic_services_availability_zones "$DYNAMIC_SERVICES_NW_AZS" \
-' .networks +=     
+' .networks +=
         [{
           "name": $dynamic_services_network_name,
           "service_network": true,
@@ -196,7 +196,7 @@ if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" ]; then
 
 fi
 
-if [ "$PKS_VCENTER_NETWORK" != "" ]; then 
+if [ "$PKS_VCENTER_NETWORK" != "" -a "$PKS_VCENTER_NETWORK" != "null" ]; then
   network_configuration=$(echo $network_configuration | jq \
     --arg pks_network_name "$PKS_NETWORK_NAME" \
     --arg pks_vcenter_network "$PKS_VCENTER_NETWORK" \
@@ -205,7 +205,7 @@ if [ "$PKS_VCENTER_NETWORK" != "" ]; then
     --arg pks_dns "$PKS_NW_DNS" \
     --arg pks_gateway "$PKS_NW_GATEWAY" \
     --arg pks_availability_zones "$PKS_NW_AZS" \
-' .networks +=     
+' .networks +=
         [{
           "name": $pks_network_name,
           "service_network": true,
@@ -262,11 +262,11 @@ jq -n \
 
 echo "Configuring IaaS and Director..."
 
-# om-linux has issues with handling boolean types 
+# om-linux has issues with handling boolean types
 # wrapped as string for uknown flags like nsx_networking_enabled
 # Error: configuring iaas specific options for bosh tile
-# could not execute "configure-bosh": 
-# could not decode json: 
+# could not execute "configure-bosh":
+# could not decode json:
 # json: cannot unmarshal string into Go value of type bool
 wrapped_iaas_config=$(cat << EOF
 {
@@ -274,11 +274,11 @@ wrapped_iaas_config=$(cat << EOF
 }
 EOF
 )
-# om-linux has issues with handling boolean types 
+# om-linux has issues with handling boolean types
 # wrapped as string for uknown flags like nsx_networking_enabled
 # Error: configuring iaas specific options for bosh tile
-# could not execute "configure-bosh": 
-# could not decode json: 
+# could not execute "configure-bosh":
+# could not decode json:
 # json: cannot unmarshal string into Go value of type bool
 wrapped_iaas_config=$(cat << EOF
 {
@@ -361,7 +361,7 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
-# Having trouble with om-cli with new network_assignment structure 
+# Having trouble with om-cli with new network_assignment structure
 # that wraps single_az and network inside json structure instead of string
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \

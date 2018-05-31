@@ -39,7 +39,7 @@ cat /tmp/nsx_manager_all_certs.log \
 cat /tmp/nsx_manager_cacert.log | tr '\n' '#'| sed -e 's/#/\r\n/g'   > /tmp/nsx_manager_edited_cacert.log
 export NSX_API_CA_CERT=$(cat /tmp/nsx_manager_edited_cacert.log)
 
-if [ "$NSX_PRODUCT_TILE_NAME" == "" ]; then
+if [ "$NSX_PRODUCT_TILE_NAME" == "" -o "$NSX_PRODUCT_TILE_NAME" == "null" ]; then
   export NSX_PRODUCT_TILE_NAME="nsx-cf-cni"
 fi
 
@@ -63,7 +63,7 @@ nsx_t_properties=$(
     {
       ".properties.nsx_api_managers": {
         "value": $nsx_api_managers
-      },      
+      },
       ".properties.nsx_api_ca_cert": {
         "value": $nsx_api_ca_cert
       },
@@ -83,33 +83,33 @@ nsx_t_properties=$(
         "value": $ncp_debug_log
       }
     }
-    
+
     +
 
 
     if $nsx_auth == "simple" then
     {
-      ".properties.nsx_auth": { 
-        "value" : "simple" 
+      ".properties.nsx_auth": {
+        "value" : "simple"
       },
-      ".properties.nsx_auth.simple.nsx_api_user":  { 
-        "value": $nsx_api_user 
+      ".properties.nsx_auth.simple.nsx_api_user":  {
+        "value": $nsx_api_user
       },
-      ".properties.nsx_auth.simple.nsx_api_password":  { 
-        "value": { 
-          "secret": $nsx_api_password 
-        } 
+      ".properties.nsx_auth.simple.nsx_api_password":  {
+        "value": {
+          "secret": $nsx_api_password
+        }
       }
     }
     else
     {
-      ".properties.nsx_auth": { 
-        "value": "client_cert" 
+      ".properties.nsx_auth": {
+        "value": "client_cert"
       },
-      ".properties.nsx_auth.client_cert.nsx_api_client_cert": { 
+      ".properties.nsx_auth.client_cert.nsx_api_client_cert": {
         "value": {
-          "cert_pem": $nsx_client_cert_cert, 
-          "private_key_pem": $nsx_client_cert_private_key 
+          "cert_pem": $nsx_client_cert_cert,
+          "private_key_pem": $nsx_client_cert_private_key
         }
       }
     }
@@ -179,7 +179,7 @@ if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
       {
         ".properties.overlay_tz": {
           "value": $nsx_overlay_tz
-        },      
+        },
         ".properties.tier0_router": {
           "value": $nsx_tier0_router
         },

@@ -39,7 +39,7 @@ fi
 # to: ".properties.push_apps_manager_company_name"
 
 # Generate CredHub passwd
-if [ "$CREDHUB_PASSWORD" == "" ]; then
+if [ "$CREDHUB_PASSWORD" == "" -o  "$CREDHUB_PASSWORD" == "null" ]; then
   CREDHUB_PASSWORD=$(echo $OPSMAN_PASSWORD{,,,,} | sed -e 's/ //g' | cut -c1-25)
 fi
 
@@ -69,7 +69,7 @@ else
 fi
 
 # Set Router as default routing ssl terminator
-if [ "$ROUTING_SSL_TERMINATOR" == "" ]; then
+if [ "$ROUTING_SSL_TERMINATOR" == "" -o  "$ROUTING_SSL_TERMINATOR" == "null" ]; then
   ROUTING_SSL_TERMINATOR=router
 fi
 
@@ -375,7 +375,7 @@ cf_properties=$(
     +
 
     # SMTP Configuration
-    if $smtp_address != "" then
+    if $smtp_address != "" and $smtp_address != "null" then
       {
         ".properties.smtp_from": {
           "value": $smtp_from
@@ -406,7 +406,7 @@ cf_properties=$(
     +
 
     # Syslog
-    if $syslog_host != "" then
+    if $syslog_host != "" and $syslog_host != "null" then
       {
         ".doppler.message_drain_buffer_size": {
           "value": $syslog_drain_buffer_size
@@ -640,7 +640,7 @@ cf_resources=$(
 
     +
 
-    if $ha_proxy_elb_name != "" then
+    if $ha_proxy_elb_name != "" and $ha_proxy_elb_name != "null" then
       .ha_proxy |= . + { "elb_names": [ $ha_proxy_elb_name ] }
     else
       .
@@ -648,7 +648,7 @@ cf_resources=$(
 
     +
 
-    if $ha_proxy_floating_ips != "" then
+    if $ha_proxy_floating_ips != "" and $ha_proxy_floating_ips != "null" then
       .ha_proxy |= . + { "floating_ips": $ha_proxy_floating_ips }
     else
       .
@@ -658,7 +658,7 @@ cf_resources=$(
 
     # NSX LBs
 
-    if $tcp_router_nsx_lb_edge_name != "" then
+    if $tcp_router_nsx_lb_edge_name != "" and $tcp_router_nsx_lb_edge_name != "null" then
       .tcp_router |= . + {
         "nsx_security_groups": [$tcp_router_nsx_security_group],
         "nsx_lbs": [
@@ -676,7 +676,7 @@ cf_resources=$(
 
     +
 
-    if $router_nsx_lb_edge_name != "" then
+    if $router_nsx_lb_edge_name != "" and $router_nsx_lb_edge_name != "null" then
       .router |= . + {
         "nsx_security_groups": [$router_nsx_security_group],
         "nsx_lbs": [
@@ -694,7 +694,7 @@ cf_resources=$(
 
     +
 
-    if $diego_brain_nsx_lb_edge_name != "" then
+    if $diego_brain_nsx_lb_edge_name != "" and $diego_brain_nsx_lb_edge_name != "null" then
       .diego_brain |= . + {
         "nsx_security_groups": [$diego_brain_nsx_security_group],
         "nsx_lbs": [
