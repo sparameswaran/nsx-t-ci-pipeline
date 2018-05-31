@@ -7,7 +7,7 @@ source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
 
-if [[ -z "$SSL_CERT" ]]; then
+if [ -z "$SSL_CERT"  -o "null" == "$SSL_CERT" ]; then
   domains=(
     "*.${SYSTEM_DOMAIN}"
     "*.${APPS_DOMAIN}"
@@ -21,7 +21,7 @@ if [[ -z "$SSL_CERT" ]]; then
 fi
 
 
-if [[ -z "$SAML_SSL_CERT" ]]; then
+if [ -z "$SAML_SSL_CERT"  -o "null" == "$SAML_SSL_CERT" ]; then
   saml_cert_domains=(
     "*.${SYSTEM_DOMAIN}"
     "*.login.${SYSTEM_DOMAIN}"
@@ -33,8 +33,8 @@ if [[ -z "$SAML_SSL_CERT" ]]; then
   SAML_SSL_PRIVATE_KEY=$(echo $saml_certificates | jq --raw-output '.key')
 fi
 
-# SABHA 
-# Change in ERT 2.0 
+# SABHA
+# Change in ERT 2.0
 # from: ".push-apps-manager.company_name"
 # to: ".properties.push_apps_manager_company_name"
 
@@ -54,7 +54,7 @@ om-linux \
     -k stage-product \
     -p $PRODUCT_NAME \
     -v $PRODUCT_VERSION
-  
+
 check_staged_product_guid "cf-"
 
 has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nfs_server\.blobstore_internal_access_rules" | wc -l || true)
@@ -204,7 +204,7 @@ cf_properties=$(
     }
 
     +
-    
+
     # Blobstore access subnet
     if $has_blobstore_internal_access_subnet != "0" then
     {
@@ -275,21 +275,21 @@ cf_properties=$(
     # SABHA - Change structure to take multiple certs.. for PCF 2.0
     {
       ".properties.networking_poe_ssl_certs": {
-        "value": [ 
+        "value": [
           {
             "name": "certificate",
             "certificate": {
               "cert_pem": $cert_pem,
               "private_key_pem": $private_key_pem
             }
-          } 
+          }
         ]
       }
     }
 
     +
     # PAS 2.1 has new flag for routing tls temrination: .properties.routing_tls_termination
-    if $product_version != "2.0" then 
+    if $product_version != "2.0" then
     {
       ".properties.routing_tls_termination": {
         "value": $routing_tls_terminator
@@ -297,7 +297,7 @@ cf_properties=$(
     }
     else
       .
-    end 
+    end
 
     +
 
@@ -305,10 +305,10 @@ cf_properties=$(
     {
      ".properties.credhub_key_encryption_passwords": {
         "value": [
-          {                  
+          {
             "name": "primary-encryption-key",
             "key": { "secret": $credhub_password },
-            "primary": true      
+            "primary": true
           }
         ]
       }
@@ -318,7 +318,7 @@ cf_properties=$(
 
 
     # SABHA - NSX-T Vs Silk integration
-    if $container_networking_interface_plugin != "silk" then 
+    if $container_networking_interface_plugin != "silk" then
       {
         ".properties.container_networking_interface_plugin": {
           "value": "external"
@@ -550,7 +550,7 @@ cf_properties=$(
 # ".properties.container_networking_network_cidr": {
 #         "value": $container_networking_nw_cidr
 #       },
-      
+
 
 
 
@@ -569,8 +569,8 @@ cf_network=$(
         "name": $singleton_az
       }
     }
-    '    
-    
+    '
+
 )
 
 cf_resources=$(
@@ -722,4 +722,3 @@ om-linux \
   --product-properties "$cf_properties" \
   --product-network "$cf_network" \
   --product-resources "$cf_resources"
-

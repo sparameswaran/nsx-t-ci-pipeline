@@ -80,8 +80,6 @@ jobs:
     - get: pivnet-product
       resource: pivotal-container-service
       params: {globs: ["pivotal-container-service*.pivotal"]}
-    - get: pcf-ops-manager
-      params: {globs: []}
 
   - task: upload-tile
     file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml

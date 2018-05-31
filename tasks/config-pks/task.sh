@@ -41,7 +41,7 @@ cat /tmp/nsx_manager_cacert.log | tr '\n' '#'| sed -e 's/#/\r\n/g'   > /tmp/nsx_
 export NSX_API_CA_CERT=$(cat /tmp/nsx_manager_edited_cacert.log)
 
 
-if [[ -z "$PKS_SSL_CERT" ]]; then
+if [ -z "$PKS_SSL_CERT"  -o  "null" == "$PKS_SSL_CERT" ]; then
   domains=(
     "*.${PKS_SYSTEM_DOMAIN}"
   )
