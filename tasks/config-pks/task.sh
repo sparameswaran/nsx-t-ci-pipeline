@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -euxv
-env
+set -eu
 
 export ROOT_DIR=`pwd`
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
@@ -104,24 +103,6 @@ om-linux \
   --product-name pivotal-container-service \
   --product-network "$pks_network"
 
-plan_props='{}'
-# for plan_selection in $(echo "$PKS_PLAN_DETAILS" | jq  -r '.[].plan_detail.plan_selector')
-# do
-#   # echo "Plan selection is ${plan_selection}"
-#   # echo ""
-#   new_plan_entry=$(echo "$PKS_PLAN_DETAILS"  \
-#                | jq  -r --arg plan_selection $plan_selection \
-#                  '.[].plan_detail | select(.plan_selector | contains($plan_selection) ) | select(.is_active == true ) | del(.is_active)| del(.plan_selector) | to_entries | .[] | "{ \".properties."+$plan_selection+".active." + .key + "\": { \"value\": \"" + (.value|tostring) + "\" } }" '  )
-#
-#   if [ "$new_plan_entry" == '' ]; then
-#     new_plan_entry=$(echo "{ \".properties.${plan_selection}\": { \"value\": \"Plan Inactive\" } }")
-#   else
-#     new_plan_entry=$(echo "{ \".properties.${plan_selection}\": { \"value\": \"Plan Active\" } }" "$new_plan_entry" | jq -s add)
-#   fi
-#   # echo "New plan entry is $new_plan_entry"
-#   plan_props=$(echo $plan_props $new_plan_entry | jq -s add )
-#
-# done
 
 
 
@@ -276,6 +257,7 @@ om-linux \
   --product-name pivotal-container-service \
   --product-properties "$pks_syslog_properties"
 
+plan_props='{}'
 
 for plan_selection in $(echo "$PKS_PLAN_DETAILS" | jq  -r '.[].plan_detail.plan_selector')
 do
@@ -306,12 +288,10 @@ do
     new_plan_entry=$(echo "{ \".properties.${plan_selection}\": { \"value\": \"Plan Active\" } }" "$new_plan_entry" | jq -s add)
   fi
 
-  echo "New plan entry is $new_plan_entry"
+  #echo "New plan entry is $new_plan_entry"
   plan_props=$(echo $plan_props $new_plan_entry | jq -s add )
-
 done
-
-echo "Final PKS Plan Properties is $plan_props"
+#echo "Final PKS Plan Properties is $plan_props"
 
 pks_main_properties=$(
   echo $plan_props | jq  \
