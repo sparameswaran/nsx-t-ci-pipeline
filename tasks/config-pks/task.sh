@@ -103,10 +103,6 @@ om-linux \
   --product-name pivotal-container-service \
   --product-network "$pks_network"
 
-
-
-
-
 pks_nsx_vcenter_properties=$(
   jq -n \
     --arg nsx_api_manager "$NSX_API_MANAGER" \
@@ -132,17 +128,13 @@ pks_nsx_vcenter_properties=$(
       ".properties.cloud_provider.vsphere.vcenter_master_creds": {
         "value": {
           "identity": $vcenter_username,
-          "password":  {
-            "secret": $vcenter_password
-          }
+          "password": $vcenter_password
         }
       },
       ".properties.cloud_provider.vsphere.vcenter_worker_creds": {
         "value": {
           "identity": $vcenter_username,
-          "password":  {
-            "secret": $vcenter_password
-          }
+          "password": $vcenter_password
         }
       },
       ".properties.cloud_provider.vsphere.vcenter_ip": {
@@ -166,9 +158,7 @@ pks_nsx_vcenter_properties=$(
       ".properties.network_selector.nsx.credentials": {
           "value": {
             "identity": $nsx_api_user,
-            "password":  {
-              "secret": $nsx_api_password
-            }
+            "password": $nsx_api_password
           }
       },
       ".properties.network_selector.nsx.nsx-t-ca-cert": {
@@ -203,49 +193,50 @@ om-linux \
   --product-name pivotal-container-service \
   --product-properties "$pks_nsx_vcenter_properties"
 
+echo "Finished configuring NSX/vCenter properties"
 
-  pks_syslog_properties=$(
-    jq -n \
-    --arg pks_syslog_migration_enabled "$PKS_SYSLOG_MIGRATION_ENABLED" \
-    --arg pks_syslog_address "$PKS_SYSLOG_ADDRESS" \
-    --arg pks_syslog_port "$PKS_SYSLOG_PORT" \
-    --arg pks_syslog_transport_protocol "$PKS_SYSLOG_TRANSPORT_PROTOCOL" \
-    --arg pks_syslog_tls_enabled "$PKS_SYSLOG_TLS_ENABLED" \
-    --arg pks_syslog_peer "$PKS_SYSLOG_PEER" \
-    --arg pks_syslog_ca_cert "$PKS_SYSLOG_CA_CERT" \
-      '
+pks_syslog_properties=$(
+  jq -n \
+  --arg pks_syslog_migration_enabled "$PKS_SYSLOG_MIGRATION_ENABLED" \
+  --arg pks_syslog_address "$PKS_SYSLOG_ADDRESS" \
+  --arg pks_syslog_port "$PKS_SYSLOG_PORT" \
+  --arg pks_syslog_transport_protocol "$PKS_SYSLOG_TRANSPORT_PROTOCOL" \
+  --arg pks_syslog_tls_enabled "$PKS_SYSLOG_TLS_ENABLED" \
+  --arg pks_syslog_peer "$PKS_SYSLOG_PEER" \
+  --arg pks_syslog_ca_cert "$PKS_SYSLOG_CA_CERT" \
+    '
 
-      # Syslog
-      if $pks_syslog_migration_enabled == "enabled" then
-        {
-          ".properties.syslog_migration_selector.enabled.address": {
-            "value": $pks_syslog_address
-          },
-          ".properties.syslog_migration_selector.enabled.port": {
-            "value": $pks_syslog_port
-          },
-          ".properties.syslog_migration_selector.enabled.transport_protocol": {
-            "value": $pks_syslog_transport_protocol
-          },
-          ".properties.syslog_migration_selector.enabled.tls_enabled": {
-            "value": $pks_syslog_tls_enabled
-          },
-          ".properties.syslog_migration_selector.enabled.permitted_peer": {
-            "value": $pks_syslog_peer
-          },
-          ".properties.syslog_migration_selector.enabled.ca_cert": {
-            "value": $pks_syslog_ca_cert
-          }
+    # Syslog
+    if $pks_syslog_migration_enabled == "enabled" then
+      {
+        ".properties.syslog_migration_selector.enabled.address": {
+          "value": $pks_syslog_address
+        },
+        ".properties.syslog_migration_selector.enabled.port": {
+          "value": $pks_syslog_port
+        },
+        ".properties.syslog_migration_selector.enabled.transport_protocol": {
+          "value": $pks_syslog_transport_protocol
+        },
+        ".properties.syslog_migration_selector.enabled.tls_enabled": {
+          "value": $pks_syslog_tls_enabled
+        },
+        ".properties.syslog_migration_selector.enabled.permitted_peer": {
+          "value": $pks_syslog_peer
+        },
+        ".properties.syslog_migration_selector.enabled.ca_cert": {
+          "value": $pks_syslog_ca_cert
         }
-      else
-        {
-          ".properties.syslog_migration_selector": {
-            "value": "disabled"
-          }
+      }
+    else
+      {
+        ".properties.syslog_migration_selector": {
+          "value": "disabled"
         }
-      end
-      '
-  )
+      }
+    end
+    '
+)
 
 
 om-linux \
@@ -256,6 +247,9 @@ om-linux \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_syslog_properties"
+
+
+echo "Finished configuring syslog properties"
 
 plan_props='{}'
 
@@ -336,3 +330,5 @@ om-linux \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_main_properties"
+
+  echo "Finished configuring PKS plan and other config properties!!"

@@ -313,8 +313,6 @@ groups:
   jobs:
   - upload-pks
   - deploy-pks
-  # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
-  - create-pks-cli-user
 
 - name: wipe
   jobs:
@@ -511,7 +509,6 @@ jobs:
     file: nsx-t-ci-pipeline/tasks/config-ert-2.0/task.yml
     params: *ert-config-params
 
-
   - task: configure-errands
     file: nsx-t-ci-pipeline/tasks/config-errands/task.yml
     params:
@@ -556,6 +553,7 @@ jobs:
   - aggregate:
     - get: nsx-t-ci-pipeline
     - get: pcf-pipelines
+    - get: pcf-pipelines-utils
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [upload-pks]
@@ -572,10 +570,6 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
 
-- name: create-pks-cli-user
-  plan:
-  - aggregate:
-    - get: pcf-pipelines-utils
   - task: configure-pks-cli-user
     file: pcf-pipelines-utils/tasks/pcf/pks/configure-pks-cli-user/task.yml
     params:

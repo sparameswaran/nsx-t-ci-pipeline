@@ -165,8 +165,6 @@ groups:
   - deploy-director
   - upload-pks
   - deploy-pks
-  # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
-  - create-pks-cli-user
 
 # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
 - name: delete-pks-clusters
@@ -183,6 +181,7 @@ groups:
   jobs:
   - upload-pks-standalone
   - deploy-pks-standalone
+
 
 - name: wipe
   jobs:
@@ -293,6 +292,7 @@ jobs:
   - aggregate:
     - get: nsx-t-ci-pipeline
     - get: pcf-pipelines
+    - get: pcf-pipelines-utils
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [upload-pks]
@@ -308,6 +308,19 @@ jobs:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
+
+  - task: configure-pks-cli-user
+    file: pcf-pipelines-utils/tasks/pcf/pks/configure-pks-cli-user/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+      OPSMAN_USERNAME: ((opsman_admin_username))
+      OPSMAN_PASSWORD: ((opsman_admin_password))
+      #OPSMAN_CLIENT_ID: ((opsman_client_id))
+      #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
+      PKS_DOMAIN: ((pks_system_domain))
+      PKS_CLI_USERNAME: ((pks_cli_username))
+      PKS_CLI_USEREMAIL: ((pks_cli_useremail))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
 
 - name: upload-pks-standalone
   plan:
@@ -331,6 +344,7 @@ jobs:
 - name: deploy-pks-standalone
   plan:
   - aggregate:
+    - get: pcf-pipelines-utils
     - get: nsx-t-ci-pipeline
       params: {globs: []}
       passed: [upload-pks-standalone]
@@ -347,10 +361,6 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
 
-- name: create-pks-cli-user
-  plan:
-  - aggregate:
-    - get: pcf-pipelines-utils
   - task: configure-pks-cli-user
     file: pcf-pipelines-utils/tasks/pcf/pks/configure-pks-cli-user/task.yml
     params:
