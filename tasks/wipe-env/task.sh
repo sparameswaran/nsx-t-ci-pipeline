@@ -10,6 +10,31 @@ source "${root}/nsx-t-ci-pipeline/functions/check_opsman_available.sh"
 
 opsman_available=$(check_opsman_available $OPSMAN_DOMAIN_OR_IP_ADDRESS)
 if [[ $opsman_available == "available" ]]; then
+
+  # Check for pending changes before starting deletion
+  pending_changes=$( om-linux \
+    -f json \
+    --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
+    --skip-ssl-validation \
+    --client-id "${OPSMAN_CLIENT_ID}" \
+    --client-secret "${OPSMAN_CLIENT_SECRET}" \
+    --username "$OPSMAN_USERNAME" \
+    --password "$OPSMAN_PASSWORD" \
+    pending-changes
+    )
+  # If there are any pending changes, then revert them before starting deletion
+  if [ "$pending_changes" != '[]' ]; then
+    om-linux \
+      -f json \
+      --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
+      --skip-ssl-validation \
+      --client-id "${OPSMAN_CLIENT_ID}" \
+      --client-secret "${OPSMAN_CLIENT_SECRET}" \
+      --username "$OPSMAN_USERNAME" \
+      --password "$OPSMAN_PASSWORD" \
+      revert-staged-changes
+  fi
+
   om-linux \
     --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
     --skip-ssl-validation \

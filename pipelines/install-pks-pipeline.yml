@@ -98,9 +98,9 @@ pks_config_params: &pks-config-params
   PKS_VCENTER_DATASTORE: ((pks_vcenter_datastore))
   PKS_VCENTER_CLUSTER: ((pks_vcenter_cluster))
   PKS_VM_FOLDER: ((pks_vm_folder))
-  PKS_CLI_USER: ((pks_cli_user))
+  PKS_CLI_USER: ((pks_cli_username))
   PKS_CLI_PASSWORD: ((pks_cli_password))
-  PKS_CLI_EMAIL: ((pks_cli_email))
+  PKS_CLI_EMAIL: ((pks_cli_useremail))
   PKS_PLAN_DETAILS: ((pks_plan_details))
   PKS_T0_ROUTER_ID: ((pks_t0_router_id))
   PKS_IP_BLOCK_ID: ((pks_ip_block_id))
@@ -150,6 +150,11 @@ resources:
     product_version: ((pks_major_minor_version))
     sort_by: semver
 
+# Used for PKS user creation and deletion of clusters
+- name: pcf-pipelines-utils
+  type: git
+  source:
+    uri: https://github.com/pivotalservices/concourse-pipeline-samples.git
 
 groups:
 
@@ -160,8 +165,13 @@ groups:
   - deploy-director
   - upload-pks
   - deploy-pks
+  # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
+  - create-pks-cli-user
 
-
+# From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
+- name: delete-pks-clusters
+  jobs:
+  - delete-clusters
 
 - name: ops-mgr-install
   jobs:
@@ -176,6 +186,7 @@ groups:
 
 - name: wipe
   jobs:
+  - delete-clusters
   - wipe-env
 
 jobs:
@@ -335,6 +346,34 @@ jobs:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
+
+- name: create-pks-cli-user
+  plan:
+  - aggregate:
+    - get: pcf-pipelines-utils
+  - task: configure-pks-cli-user
+    file: pcf-pipelines-utils/tasks/pcf/pks/configure-pks-cli-user/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+      OPSMAN_USERNAME: ((opsman_admin_username))
+      OPSMAN_PASSWORD: ((opsman_admin_password))
+      #OPSMAN_CLIENT_ID: ((opsman_client_id))
+      #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
+      PKS_DOMAIN: ((pks_system_domain))
+      PKS_CLI_USERNAME: ((pks_cli_username))
+      PKS_CLI_USEREMAIL: ((pks_cli_useremail))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+
+- name: delete-clusters
+  plan:
+  - get: pcf-pipelines-utils
+  - task: delete-all-pks-clusters
+    file: pcf-pipelines-utils/tasks/pcf/pks/delete-all-pks-clusters/task.yml
+    params:
+      PCF_PKS_API: api.((pks_system_domain))
+      PKS_CLI_USERNAME: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      DEBUG: false
 
 - name: wipe-env
   plan:

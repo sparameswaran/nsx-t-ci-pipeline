@@ -343,9 +343,9 @@ diego_brain_nsx_lb_port:
 
 pks_system_domain: pks.test.corp.com
 pks_uaa_domain_prefix: api # Would be used for UAA as api.${pks_system_domain}
-pks_cli_user: pksadmin
+pks_cli_username: pksadmin
 pks_cli_password: pksadmin123
-pks_cli_email: pksadmin@corp.com
+pks_cli_useremail: pksadmin@corp.com
 pks_cert_pem: # Would be generated or provide
 #cert_pem: |
   # -----BEGIN CERTIFICATE-----
