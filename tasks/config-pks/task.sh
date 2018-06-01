@@ -328,7 +328,21 @@ om-linux \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
   configure-product \
-  --product-name pivotal-container-service \
+  --product-name "$PRODUCT_NAME" \
   --product-properties "$pks_main_properties"
 
-  echo "Finished configuring PKS plan and other config properties!!"
+echo "Finished configuring PKS plan and other config properties!!"
+
+errand="pks-nsx-t-precheck"
+
+om-linux \
+  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
+  --skip-ssl-validation \
+  set-errand-state \
+  --product-name "$PRODUCT_NAME" \
+  --errand-name $errand \
+  --post-deploy-state "true"
+
+echo "Configured $errand to always run ..."
