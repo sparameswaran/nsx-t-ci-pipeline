@@ -50,23 +50,42 @@ az_configuration=$(cat <<-EOF
       "name": "$AZ_1",
       "cluster": "$AZ_1_CLUSTER_NAME",
       "resource_pool": "$AZ_1_RP_NAME"
-    },
-    {
-      "name": "$AZ_2",
-      "cluster": "$AZ_2_CLUSTER_NAME",
-      "resource_pool": "$AZ_2_RP_NAME"
-    },
-    {
-      "name": "$AZ_3",
-      "cluster": "$AZ_3_CLUSTER_NAME",
-      "resource_pool": "$AZ_3_RP_NAME"
     }
   ]
 }
 EOF
 )
 
-# Add additional AZ for PKS
+# Add additional AZs if defined
+if [ "$AZ_2" != "" -a "$AZ_2" != "null" ]; then
+  az_configuration=$(echo $az_configuration | jq \
+    --arg az_name "$AZ_2" \
+    --arg az_cluster "$AZ_2_CLUSTER_NAME" \
+    --arg az_rp "$AZ_2_RP_NAME" \
+  ' .availability_zones +=
+          [{
+            "name": $az_name,
+            "cluster": $az_cluster,
+            "resource_pool": $az_rp
+          }]
+  '
+  )
+fi
+
+if [ "$AZ_3" != "" -a "$AZ_3" != "null" ]; then
+  az_configuration=$(echo $az_configuration | jq \
+    --arg az_name "$AZ_3" \
+    --arg az_cluster "$AZ_3_CLUSTER_NAME" \
+    --arg az_rp "$AZ_3_RP_NAME" \
+  ' .availability_zones +=
+          [{
+            "name": $az_name,
+            "cluster": $az_cluster,
+            "resource_pool": $az_rp
+          }]
+  '
+  )
+fi
 
 if [ "$AZ_4" != "" -a "$AZ_4" != "null" ]; then
   az_configuration=$(echo $az_configuration | jq \
@@ -81,9 +100,7 @@ if [ "$AZ_4" != "" -a "$AZ_4" != "null" ]; then
         }]
 '
 )
-
 fi
-
 
 network_configuration=$(
   jq -n \
@@ -119,13 +136,27 @@ network_configuration=$(
               "availability_zone_names": ($infra_availability_zones | split(","))
             }
           ]
-        },
-        {
+        }
+      ]
+    }'
+)
+
+if [ "$DEPLOYMENT_VCENTER_NETWORK" != "" -a "$DEPLOYMENT_VCENTER_NETWORK" != "null" ]; then
+  network_configuration=$(echo $network_configuration | jq \
+    --arg deployment_network_name "$DEPLOYMENT_NETWORK_NAME" \
+    --arg services_vcenter_network "$DEPLOYMENT_VCENTER_NETWORK" \
+    --arg deployment_network_cidr "$DEPLOYMENT_NW_CIDR" \
+    --arg deployment_reserved_ip_ranges "$DEPLOYMENT_EXCLUDED_RANGE" \
+    --arg deployment_dns "$DEPLOYMENT_NW_DNS" \
+    --arg deployment_gateway "$DEPLOYMENT_NW_GATEWAY" \
+    --arg deployment_availability_zones "$DEPLOYMENT_NW_AZS" \
+' .networks +=
+        [{
           "name": $deployment_network_name,
           "service_network": false,
           "subnets": [
             {
-              "iaas_identifier": $deployment_vcenter_network,
+              "iaas_identifier": $services_vcenter_network,
               "cidr": $deployment_network_cidr,
               "reserved_ip_ranges": $deployment_reserved_ip_ranges,
               "dns": $deployment_dns,
@@ -133,10 +164,11 @@ network_configuration=$(
               "availability_zone_names": ($deployment_availability_zones | split(","))
             }
           ]
-        }
-      ]
-    }'
+        }]
+'
 )
+
+fi
 
 if [ "$SERVICES_VCENTER_NETWORK" != "" -a "$SERVICES_VCENTER_NETWORK" != "null" ]; then
   network_configuration=$(echo $network_configuration | jq \

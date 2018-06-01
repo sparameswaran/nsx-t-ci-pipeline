@@ -1,0 +1,174 @@
+# Pipeline resource configuration
+pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
+opsman_major_minor_version: ^2\.1\.2$   # PCF Ops Manager minor version to track
+pks_major_minor_version: ^1\.0\..*$
+
+# vCenter configuration
+vcenter_host: 10.1.1.10            # vCenter host or IP
+vcenter_usr: administrator@vsphere.local             # vCenter username. If user is tied to a domain, then escape the \, example `domain\\user`
+vcenter_pwd: "k32...la!"          # vCenter password
+vcenter_data_center: Datacenter       # vCenter datacenter
+vcenter_insecure: 1        # vCenter skip TLS cert validation; enter `1` to disable cert verification, `0` to enable verification
+vcenter_ca_cert:           # vCenter CA cert at the API endpoint; enter a value if `vcenter_insecure: 0`
+
+# Ops Manager VM configuration
+om_vm_host: 192.168.10.5              # Optional - vCenter host to deploy Ops Manager in
+om_data_store: vsan2                  # vCenter datastore name to deploy Ops Manager in
+opsman_domain_or_ip_address: opsmgr.test-cf-app.com              # FQDN to access Ops Manager without protocol (will use https), ex: opsmgr.example.com
+opsman_admin_username: admin          # Username for Ops Manager admin account
+opsman_admin_password: password123    # Password for Ops Manager admin account
+om_ssh_pwd: pas..d123                 # SSH password for Ops Manager (ssh user is ubuntu)
+om_decryption_pwd: pas...rd123        # Decryption password for Ops Manager exported settings
+om_ntp_servers: us.pool.ntp.org       # Comma-separated list of NTP Servers
+om_dns_servers: 10.1.1.2              # Comma-separated list of DNS Servers
+om_gateway: 192.168.10.1              # Gateway for Ops Manager network
+om_netmask: 255.255.255.192           # Netmask for Ops Manager network
+om_ip: 192.168.10.5                   # IP to assign to Ops Manager VM
+om_vm_network: infra           # vCenter network name to use to deploy Ops Manager in
+om_vm_name: opsmgr-nsx         # Name to use for Ops Manager VM
+opsman_disk_type: "thin"  # Disk type for Ops Manager VM (thick|thin)
+om_vm_power_state: true   # Whether to power on Ops Manager VM after creation
+
+# vCenter Cluster or Resource Pool to use to deploy Ops Manager.
+# Possible formats:
+#   cluster:       /<Data Center Name>/host/<Cluster Name>
+#   resource pool: /<Data Center Name>/host/<Cluster Name>/Resources/<Resource Pool Name>
+om_resource_pool: rpcluster-1
+
+ephemeral_storage_names:  vsan # Ephemeral Storage names in vCenter for use by PCF
+persistent_storage_names: vsan # Persistent Storage names in vCenter for use by PCF
+
+bosh_vm_folder: "nsx_vms"                 # vSphere datacenter folder (such as pcf_vms) where VMs will be placed
+bosh_template_folder: "nsx_templates"     # vSphere datacenter folder (such as pcf_templates) where templates will be placed
+bosh_disk_path: "nsx_disk"                # vSphere datastore folder (such as pcf_disk) where attached disk images will be created
+
+trusted_certificates:         # Trusted certificates to be deployed along with all VM's provisioned by BOSH
+vm_disk_type: "thick"         # Disk type for BOSH provisioned VM. (thick|thin)
+
+# AZ configuration for Ops Director
+az_1_name: PKS                   # Logical name of availability zone. No spaces or special characters.
+az_1_cluster_name: Cluster1      # Name of cluster in vCenter for PKS
+az_1_rp_name: pks-rp             # Resource pool name in vCenter for PKS
+
+ntp_servers: us.pool.ntp.org                 # Comma-separated list of NTP servers to use for VMs deployed by BOSH
+enable_vm_resurrector: true   # Whether to enable BOSH VM resurrector
+max_threads: 30               # Max threads count for deploying VMs
+
+# Network configuration for Ops Director
+icmp_checks_enabled: false     # Enable or disable ICMP checks
+
+infra_network_name: "INFRASTRUCTURE"
+infra_vsphere_network: infra       # vCenter Infrastructure network name
+infra_nw_cidr: 192.168.20.0/26              # Infrastructure network CIDR, ex: 10.0.0.0/22
+infra_excluded_range: 192.168.20.0-192.168.20.9,192.168.20.25-192.168.20.64       # Infrastructure network exclusion range
+infra_nw_dns: 10.1.1.2                    # Infrastructure network DNS
+infra_nw_gateway: 192.168.20.1            # Infrastructure network Gateway
+infra_nw_azs: PKS                         # Comma separated list of AZ's to be associated with this network
+nsx_networking_enabled: false              # (true|false) to use nsx networking feature
+
+# Careful with the indent and the | for multi-line input
+nsx_ca_certificate: |                     # cert for nsx
+  -----BEGIN CERTIFICATE-----
+  MIIDjDCCAnSasfasdfsfd324242342UAMIG3232GMS4wLAYDVQQD
+  asfsafsafasf
+  .............
+  -----END CERTIFICATE-----
+
+# Additional network for PKS Clusters - set to empty "" string for the vsphere network if its not required
+pks_network_name: "PKS-k8s-clusters"             # Logical switch for PKS-k8s-clusters
+pks_vsphere_network: "PKS-k8s-clusters"             # vCenter PKS-k8s-clusters  network name for PKS - if empty quotes, then this network would be skipped
+pks_nw_cidr: 192.168.40.0/24        # PKS-k8s-clusters network CIDR, ex: 10.0.0.0/22
+pks_excluded_range: 192.168.40.1    # PKS-k8s-clusters network exclusion range
+pks_nw_dns: 10.1.1.2                # PKS-k8s-clusters network DNS
+pks_nw_gateway: 192.168.40.1        # PKS-k8s-clusters network Gateway
+pks_nw_azs: az1                     # Comma separated list of AZ's to be associated with this network
+is_service_network: true  # Required select service network option in Ops man true or false
+
+## PKS Tile section
+nsx_address: nsx-t-mgr.test-domain.com    # address of nsx-t mgr
+nsx_username: admin                       # username for nsx-t access
+nsx_password: 23..d!                      # password for nsx-t access
+
+pks_system_domain: pks.test.corp.com
+pks_uaa_domain_prefix: api # Would be used for UAA as api.${pks_system_domain}
+pks_cli_username: pksadmin
+pks_cli_password: pksadmin123
+pks_cli_useremail: pksadmin@corp.com
+pks_cert_pem: # Would be generated or provide
+#cert_pem: |
+  # -----BEGIN CERTIFICATE-----
+  # MIIDjDCCAnSasfasdfsfd324242342UAMIG3232GMS4wLAYDVQQD
+  # asfsafsafasf
+  # .............
+  # -----END CERTIFICATE-----
+
+pks_private_key_pem: # Would be generated
+
+pks_vcenter_host: EDIT_ME
+pks_vcenter_usr: EDIT_ME
+pks_vcenter_pwd: EDIT_ME
+pks_vcenter_data_center: EDIT_ME
+pks_vcenter_cluster: EDIT_ME
+pks_vcenter_datastore: EDIT_ME
+pks_vm_folder: EDIT_ME
+
+pks_singleton_job_az: az1 # Check
+pks_nw_azs: az1,az2,az3
+pks_network_name: INFRASTRUCTURE # Can be any network created already
+pks_service_network_name: PKS # Should match the PKS network created already
+
+nsx_skip_ssl_verification: true # can be true or false
+pks_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
+pks_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used for PKS
+pks_floating_ip_pool_ids: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
+pks_syslog_migration_enabled: disabled # can be enabled
+pks_syslog_address: #101.10.10.10
+pks_syslog_port: # 0
+pks_syslog_transport_protocol: #tcp
+pks_syslog_tls_enabled: # true
+pks_syslog_peer: # *.test.corp.com
+pks_syslog_ca_cert:
+
+pks_plan_details:
+- plan_detail:
+    name: "small"  # the name that appears for end users to choose
+    plan_selector: plan1_selector # Dont change the value of selector - Needs to be planN_selector
+    is_active: true
+    description: "Small plan"
+    az_placement: az1  # Specify the AZ in which the cluster will be created
+    authorization_mode: rbac    # rbac - Default Cluster Authorization Mode
+    master_vm_type: medium
+    master_persistent_disk_type: "10240"
+    worker_vm_type: medium
+    persistent_disk_type: "10240"
+    worker_instances: 3    # The number of K8s worker instances
+    errand_vm_type: micro
+    addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
+    allow_privileged_containers: false  # Privileged containers run with host-like permissions. Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles. Use with caution."
+- plan_detail:
+    name: "medium"  # the name that appears for end users to choose
+    is_active: false
+    plan_selector: plan2_selector # Dont change the value of selector - Needs to be planN_selector
+    description: "Medium plan"
+    az_placement: az1  # Specify the AZ in which the cluster will be created
+    authorization_mode: rbac    # rbac or abac - Default Cluster Authorization Mode
+    master_vm_type: medium
+    master_persistent_disk_type: "10240"
+    worker_vm_type: medium
+    persistent_disk_type: "10240"
+    worker_instances: 5    # The number of K8s worker instances
+    errand_vm_type: micro
+    addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
+    allow_privileged_containers: false  # Privileged containers run with host-like permissions. Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles. Use with caution."
+- plan_detail:
+    name: "large"  # the name that appears for end users to choose
+    is_active: false
+    plan_selector: plan3_selector # Dont change the value of selector - Needs to be planN_selector
+    # other fields not considered if its not active
+
+# Use this for downloading tile from a s3 bucket
+s3_bucket: pks-tile-s3              # Required for S3. ID of the AWS S3 bucket to download Pivotal releases from
+s3_creds_access_key_id: AAa23....asdfZA       # Required for S3. Access key of the AWS S3 bucket
+s3_creds_secret_access_key: s6A234...asfsadUL   # Required for S3. Secret access key of the AWS S3 bucket
+s3_region: us-west-2                 # The region the bucket is in. Leave it blank if not applicable (e.g. for Minio)
+s3_nsx_t_tile_path: pivotal-container-service-(.*).pivotal    # file path name to the tile in the s3 bucket
