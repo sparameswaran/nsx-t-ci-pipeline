@@ -16,11 +16,6 @@ iaas_configuration=$(
   --arg bosh_disk_path "$BOSH_DISK_PATH" \
   --arg ssl_verification_enabled false \
   --arg nsx_networking_enabled $NSX_NETWORKING_ENABLED \
-  --arg nsx_mode "$NSX_MODE" \
-  --arg nsx_address "$NSX_ADDRESS" \
-  --arg nsx_username "$NSX_USERNAME" \
-  --arg nsx_password "$NSX_PASSWORD" \
-  --arg nsx_ca_certificate "$NSX_CA_CERTIFICATE" \
   '
   {
     "vcenter_host": $vcenter_host,
@@ -34,14 +29,28 @@ iaas_configuration=$(
     "bosh_template_folder": $bosh_template_folder,
     "bosh_disk_path": $bosh_disk_path,
     "ssl_verification_enabled": $ssl_verification_enabled,
-    "nsx_networking_enabled": $nsx_networking_enabled,
-    "nsx_mode": $nsx_mode,
-    "nsx_address": $nsx_address,
-    "nsx_username": $nsx_username,
-    "nsx_password": $nsx_password,
-    "nsx_ca_certificate": $nsx_ca_certificate
+    "nsx_networking_enabled": $nsx_networking_enabled
   }'
 )
+
+if [ "$NSX_NETWORKING_ENABLED" == "true" ]; then
+  iaas_configuration=$(echo $iaas_configuration | jq \
+  --arg nsx_mode "$NSX_MODE" \
+  --arg nsx_address "$NSX_ADDRESS" \
+  --arg nsx_username "$NSX_USERNAME" \
+  --arg nsx_password "$NSX_PASSWORD" \
+  --arg nsx_ca_certificate "$NSX_CA_CERTIFICATE" \
+' .iaas_configuration +=
+        {
+          "nsx_mode": $nsx_mode,
+          "nsx_address": $nsx_address,
+          "nsx_username": $nsx_username,
+          "nsx_password": $nsx_password,
+          "nsx_ca_certificate": $nsx_ca_certificate
+        }
+'
+)
+fi
 
 az_configuration=$(cat <<-EOF
 {
