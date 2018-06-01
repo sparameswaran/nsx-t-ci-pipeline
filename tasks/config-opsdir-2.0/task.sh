@@ -2,6 +2,13 @@
 
 set -eu
 
+export ROOT_DIR=`pwd`
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
+
 iaas_configuration=$(
   jq -n \
   --arg vcenter_host "$VCENTER_HOST" \
@@ -343,7 +350,9 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   curl -p '/api/v0/staged/director/properties' \
-  -x PUT -d  "$wrapped_iaas_config"
+  -x PUT -d  "$wrapped_iaas_config" \
+  2>/dev/null
+
 # Check for errors
 if [ $? != 0 ]; then
   echo "IaaS configuration failed!!"
@@ -356,7 +365,8 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   configure-bosh \
-  --director-configuration "$director_config"
+  --director-configuration "$director_config" \
+  2>/dev/null
 # Check for errors
 if [ $? != 0 ]; then
   echo "Bosh Director configuration failed!!"
@@ -369,7 +379,8 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   configure-bosh \
-  --security-configuration "$security_configuration"
+  --security-configuration "$security_configuration" \
+  2>/dev/null
 # Check for errors
 if [ $? != 0 ]; then
   echo "Bosh Security configuration failed!!"
@@ -382,7 +393,8 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   curl -p "/api/v0/staged/director/availability_zones" \
-  -x PUT -d "$az_configuration"
+  -x PUT -d "$az_configuration" \
+  2>/dev/null
 # Check for errors
 if [ $? != 0 ]; then
   echo "Availability Zones configuration failed!!"
@@ -396,6 +408,7 @@ om-linux \
   --password $OPSMAN_PASSWORD \
   -k curl -p "/api/v0/staged/director/networks" \
   -x PUT -d "$network_configuration" \
+  2>/dev/null
 # Check for errors
 if [ $? != 0 ]; then
   echo "Networks configuration failed!!"
@@ -411,6 +424,7 @@ om-linux \
   --password $OPSMAN_PASSWORD \
   -k curl -p "/api/v0/staged/director/network_and_az" \
   -x PUT -d "$wrapped_network_az_assignment" \
+   2>/dev/null
 # Check for errors
 if [ $? != 0 ]; then
   echo "Networks configuration and AZ assignment failed!!"

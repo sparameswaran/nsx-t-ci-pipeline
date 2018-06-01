@@ -7,6 +7,8 @@ source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
+
 
 openssl s_client  -servername $NSX_API_MANAGERS \
                   -connect ${NSX_API_MANAGERS}:443 \

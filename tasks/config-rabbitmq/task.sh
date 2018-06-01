@@ -5,6 +5,9 @@ set -eu
 export ROOT_DIR=`pwd`
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
 
 check_bosh_version
 check_available_product_version "p-rabbitmq"
@@ -81,24 +84,24 @@ prod_properties=$(cat <<-EOF
 EOF
 )
 
-if [ "$has_odb_plan_vm_type" != "0" ]; then 
+if [ "$has_odb_plan_vm_type" != "0" ]; then
   prod_properties=$(cat <<-EOF
 $prod_properties,
   ".properties.on_demand_broker_plan_1_rabbitmq_vm_type": {
     "value": "$TILE_RABBIT_ON_DEMAND_PLAN_1_VM_TYPE"
   }
 EOF
-)  
+)
 fi
 
-if [ "$has_odb_plan_disk_type" != "0" ]; then 
+if [ "$has_odb_plan_disk_type" != "0" ]; then
   prod_properties=$(cat <<-EOF
 $prod_properties,
   ".properties.on_demand_broker_plan_1_rabbitmq_persistent_disk_type": {
     "value": "$TILE_RABBIT_ON_DEMAND_PLAN_1_PERSISTENT_DISK_TYPE"
   }
 EOF
-)  
+)
 fi
 
 prod_properties=$(cat <<-EOF

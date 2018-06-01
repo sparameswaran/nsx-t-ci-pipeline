@@ -1,8 +1,12 @@
 #!/bin/bash -eu
 
-if [[ -n "$NO_PROXY" ]]; then
-  echo "$OM_IP $OPSMAN_DOMAIN_OR_IP_ADDRESS" >> /etc/hosts
-fi
+export ROOT_DIR=`pwd`
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
+
 
 # Should the slug contain more than one product, pick only the first.
 FILE_PATH=`find ./s3-tile -name *.pivotal | sort | head -1`
