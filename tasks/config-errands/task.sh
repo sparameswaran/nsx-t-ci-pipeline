@@ -2,6 +2,12 @@
 
 set -eu
 
+export ROOT_DIR=`pwd`
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
+
+check_available_product_version "cf"
+
 enabled_errands=$(
   om-linux \
     --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \

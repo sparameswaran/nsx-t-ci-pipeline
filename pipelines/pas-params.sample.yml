@@ -340,13 +340,12 @@ diego_brain_nsx_lb_port:
 
 
 ## PKS section
-
-pks_system_domain: pks.test.corp.com
-pks_uaa_domain_prefix: api # Would be used for UAA as api.${pks_system_domain}
-pks_cli_username: pksadmin
-pks_cli_password: pksadmin123
-pks_cli_useremail: pksadmin@corp.com
-pks_cert_pem: # Would be generated or provide
+pks_tile_system_domain: pks.test.corp.com
+pks_tile_uaa_domain_prefix: api # Would be used for UAA as api.${pks_system_domain}
+pks_tile_cli_username: pksadmin
+pks_tile_cli_password: pksadmin123
+pks_tile_cli_useremail: pksadmin@corp.com
+pks_tile_cert_pem: # Would be generated or provide
 #cert_pem: |
   # -----BEGIN CERTIFICATE-----
   # MIIDjDCCAnSasfasdfsfd324242342UAMIG3232GMS4wLAYDVQQD
@@ -354,34 +353,34 @@ pks_cert_pem: # Would be generated or provide
   # .............
   # -----END CERTIFICATE-----
 
-pks_private_key_pem: # Would be generated
+pks_tile_private_key_pem: # Would be generated
 
-pks_vcenter_host: EDIT_ME
-pks_vcenter_usr: EDIT_ME
-pks_vcenter_pwd: EDIT_ME
-pks_vcenter_data_center: EDIT_ME
-pks_vcenter_cluster: EDIT_ME
-pks_vcenter_datastore: EDIT_ME
-pks_vm_folder: EDIT_ME
+pks_tile_vcenter_host: EDIT_ME
+pks_tile_vcenter_usr: EDIT_ME
+pks_tile_vcenter_pwd: EDIT_ME
+pks_tile_vcenter_data_center: EDIT_ME
+pks_tile_vcenter_cluster: EDIT_ME
+pks_tile_vcenter_datastore: EDIT_ME
+pks_tile_vm_folder: EDIT_ME
 
-pks_singleton_job_az: az1 # Check
-pks_nw_azs: az1,az2,az3
-pks_network_name: INFRASTRUCTURE # Can be any network created already
-pks_service_network_name: PKS # Should match the PKS network created already
+pks_tile_singleton_job_az: az1 # Check
+pks_tile_nw_azs: az1
+pks_tile_network_name: INFRASTRUCTURE # Can be any network created already
+pks_tile_service_network_name: PKS-k8s-clusters # Should match the PKS network created already
 
-nsx_skip_ssl_verification: true # can be true or false
-pks_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
-pks_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used for PKS
-pks_floating_ip_pool_ids: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
-pks_syslog_migration_enabled: disabled # can be enabled
-pks_syslog_address: #101.10.10.10
-pks_syslog_port: # 0
-pks_syslog_transport_protocol: #tcp
-pks_syslog_tls_enabled: # true
-pks_syslog_peer: # *.test.corp.com
-pks_syslog_ca_cert:
+pks_tile_nsx_skip_ssl_verification: true # can be true or false
+pks_tile_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
+pks_tile_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used for PKS
+pks_tile_floating_ip_pool_ids: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
+pks_tile_syslog_migration_enabled: disabled # can be enabled
+pks_tile_syslog_address: #101.10.10.10
+pks_tile_syslog_port: # 0
+pks_tile_syslog_transport_protocol: #tcp
+pks_tile_syslog_tls_enabled: # true
+pks_tile_syslog_peer: # *.test.corp.com
+pks_tile_syslog_ca_cert:
 
-pks_plan_details:
+pks_tile_plan_details:
 - plan_detail:
     name: "small"  # the name that appears for end users to choose
     plan_selector: plan1_selector # Dont change the value of selector - Needs to be planN_selector
@@ -417,8 +416,6 @@ pks_plan_details:
     is_active: false
     plan_selector: plan3_selector # Dont change the value of selector - Needs to be planN_selector
     # other fields not considered if its not active
-
-
 
 cf_uaa_credential_references: ".uaa.admin_credentials,.uaa.admin_client_credentials,.uaa.tcp_emitter_credentials"
 
