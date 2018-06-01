@@ -113,9 +113,9 @@ pks_vcenter_datastore: EDIT_ME
 pks_vm_folder: EDIT_ME
 
 pks_singleton_job_az: az1 # Check
-pks_nw_azs: az1,az2,az3
+pks_nw_azs: az1
 pks_network_name: INFRASTRUCTURE # Can be any network created already
-pks_service_network_name: PKS # Should match the PKS network created already
+pks_service_network_name: PKS-k8s-clusters # Should match the PKS network created already
 
 nsx_skip_ssl_verification: true # can be true or false
 pks_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
