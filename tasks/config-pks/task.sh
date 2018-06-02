@@ -72,20 +72,19 @@ else
 
 fi
 
-
 pks_network=$(
   jq -n \
-    --arg network_name "$PKS_NETWORK_NAME" \
-    --arg pks_service_network_name "$PKS_SERVICE_NETWORK_NAME" \
+    --arg pks_deployment_network_name "$PKS_DEPLOYMENT_NETWORK_NAME" \
+    --arg pks_cluster_service_network_name "$PKS_CLUSTER_SERVICE_NETWORK_NAME" \
     --arg other_azs "$PKS_NW_AZS" \
     --arg singleton_az "$PKS_SINGLETON_JOB_AZ" \
     '
     {
       "network": {
-        "name": $network_name
+        "name": $pks_deployment_network_name
       },
       "service_network": {
-        "name": $pks_service_network_name
+        "name": $pks_cluster_service_network_name
       },
       "other_availability_zones": ($other_azs | split(",") | map({name: .})),
       "singleton_availability_zone": {
