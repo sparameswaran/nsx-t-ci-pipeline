@@ -70,7 +70,7 @@ pks_config_params: &pks-config-params
   PKS_FLOATING_IP_POOL_IDS: ((pks_tile_floating_ip_pool_ids))
   PKS_SYSLOG_MIGRATION_ENABLED: ((pks_tile_syslog_migration_enabled))
   PKS_SYSLOG_ADDRESS: ((pks_tile_syslog_address))
-  PKS_SYSLOG_PORT: ((pks_tile_tile_syslog_port))
+  PKS_SYSLOG_PORT: ((pks_tile_syslog_port))
   PKS_SYSLOG_TRANSPORT_PROTOCOL: ((pks_tile_syslog_transport_protocol))
   PKS_SYSLOG_TLS_ENABLED: ((pks_tile_syslog_tls_enabled))
   PKS_SYSLOG_PEER: ((pks_tile_syslog_peer))
@@ -247,7 +247,6 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
       PIVNET_API_TOKEN: ((pivnet_token))
-      NO_PROXY: ((company_proxy_domain))
       OM_IP: ((om_ip))
 
 - name: deploy-pks
@@ -301,7 +300,6 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
       PIVNET_API_TOKEN: ((pivnet_token))
-      NO_PROXY: ((company_proxy_domain))
       OM_IP: ((om_ip))
 
 - name: deploy-pks-standalone

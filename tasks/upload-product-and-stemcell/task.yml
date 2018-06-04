@@ -11,7 +11,6 @@ params:
   OPSMAN_USERNAME:
   OPSMAN_PASSWORD:
   PIVNET_API_TOKEN:
-  NO_PROXY:
   IAAS:
 
 inputs:

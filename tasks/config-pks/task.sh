@@ -44,6 +44,8 @@ export NSX_API_CA_CERT=$(cat /tmp/nsx_manager_edited_cacert.log)
 if [ -z "$PKS_SSL_CERT"  -o  "null" == "$PKS_SSL_CERT" ]; then
   domains=(
     "*.${PKS_SYSTEM_DOMAIN}"
+    "*.api.${PKS_SYSTEM_DOMAIN}"
+    "*.uaa.${PKS_SYSTEM_DOMAIN}"
   )
 
   certificates=$(generate_cert "${domains[*]}")
@@ -343,6 +345,6 @@ om-linux \
   set-errand-state \
   --product-name "$PRODUCT_NAME" \
   --errand-name $errand \
-  --post-deploy-state "true"
+  --post-deploy-state enabled
 
 echo "Configured $errand to always run ..."
