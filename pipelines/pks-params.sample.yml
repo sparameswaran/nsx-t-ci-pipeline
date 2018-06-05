@@ -91,8 +91,11 @@ nsx_password: 23..d!                      # password for nsx-t access
 
 ## PKS Tile section
 
+# Create DNS entry in the loadbalancer and DNAT/SNAT entries for following
 pks_tile_system_domain: pks.test.corp.com
-pks_tile_uaa_domain_prefix: api # Would be used for UAA as api.${pks_system_domain}
+# Just provide the prefix like uaa or api for domain_prefix.
+# The prefix together with system domain would be used like api.pks.test.corp.com or uaa.pks.test.corp.com
+pks_tile_uaa_domain_prefix: api # Would be used for UAA as ${prefix}.${pks_system_domain}
 pks_tile_cli_username: pksadmin
 pks_tile_cli_password: pksadmin123
 pks_tile_cli_useremail: pksadmin@corp.com
@@ -130,7 +133,7 @@ pks_tile_syslog_transport_protocol: #tcp
 pks_tile_syslog_tls_enabled: # true
 pks_tile_syslog_peer: # *.test.corp.com
 pks_tile_syslog_ca_cert:
-pks_allow_public_ip: true # leave it to empty or false to turn off public ip
+pks_tile_allow_public_ip: true # leave it to empty or false to turn off public ip
 
 pks_tile_plan_details:
 - plan_detail:

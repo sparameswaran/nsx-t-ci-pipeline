@@ -340,8 +340,13 @@ diego_brain_nsx_lb_port:
 
 
 ## PKS section
+
+# Create DNS entry in the loadbalancer and DNAT/SNAT entries for following
 pks_tile_system_domain: pks.test.corp.com
-pks_tile_uaa_domain_prefix: api # Would be used for UAA as api.${pks_system_domain}
+# Just provide the prefix like uaa or api for domain_prefix.
+# The prefix together with system domain would be used like api.pks.test.corp.com or uaa.pks.test.corp.com
+pks_tile_uaa_domain_prefix: api # Would be used for UAA as ${prefix}.${pks_system_domain}
+
 pks_tile_cli_username: pksadmin
 pks_tile_cli_password: pksadmin123
 pks_tile_cli_useremail: pksadmin@corp.com

@@ -253,8 +253,6 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-pipelines
-    - get: pcf-pipelines-utils
     - get: pcf-ops-manager
       params: {globs: []}
       passed: [upload-pks]
@@ -271,15 +269,16 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
 
-  - task: configure-pks-cli-user
-    file: pcf-pipelines-utils/tasks/pcf/pks/configure-pks-cli-user/task.yml
+  - task: config-pks-cli-user
+    file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
       #OPSMAN_CLIENT_ID: ((opsman_client_id))
       #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
-      PKS_DOMAIN: ((pks_tile_system_domain))
+      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
+      PKS_SYSTEM_DOMAIN: ((pks_system_domain))
       PKS_CLI_USERNAME: ((pks_tile_cli_username))
       PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
       PKS_CLI_PASSWORD: ((pks_tile_cli_password))
@@ -305,7 +304,6 @@ jobs:
 - name: deploy-pks-standalone
   plan:
   - aggregate:
-    - get: pcf-pipelines-utils
     - get: nsx-t-ci-pipeline
       params: {globs: []}
       passed: [upload-pks-standalone]
@@ -322,15 +320,16 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
 
-  - task: configure-pks-cli-user
-    file: pcf-pipelines-utils/tasks/pcf/pks/configure-pks-cli-user/task.yml
+  - task: config-pks-cli-user
+    file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
       #OPSMAN_CLIENT_ID: ((opsman_client_id))
       #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
-      PKS_DOMAIN: ((pks_system_domain))
+      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
+      PKS_SYSTEM_DOMAIN: ((pks_system_domain))
       PKS_CLI_USERNAME: ((pks_cli_username))
       PKS_CLI_USEREMAIL: ((pks_cli_useremail))
       PKS_CLI_PASSWORD: ((pks_cli_password))
@@ -341,7 +340,7 @@ jobs:
   - task: delete-all-pks-clusters
     file: pcf-pipelines-utils/tasks/pcf/pks/delete-all-pks-clusters/task.yml
     params:
-      PCF_PKS_API: api.((pks_system_domain))
+      PCF_PKS_API: ((pks_tile_uaa_domain_prefix)).((pks_system_domain))
       PKS_CLI_USERNAME: ((pks_cli_username))
       PKS_CLI_PASSWORD: ((pks_cli_password))
       DEBUG: false
