@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function check_bosh_version {  
+function check_bosh_version {
 
   export BOSH_PRODUCT_VERSION=$(om-linux \
                                   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
@@ -27,7 +27,8 @@ function check_available_product_version {
                     | grep $product_code)
 
   export PRODUCT_NAME=$(echo $TILE_RELEASE | cut -d"|" -f2 | tr -d " ")
-  export PRODUCT_VERSION=$(echo $TILE_RELEASE | cut -d"|" -f3 | tr -d " ")
+  # Take the last version (most recent one instead of first occuring version if there are multiple versions)
+  export PRODUCT_VERSION=$(echo $TILE_RELEASE |  tr '\n' ' ' | awk -F '|' '{print $(NF-1) }' | tr -d ' ' )
   export PRODUCT_MAJOR_VERSION=$(echo $PRODUCT_VERSION | awk -F '.' '{print $1}' )
   export PRODUCT_MINOR_VERSION=$(echo $PRODUCT_VERSION | awk -F '.' '{print $2}' | sed -e 's/-.*//g' )
 

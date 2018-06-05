@@ -149,11 +149,11 @@ om-linux \
 
 
 check_available_product_version "VMware-NSX-T"
-if [[ "$PRODUCT_VERSION" =~ "2.1.0" ]]; then
+if [[ "$PRODUCT_VERSION" =~ ^2.1.0 ]]; then
   return
 fi
 
-if [[ "$PRODUCT_VERSION" =~ "2.1.3" ]]; then
+if [[ "$PRODUCT_VERSION" =~ ^2.1.3 ]]; then
   # Set .properties.overlay_tz
   # Set .properties.tier0_router
   # Set .properties.container_ip_blocks[index][name]

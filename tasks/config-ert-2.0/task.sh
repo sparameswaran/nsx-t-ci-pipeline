@@ -62,7 +62,7 @@ has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | 
 has_grootfs=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties\.enable_grootfs" | wc -l || true)
 
 # Check if product is older 2.0 or not
-if [[ "$PRODUCT_VERSION" =~ "2.0" ]]; then
+if [[ "$PRODUCT_VERSION" =~ ^2.0 ]]; then
   product_version=2.0
 else
   product_version=2.1

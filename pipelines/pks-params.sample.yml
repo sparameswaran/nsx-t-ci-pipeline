@@ -125,15 +125,52 @@ pks_tile_cluster_service_network_name: PKS-k8s-clusters # Should match the PKS-k
 pks_tile_nsx_skip_ssl_verification: true # can be true or false
 pks_tile_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
 pks_tile_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used for PKS
-pks_tile_floating_ip_pool_ids: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
-pks_tile_syslog_migration_enabled: disabled # can be enabled
+pks_tile_floating_ip_pool_id: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
+pks_tile_nodes_ip_block_id: EDIT_ME # UUID of Node IP BLock in NSX Mgr to be used for PKS nodes in v1.1
+
+# Syslog Flags
+pks_tile_syslog_migration_enabled: disabled # can be set to 'enabled', if 'disabled' all syslog properties ignored
 pks_tile_syslog_address: #101.10.10.10
 pks_tile_syslog_port: # 0
 pks_tile_syslog_transport_protocol: #tcp
 pks_tile_syslog_tls_enabled: # true
 pks_tile_syslog_peer: # *.test.corp.com
 pks_tile_syslog_ca_cert:
+
+# Allow public ip
 pks_tile_allow_public_ip: true # leave it to empty or false to turn off public ip
+
+# vRealize Log Insight (vrli) flags
+pks_tile_vrli_enabled: false # Change to true and fill following fields for using vrli
+pks_tile_vrli_host:
+pks_tile_vrli_use_ssl: true
+pks_tile_vrli_skip_cert_verify: true
+pks_tile_vrli_ca_cert: # cert contents
+pks_tile_vrli_rate_limit: 0
+
+# PKS use Proxy
+pks_tile_enable_http_proxy: false # Change to true and fill following fields for using proxy
+pks_tile_http_proxy_url:
+pks_tile_http_proxy_user:
+pks_tile_http_proxy_password:
+pks_tile_https_proxy_url:
+pks_tile_https_proxy_user:
+pks_tile_https_proxy_password:
+pks_tile_no_proxy:
+
+# Use LDAP for PKS UAA
+# Default is to use internal uaa
+pks_tile_uaa_use_ldap: false # Change to true and fill following fields for using LDAP
+pks_tile_ldap_url:
+pks_tile_ldap_user:
+pks_tile_ldap_password:
+pks_tile_ldap_search_base:
+pks_tile_ldap_group_search_filter:
+pks_tile_ldap_server_ssl_cert:
+pks_tile_ldap_server_ssl_cert_alias:
+pks_tile_ldap_email_domains:
+pks_tile_ldap_first_name_attribute:
+pks_tile_ldap_last_name_attribute:
 
 pks_tile_plan_details:
 - plan_detail:
@@ -141,12 +178,15 @@ pks_tile_plan_details:
     plan_selector: plan1_selector # Dont change the value of selector - Needs to be planN_selector
     is_active: true
     description: "Small plan"
-    az_placement: az1  # Specify the AZ in which the cluster will be created
+    # AZ can be only a single value for PKS v1.0
+    # There can be a comma separated list for PKS v1.1 which supports multiple AZs
+    az_placement: az1  # Specify the AZ in which the cluster will be created, single for PKS v1.0
     authorization_mode: rbac    # rbac - Default Cluster Authorization Mode
     master_vm_type: medium
-    master_persistent_disk_type: "10240"
     worker_vm_type: medium
-    persistent_disk_type: "10240"
+    persistent_disk_type: "10240" # Used in PKS 1.0
+    master_persistent_disk_type: "10240" # Used in PKS 1.1+
+    worker_persistent_disk_type: "10240" # Used in PKS 1.1+
     worker_instances: 3    # The number of K8s worker instances
     errand_vm_type: micro
     addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
@@ -156,12 +196,15 @@ pks_tile_plan_details:
     is_active: false
     plan_selector: plan2_selector # Dont change the value of selector - Needs to be planN_selector
     description: "Medium plan"
-    az_placement: az1  # Specify the AZ in which the cluster will be created
+    # AZ can be only a single value for PKS v1.0
+    # There can be a comma separated list for PKS v1.1 which supports multiple AZs
+    az_placement: az1  # Specify the AZ in which the cluster will be created, single for PKS v1.0
     authorization_mode: rbac    # rbac or abac - Default Cluster Authorization Mode
     master_vm_type: medium
-    master_persistent_disk_type: "10240"
     worker_vm_type: medium
-    persistent_disk_type: "10240"
+    persistent_disk_type: "10240" # Used in PKS 1.0
+    master_persistent_disk_type: "10240" # Used in PKS 1.1+
+    worker_persistent_disk_type: "10240" # Used in PKS 1.1+
     worker_instances: 5    # The number of K8s worker instances
     errand_vm_type: micro
     addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
