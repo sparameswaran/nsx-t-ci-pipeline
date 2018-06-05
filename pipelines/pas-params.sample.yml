@@ -378,6 +378,7 @@ pks_tile_syslog_transport_protocol: #tcp
 pks_tile_syslog_tls_enabled: # true
 pks_tile_syslog_peer: # *.test.corp.com
 pks_tile_syslog_ca_cert:
+pks_tile_allow_public_ip: true # leave it to empty or false to turn off public ip
 
 pks_tile_plan_details:
 - plan_detail:
@@ -385,7 +386,8 @@ pks_tile_plan_details:
     plan_selector: plan1_selector # Dont change the value of selector - Needs to be planN_selector
     is_active: true
     description: "Small plan"
-    az_placement: az1  # Specify the AZ in which the cluster will be created
+    az_placement: az            # Specify the AZ in which the cluster will be created
+    #az_placement: az1,az2,az3  # Multiple azs only supported in PKS v1.1+
     authorization_mode: rbac    # rbac - Default Cluster Authorization Mode
     master_vm_type: medium
     master_persistent_disk_type: "10240"
@@ -401,6 +403,7 @@ pks_tile_plan_details:
     plan_selector: plan2_selector # Dont change the value of selector - Needs to be planN_selector
     description: "Medium plan"
     az_placement: az1  # Specify the AZ in which the cluster will be created
+    #az_placement: az1,az2,az3  # Multiple azs only supported in PKS v1.1+
     authorization_mode: rbac    # rbac or abac - Default Cluster Authorization Mode
     master_vm_type: medium
     master_persistent_disk_type: "10240"

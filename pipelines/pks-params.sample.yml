@@ -130,6 +130,7 @@ pks_tile_syslog_transport_protocol: #tcp
 pks_tile_syslog_tls_enabled: # true
 pks_tile_syslog_peer: # *.test.corp.com
 pks_tile_syslog_ca_cert:
+pks_allow_public_ip: true # leave it to empty or false to turn off public ip
 
 pks_tile_plan_details:
 - plan_detail:

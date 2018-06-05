@@ -14,11 +14,16 @@ openssl s_client  -servername $NSX_API_MANAGER \
                   </dev/null 2>/dev/null \
                   | openssl x509 -text \
                   >  /tmp/complete_nsx_manager_cert.log
+echo "Full nsx mgr cert log"
+cat /tmp/complete_nsx_manager_cert.log
+cat /tmp/complete_nsx_manager_cert.log \
+                        | grep Subject | grep "CN=" \
+                        | awk '{print $NF}'
 
 NSX_MANAGER_CERT_ADDRESS=`cat /tmp/complete_nsx_manager_cert.log \
                         | grep Subject | grep "CN=" \
-                        | awk '{print $NF}' \
-                        | sed -e 's/CN=//g' `
+                        | tr , '\n' | grep 'CN=' \
+                        | sed -e 's/.* CN=//' `
 
 echo "Fully qualified domain name for NSX Manager: $NSX_API_MANAGER"
 echo "Host name associated with NSX Manager cert: $NSX_MANAGER_CERT_ADDRESS"
@@ -71,7 +76,6 @@ if [[ "$PRODUCT_VERSION" =~ "1.0" ]]; then
   product_version=1.0
 else
   product_version=1.1
-
 fi
 
 pks_network=$(
@@ -259,9 +263,22 @@ for plan_selection in $(echo "$PKS_PLAN_DETAILS" | jq  -r '.[].plan_detail.plan_
 do
   # echo "Plan selection is ${plan_selection}"
   # echo ""
+
+  if [[ "$product_version" =~ "1.0" ]]; then
+    az_value=$(echo  "$PKS_PLAN_DETAILS"  \
+               | jq  --arg plan_selection $plan_selection \
+                 '.[].plan_detail | select(.plan_selector | contains($plan_selection) ) | select(.is_active == true ) | .az_placement ' )
+    az_json=$(echo "{ \".properties.${plan_selection}.active.az_placement\": { \"value\": $az_value } }" )
+  else
+    az_value=$(echo "$PKS_PLAN_DETAILS"  \
+                 | jq  --arg plan_selection $plan_selection \
+                   '.[].plan_detail | select(.plan_selector | contains($plan_selection) ) | select(.is_active == true ) | .az_placement |  split(",") ')
+    az_json=$(echo "{ \".properties.${plan_selection}.active.master_az_placement\": { \"value\": $az_value } } { \".properties.${plan_selection}.active.worker_az_placement\": { \"value\": $az_value } } " )
+  fi
+
   new_plan_entry=$(echo "$PKS_PLAN_DETAILS"  \
                | jq  --arg plan_selection $plan_selection \
-                 '.[].plan_detail | select(.plan_selector | contains($plan_selection) ) | select(.is_active == true ) | del(.is_active)| del(.plan_selector) | to_entries | .[] |  { ".properties.\($plan_selection).active.\(.key)" : { "value" : (.value) } }' | jq -s add  )
+                 '.[].plan_detail | select(.plan_selector | contains($plan_selection) ) | select(.is_active == true ) | del(.is_active) | del(.plan_selector) | del(.az_placement) | to_entries | .[] |  { ".properties.\($plan_selection).active.\(.key)" : { "value" : (.value) } }' | jq -s add  )
 
     # Pushing the properties under .properties.$plan_selection.active wrapper
     # does not work with Ops Mgr
@@ -278,10 +295,11 @@ do
     #   '
     # )
 
+
   if [ "$new_plan_entry" == ''  -o "$new_plan_entry" == "null" ]; then
-      new_plan_entry=$(echo "{ \".properties.${plan_selection}\": { \"value\": \"Plan Inactive\" } }")
+    new_plan_entry=$(echo "{ \".properties.${plan_selection}\": { \"value\": \"Plan Inactive\" } }")
   else
-    new_plan_entry=$(echo "{ \".properties.${plan_selection}\": { \"value\": \"Plan Active\" } }" "$new_plan_entry" | jq -s add)
+    new_plan_entry=$(echo "{ \".properties.${plan_selection}\": { \"value\": \"Plan Active\" } }  $az_json " "$new_plan_entry" | jq -s add)
   fi
 
   #echo "New plan entry is $new_plan_entry"
@@ -324,6 +342,7 @@ pks_main_properties=$(
 )
 
 
+
 om-linux \
   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   -u $OPSMAN_USERNAME \
@@ -334,6 +353,35 @@ om-linux \
   --product-properties "$pks_main_properties"
 
 echo "Finished configuring PKS plan and other config properties!!"
+
+if [[ "$product_version" =~ "1.0" ]]; then
+  echo "Nothing additional to configure in terms of PKS 1.0 tile"
+else
+  pksv1_1_properties='{}'
+  if [ "$PKS_ALLOW_PUBLIC_IP" == "true" ]; then
+    pksv1_1_properties=$(jq -n  \
+        --arg pks_allow_public_ip "$PKS_ALLOW_PUBLIC_IP" \
+        '
+        {
+          ".properties.vm_extensions": {
+            "value" :[
+              "public_ip"
+            ]
+          }
+        }
+        '
+    )
+  fi
+  om-linux \
+    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+    -u $OPSMAN_USERNAME \
+    -p $OPSMAN_PASSWORD \
+    --skip-ssl-validation \
+    configure-product \
+    --product-name "$PRODUCT_NAME" \
+    --product-properties "$pksv1_1_properties"
+fi
+
 
 errand="pks-nsx-t-precheck"
 

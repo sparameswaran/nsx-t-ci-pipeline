@@ -75,7 +75,7 @@ pks_config_params: &pks-config-params
   PKS_SYSLOG_TLS_ENABLED: ((pks_tile_syslog_tls_enabled))
   PKS_SYSLOG_PEER: ((pks_tile_syslog_peer))
   PKS_SYSLOG_CA_CERT: ((pks_tile_syslog_ca_cert))
-
+  PKS_ALLOW_PUBLIC_IP: ((pks_tile_allow_public_ip))
 
 resource_types:
 - name: pivnet

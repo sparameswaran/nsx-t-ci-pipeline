@@ -18,8 +18,8 @@ openssl s_client  -servername $NSX_API_MANAGERS \
 
 NSX_MANAGER_CERT_ADDRESS=`cat /tmp/complete_nsx_manager_cert.log \
                         | grep Subject | grep "CN=" \
-                        | awk '{print $NF}' \
-                        | sed -e 's/CN=//g' `
+                        | tr , '\n' | grep 'CN=' \
+                        | sed -e 's/.* CN=//g' `
 
 echo "Fully qualified domain name for NSX Manager: $NSX_API_MANAGERS"
 echo "Host name associated with NSX Manager cert: $NSX_MANAGER_CERT_ADDRESS"
