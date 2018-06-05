@@ -303,7 +303,7 @@ jobs:
       #OPSMAN_CLIENT_ID: ((opsman_client_id))
       #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
       PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-      PKS_SYSTEM_DOMAIN: ((pks_system_domain))
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
       PKS_CLI_USERNAME: ((pks_tile_cli_username))
       PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
       PKS_CLI_PASSWORD: ((pks_tile_cli_password))
@@ -354,10 +354,10 @@ jobs:
       #OPSMAN_CLIENT_ID: ((opsman_client_id))
       #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
       PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-      PKS_SYSTEM_DOMAIN: ((pks_system_domain))
-      PKS_CLI_USERNAME: ((pks_cli_username))
-      PKS_CLI_USEREMAIL: ((pks_cli_useremail))
-      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
+      PKS_CLI_USERNAME: ((pks_tile_cli_username))
+      PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
+      PKS_CLI_PASSWORD: ((pks_tile_cli_password))
 
 - name: delete-clusters
   plan:
@@ -365,9 +365,9 @@ jobs:
   - task: delete-all-pks-clusters
     file: pcf-pipelines-utils/tasks/pcf/pks/delete-all-pks-clusters/task.yml
     params:
-      PCF_PKS_API: ((pks_tile_uaa_domain_prefix)).((pks_system_domain))
-      PKS_CLI_USERNAME: ((pks_cli_username))
-      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PCF_PKS_API: ((pks_tile_uaa_domain_prefix)).((pks_tile_system_domain))
+      PKS_CLI_USERNAME: ((pks_tile_cli_username))
+      PKS_CLI_PASSWORD: ((pks_tile_cli_password))
       DEBUG: false
 
 - name: wipe-env

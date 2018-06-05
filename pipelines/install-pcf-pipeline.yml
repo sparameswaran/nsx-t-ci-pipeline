@@ -310,10 +310,10 @@ resources:
     sort_by: semver
 
 # Used for PKS user creation and deletion of clusters
-- name: pcf-pipelines-utils
-  type: git
-  source:
-    uri: https://github.com/pivotalservices/concourse-pipeline-samples.git
+# - name: pcf-pipelines-utils
+#   type: git
+#   source:
+#     uri: https://github.com/pivotalservices/concourse-pipeline-samples.git
 
 groups:
 
@@ -598,7 +598,7 @@ jobs:
       #OPSMAN_CLIENT_ID: ((opsman_client_id))
       #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
       PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-      PKS_SYSTEM_DOMAIN: ((pks_system_domain))
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
       PKS_CLI_USERNAME: ((pks_tile_cli_username))
       PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
       PKS_CLI_PASSWORD: ((pks_tile_cli_password))
