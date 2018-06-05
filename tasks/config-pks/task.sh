@@ -56,13 +56,13 @@ fi
 check_bosh_version
 check_available_product_version "pivotal-container-service"
 
-# om-linux \
-#     -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-#     -u $OPSMAN_USERNAME \
-#     -p $OPSMAN_PASSWORD \
-#     -k stage-product \
-#     -p $PRODUCT_NAME \
-#     -v $PRODUCT_VERSION
+om-linux \
+    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+    -u $OPSMAN_USERNAME \
+    -p $OPSMAN_PASSWORD \
+    -k stage-product \
+    -p $PRODUCT_NAME \
+    -v $PRODUCT_VERSION
 
 check_staged_product_guid "pivotal-container-service-"
 
