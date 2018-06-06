@@ -1,7 +1,7 @@
 # Pipeline resource configuration
 pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
 opsman_major_minor_version: ^2\.1\.2$   # PCF Ops Manager minor version to track
-pks_major_minor_version: ^1\.0\..*$
+pks_major_minor_version: ^1\..*$       # Can pick 1.0 (or v1.1 once it becomes GA and available on pivnet)
 
 # vCenter configuration
 vcenter_host: 10.1.1.10            # vCenter host or IP
@@ -220,4 +220,8 @@ s3_bucket: pks-tile-s3              # Required for S3. ID of the AWS S3 bucket t
 s3_creds_access_key_id: AAa23....asdfZA       # Required for S3. Access key of the AWS S3 bucket
 s3_creds_secret_access_key: s6A234...asfsadUL   # Required for S3. Secret access key of the AWS S3 bucket
 s3_region: us-west-2                 # The region the bucket is in. Leave it blank if not applicable (e.g. for Minio)
-s3_nsx_t_tile_path: pivotal-container-service-(.*).pivotal    # file path name to the tile in the s3 bucket
+s3_pksv11_tile_path: pivotal-container-service-(.*).pivotal    # file path name to the tile in the s3 bucket
+
+# Use this for downloading PKS v1.1 tile from a web server (till it becomes available on Pivnet)
+pks_tile_webserver: http://101.101.101.101:8080      # EDIT ME
+pksv11_tile: pivotal-container-service-1.1.0.pivotal # EDIT ME

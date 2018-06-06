@@ -77,6 +77,6 @@ The pipeline has been tested with following version:
 Tweak the versions in the params file.
 
 ## Installing PKS
-PKS v1.0 Tile can also be installed either on an existing Ops Mgr install (with or without PAS) or for a brand new install including new Ops Mgr. Use the install-pks-pipeline.yml for install of pure PKS (without PAS). For users of PAS looking at installing and exploring PKS, they can use either the install-pcf-pipeline.yml with the `install-pks` group option or use the `pks-install-standalone` group from the install-pks-pipeline.yml.
+PKS v1.0 Tile can also be installed either on an existing Ops Mgr install (with or without PAS) or for a brand new install including new Ops Mgr. Use the install-pks-pipeline.yml for install of pure PKS (without PAS) with the pks-params.sample.yml for the parameter template. For users of PAS looking at installing and exploring PKS, they can use either the install-pcf-pipeline.yml with the `install-pks` group option or use the `pks-install-standalone` group from the install-pks-pipeline.yml.
 
-PKS v1.1 Tile support is upcoming.
+PKS v1.1 Tile support is experimental (as the tile is not yet GA).

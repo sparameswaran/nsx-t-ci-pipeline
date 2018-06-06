@@ -130,6 +130,7 @@ resources:
     product_version: ((opsman_major_minor_version))
     sort_by: semver
 
+# Comment this off if planning to use PKS v1.1 and its not on pivnet
 - name: pivotal-container-service
   type: pivnet
   source:
@@ -137,6 +138,24 @@ resources:
     product_slug: pivotal-container-service
     product_version: ((pks_major_minor_version))
     sort_by: semver
+
+# Uncomment to use s3 bucket for PKS v1.1 till the tile is on pivnet...
+# - name: pivotal-container-service
+#   type: s3
+#   source:
+#     access_key_id: ((s3_creds_access_key_id))
+#     secret_access_key: ((s3_creds_secret_access_key))
+#     bucket: ((s3_bucket))
+#     regexp: ((s3_pksv11_tile_path)) #pks/pivotal-container-service-1.1.0.pivotal
+#     region_name: ((s3_region))
+
+## Uncomment to use file server for PKS v1.1 till the tile is on pivnet...
+# - name: pivotal-container-service
+#   type: file-url
+#   source:
+#     url: ((pks_tile_webserver))/((pksv11_tile))
+#     filename: ((pksv11_tile))
+
 
 # Used for PKS user creation and deletion of clusters
 - name: pcf-pipelines-utils
@@ -167,7 +186,7 @@ groups:
 
 - name: pks-install-standalone
   jobs:
-  - upload-pks-standalone
+  #- upload-pks-standalone
   - deploy-pks-standalone
 
 
@@ -331,7 +350,7 @@ jobs:
   - aggregate:
     - get: nsx-t-ci-pipeline
       params: {globs: []}
-      passed: [upload-pks-standalone]
+      #passed: [upload-pks-standalone]
       trigger: true
 
   - task: configure-pks
