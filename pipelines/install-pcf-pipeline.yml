@@ -302,22 +302,22 @@ resources:
     product_version: ((pks_major_minor_version))
     sort_by: semver
 
-# Uncomment to use s3 bucket for PKS v1.1 till the tile is on pivnet...
+# Uncomment to use s3 bucket if PKS tile is NOT on pivnet...
 # - name: pivotal-container-service
 #   type: s3
 #   source:
 #     access_key_id: ((s3_creds_access_key_id))
 #     secret_access_key: ((s3_creds_secret_access_key))
 #     bucket: ((s3_bucket))
-#     regexp: ((s3_pksv11_tile_path)) #pks/pivotal-container-service-1.1.0.pivotal
+#     regexp: ((s3_pks_tile_path)) #pks/pivotal-container-service-1.1.0.pivotal
 #     region_name: ((s3_region))
 
-## Uncomment to use file server for PKS v1.1 till the tile is on pivnet...
+# Uncomment to use file server if PKS tile is NOT on pivnet......
 # - name: pivotal-container-service
 #   type: file-url
 #   source:
-#     url: ((pks_tile_webserver))/((pksv11_tile))
-#     filename: ((pksv11_tile))
+#     url: ((pks_tile_webserver))/((pks_tile))
+#     filename: ((pks_tile))
 
 - name: nsx-t-add-on-tile
   type: pivnet
