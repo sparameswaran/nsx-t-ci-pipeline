@@ -122,6 +122,8 @@ pks_tile_nw_azs: az1
 pks_tile_deployment_network_name: INFRASTRUCTURE        # Can be any network created already, default: INFRASTRUCTURE
 pks_tile_cluster_service_network_name: PKS-k8s-clusters # Should match the PKS-k8s-clusters network created already
 
+# ALERT - The underlying Edge instances should be large, 8 vcpus.
+# Otherwise the pks-nsx-t-precheck errrand would fail.
 pks_tile_nsx_skip_ssl_verification: true # can be true or false
 pks_tile_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
 pks_tile_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used for PKS

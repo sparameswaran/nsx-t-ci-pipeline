@@ -80,3 +80,5 @@ Tweak the versions in the params file.
 PKS v1.0 Tile can also be installed either on an existing Ops Mgr install (with or without PAS) or for a brand new install including new Ops Mgr. Use the install-pks-pipeline.yml for install of pure PKS (without PAS) with the pks-params.sample.yml for the parameter template. For users of PAS looking at installing and exploring PKS, they can use either the install-pcf-pipeline.yml with the `install-pks` group option or use the `pks-install-standalone` group from the install-pks-pipeline.yml.
 
 PKS v1.1 Tile support is experimental (as the tile is not yet GA).
+Note: The underlying Edge instances used for PKS should be large size, 8 vcpus.
+Otherwise, the pks-nsx-t-precheck errand bundled with PKS v1.1 would fail.
