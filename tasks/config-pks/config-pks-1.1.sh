@@ -116,7 +116,7 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
     --arg pks_ldap_user "$PKS_LDAP_USER" \
     --arg pks_ldap_password "$PKS_LDAP_PASSWORD" \
     --arg pks_ldap_search_base "$PKS_LDAP_SEARCH_BASE" \
-    --arg pks_ldap_group_search_filter "$PKS_LDAP_GROUP_SEARCH_FILTER" \
+    --arg pks_ldap_group_search_base "$PKS_LDAP_GROUP_SEARCH_BASE" \
     --arg pks_ldap_server_ssl_cert "$PKS_LDAP_SERVER_SSL_CERT" \
     --arg pks_ldap_server_ssl_cert_alias "$PKS_LDAP_SERVER_SSL_CERT_ALIAS" \
     --arg pks_ldap_email_domains "$PKS_LDAP_EMAIL_DOMAINS" \
@@ -142,10 +142,10 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
             "value": "cn{0}"
           },
           ".properties.uaa.ldap.group_search_base": {
-            "value": "member={0}"
+            "value": pks_ldap_group_search_base
           },
           ".properties.uaa.ldap.group_search_filter": {
-            "value": $pks_ldap_group_search_filter
+            "value": "member={0}"
           },
           ".properties.uaa.ldap.server_ssl_cert": {
             "value": $pks_ldap_server_ssl_cert
@@ -191,6 +191,35 @@ configure-product \
 --product-properties "$pks_uaa_properties"
 echo "Finished configuring UAA properties"
 
+if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; then
+  pks_wavefront_properties=$(
+    jq -n \
+    --arg pks_wavefront_api_url "$PKS_WAVEFRONT_API_URL" \
+    --arg pks_wavefront_token "$PKS_WAVEFRONT_TOKEN" \
+    --arg pks_wavefront_alert_targets "$PKS_WAVEFRONT_ALERT_TARGETS" \
+    '{
+          ".properties.wavefront.enabled.wavefront_api_url": {
+            "value": pks_wavefront_api_url
+          },
+          ".properties..wavefront.enabled.wavefront_api_url": {
+            "value": $pks_wavefront_token
+          },
+          ".properties..wavefront.enabled.wavefront_alert_targets": {
+            "value": $pks_wavefront_alert_targets
+          }
+        }
+      '
+    )
+  om-linux \
+  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
+  --skip-ssl-validation \
+  configure-product \
+  --product-name pivotal-container-service \
+  --product-properties "$pks_wavefront_properties"
+  echo "Finished configuring Wavefront Monitoring properties"
+fi
 
 pks_nsx_vcenter_properties=$(
   jq -n \
@@ -260,7 +289,13 @@ pks_nsx_vcenter_properties=$(
       ".properties.network_selector.nsx.floating-ip-pool-ids": {
           "value": $floating_ip_pool_id
       },
-      ".properties.cloud_provider.vsphere.vcenter_creds": {
+      ".properties.cloud_provider.vsphere.vcenter_master_creds": {
+        "value": {
+          "identity": $vcenter_username,
+          "password": $vcenter_password
+        }
+      },
+      ".properties.cloud_provider.vsphere.vcenter_worker_creds": {
         "value": {
           "identity": $vcenter_username,
           "password": $vcenter_password
@@ -293,6 +328,28 @@ om-linux \
 
 echo "Finished configuring NSX/vCenter properties"
 
+PKS_TELEMETRY=${PKS_TELEMETRY:-disabled}
+pks_telemetry_properties=$(
+  jq -n \
+  --arg pks_telemetry_enabled "$PKS_TELEMETRY" \
+  '{
+        ".properties.telemetry_selector": {
+          "value": $pks_telemetry_enabled
+        }
+    }
+  '
+)
+
+om-linux \
+  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
+  --skip-ssl-validation \
+  configure-product \
+  --product-name pivotal-container-service \
+  --product-properties "$pks_telemetry_properties"
+
+echo "Finished configuring Telemetry properties"
 
 plan_props='{}'
 

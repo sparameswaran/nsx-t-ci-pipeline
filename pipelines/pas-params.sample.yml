@@ -416,12 +416,19 @@ pks_tile_ldap_url:
 pks_tile_ldap_user:
 pks_tile_ldap_password:
 pks_tile_ldap_search_base:
-pks_tile_ldap_group_search_filter:
+pks_tile_ldap_group_search_base:
 pks_tile_ldap_server_ssl_cert:
 pks_tile_ldap_server_ssl_cert_alias:
 pks_tile_ldap_email_domains:
 pks_tile_ldap_first_name_attribute:
 pks_tile_ldap_last_name_attribute:
+
+# PKS Wavefront integration
+pks_tile_wavefront_api_url: # wavefront api url, empty is disabled
+pks_tile_wavefront_token:   # wavefront access token
+pks_tile_wavefront_alert_targets:  # email ids to sent alerts
+
+pks_tile_telemetry: disabled # can be enabled or disabled
 
 pks_tile_plan_details:
 - plan_detail:

@@ -95,12 +95,16 @@ pks_config_params: &pks-config-params
   PKS_LDAP_USER: ((pks_tile_ldap_user))
   PKS_LDAP_PASSWORD: ((pks_tile_ldap_password))
   PKS_LDAP_SEARCH_BASE: ((pks_tile_ldap_search_base))
-  PKS_LDAP_GROUP_SEARCH_FILTER: ((pks_tile_ldap_group_search_filter))
+  PKS_LDAP_GROUP_SEARCH_BASE: ((pks_tile_ldap_group_search_base))
   PKS_LDAP_SERVER_SSL_CERT: ((pks_tile_ldap_server_ssl_cert))
   PKS_LDAP_SERVER_SSL_CERT_ALIAS: ((pks_tile_ldap_server_ssl_cert_alias))
   PKS_LDAP_EMAIL_DOMAINS: ((pks_tile_ldap_email_domains))
   PKS_LDAP_FIRST_NAME_ATTRIBUTE: ((pks_tile_ldap_first_name_attribute))
   PKS_LDAP_LAST_NAME_ATTRIBUTE: ((pks_tile_ldap_last_name_attribute))
+  PKS_WAVEFRONT_API_URL: ((pks_tile_wavefront_api_url))
+  PKS_WAVEFRONT_TOKEN: ((pks_tile_wavefront_token))
+  PKS_WAVEFRONT_ALERT_TARGETS: ((pks_tile_wavefront_alert_targets))
+  PKS_TELEMETRY: ((pks_tile_telemetry))
 
 resource_types:
 - name: pivnet

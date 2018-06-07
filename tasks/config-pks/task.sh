@@ -156,12 +156,15 @@ echo "Finished configuring syslog properties"
 # Check if product is older 1.0 or not
 if [[ "$PRODUCT_VERSION" =~ ^1.0 ]]; then
   product_version=1.0
+  echo ""
   echo "Starting configuration of PKS v1.0 properties"
   source $ROOT_DIR/nsx-t-ci-pipeline/tasks/config-pks/config-pks-1.0.sh
 else
   product_version=1.1
+  echo ""
   echo "Starting configuration of PKS v1.1+ properties"
   source $ROOT_DIR/nsx-t-ci-pipeline/tasks/config-pks/config-pks-1.1.sh
 fi
 
+echo ""
 echo "Finished configuring PKS Tile"
