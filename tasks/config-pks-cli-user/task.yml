@@ -11,7 +11,7 @@ inputs:
 - name: nsx-t-ci-pipeline
 
 run:
-  path: nsx-t-ci-pipeline/tasks/pcf/pks/config-pks-cli-user/task.sh
+  path: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.sh
 
 params:
   OPSMAN_DOMAIN_OR_IP_ADDRESS:
