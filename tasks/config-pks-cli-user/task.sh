@@ -17,6 +17,7 @@ PRODUCTS=$(om-linux \
             2>/dev/null)
 
 PKS_GUID=$(echo "$PRODUCTS" | jq -r '.[] | .guid' | grep pivotal-container-service)
+
 UAA_ADMIN_SECRET=$(om-linux \
                     -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                     -u $OPSMAN_USERNAME \
@@ -25,6 +26,23 @@ UAA_ADMIN_SECRET=$(om-linux \
                     curl -p /api/v0/deployed/products/$PKS_GUID/credentials/.properties.uaa_admin_secret \
                     2>/dev/null \
                     | jq -rc '.credential.value.secret')
+
+# For PKS v1.1 it changed to .properties.pks_uaa_management_admin_client
+if [ "$UAA_ADMIN_SECRET" == "" -o "$UAA_ADMIN_SECRET" == "null" ]; then
+  UAA_ADMIN_SECRET=$(om-linux \
+                      -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+                      -u $OPSMAN_USERNAME \
+                      -p $OPSMAN_PASSWORD \
+                      --skip-ssl-validation \
+                      curl -p /api/v0/deployed/products/$PKS_GUID/credentials/.properties.pks_uaa_management_admin_client \
+                      2>/dev/null \
+                      | jq -rc '.credential.value.secret')
+fi
+
+if [ "$UAA_ADMIN_SECRET" == "" -o "$UAA_ADMIN_SECRET" == "null" ]; then
+  echo "Unable to retreive PKS Api UAA Client credentials from either .properties.uaa_admin_secret and .properties.pks_uaa_management_admin_client!!"
+  exit -1
+fi
 
 echo "Connecting to PKS UAA server [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}]..."
 
@@ -43,8 +61,13 @@ else
   echo "PKS CLI administrator user [$PKS_CLI_USERNAME] already exists!!."
 fi
 
-uaac member add pks.clusters.admin "$PKS_CLI_USERNAME"
+pks_admin_scope=$(uaac user get "$PKS_CLI_USERNAME" | grep "pks.clusters.admin" )
+if [ "$pks_admin_scope" == "" ]; then
+  uaac member add pks.clusters.admin "$PKS_CLI_USERNAME"
+  echo "PKS CLI administrator user [$PKS_CLI_USERNAME] given scope: pks.clusters.admin"
+fi
 
+echo ""
 echo "Next, download the PKS CLI from Pivotal Network and login to the PKS API to create a new K8s cluster [https://docs.pivotal.io/runtimes/pks/1-0/create-cluster.html]"
 echo "Example: "
 echo "   pks login -a ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} -u $PKS_CLI_USERNAME -p <pks-cli-password-provided>"
