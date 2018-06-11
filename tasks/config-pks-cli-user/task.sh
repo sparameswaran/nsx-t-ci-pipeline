@@ -32,13 +32,18 @@ echo "Connecting to PKS UAA server [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN
 uaac target https://${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}:8443 --skip-ssl-validation
 uaac token client get admin --secret $UAA_ADMIN_SECRET
 
-echo "Creating PKS CLI administrator user per PK tile documentation https://docs.pivotal.io/runtimes/pks/1-0/manage-users.html#uaa-scopes"
+user_exist=$(uaac users | grep username | grep -e " $PKS_CLI_USERNAME$" )
+if [ "$user_exist" == "" ]; then
+  echo "Creating PKS CLI administrator user per PK tile documentation https://docs.pivotal.io/runtimes/pks/1-0/manage-users.html#uaa-scopes"
 
-# create pks admin user
-uaac user add "$PKS_CLI_USERNAME" --emails "$PKS_CLI_USEREMAIL" -p "$PKS_CLI_PASSWORD"
+  # create pks admin user
+  uaac user add "$PKS_CLI_USERNAME" --emails "$PKS_CLI_USEREMAIL" -p "$PKS_CLI_PASSWORD"
+  echo "PKS CLI administrator user [$PKS_CLI_USERNAME] successfully created."
+else
+  echo "PKS CLI administrator user [$PKS_CLI_USERNAME] already exists!!."
+fi
+
 uaac member add pks.clusters.admin "$PKS_CLI_USERNAME"
-
-echo "PKS CLI administrator user [$PKS_CLI_USERNAME] successfully created."
 
 echo "Next, download the PKS CLI from Pivotal Network and login to the PKS API to create a new K8s cluster [https://docs.pivotal.io/runtimes/pks/1-0/create-cluster.html]"
 echo "Example: "
