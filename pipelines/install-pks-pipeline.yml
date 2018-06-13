@@ -107,6 +107,18 @@ pks_config_params: &pks-config-params
   PKS_WAVEFRONT_ALERT_TARGETS: ((pks_tile_wavefront_alert_targets))
   PKS_TELEMETRY: ((pks_tile_telemetry))
 
+pks_cli_config_params: &pks-cli-config-params
+  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+  OPSMAN_USERNAME: ((opsman_admin_username))
+  OPSMAN_PASSWORD: ((opsman_admin_password))
+  #OPSMAN_CLIENT_ID: ((opsman_client_id))
+  #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
+  PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
+  PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
+  PKS_CLI_USERNAME: ((pks_tile_cli_username))
+  PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
+  PKS_CLI_PASSWORD: ((pks_tile_cli_password))
+
 resource_types:
 - name: pivnet
   type: docker-image
@@ -196,6 +208,9 @@ groups:
   - deploy-pks-standalone
   - config-pks-cli-user-standalone
 
+- name: config-pks-cli-user-after-install
+  jobs:
+  - config-pks-cli-user-after-install
 
 - name: wipe
   jobs:
@@ -324,24 +339,13 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-ops-manager
       params: {globs: []}
       passed: [deploy-pks]
       trigger: true
 
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
-    params:
-      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-      OPSMAN_USERNAME: ((opsman_admin_username))
-      OPSMAN_PASSWORD: ((opsman_admin_password))
-      #OPSMAN_CLIENT_ID: ((opsman_client_id))
-      #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
-      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
-      PKS_CLI_USERNAME: ((pks_tile_cli_username))
-      PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
-      PKS_CLI_PASSWORD: ((pks_tile_cli_password))
+    params: *pks-cli-config-params
 
 - name: upload-pks-standalone
   plan:
@@ -384,24 +388,24 @@ jobs:
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
-    - get: pcf-ops-manager
       params: {globs: []}
       passed: [deploy-pks-standalone]
       trigger: true
 
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
-    params:
-      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-      OPSMAN_USERNAME: ((opsman_admin_username))
-      OPSMAN_PASSWORD: ((opsman_admin_password))
-      #OPSMAN_CLIENT_ID: ((opsman_client_id))
-      #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
-      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
-      PKS_CLI_USERNAME: ((pks_tile_cli_username))
-      PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
-      PKS_CLI_PASSWORD: ((pks_tile_cli_password))
+    params: *pks-cli-config-params
+
+
+- name: config-pks-cli-user-after-install
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+
+  - task: config-pks-cli-user
+    file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
+    params: *pks-cli-config-params
+
 
 - name: delete-clusters
   plan:
