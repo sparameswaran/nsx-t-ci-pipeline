@@ -177,6 +177,7 @@ groups:
   - deploy-director
   - upload-pks
   - deploy-pks
+  - config-pks-cli-user
 
 # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
 - name: delete-pks-clusters
@@ -193,6 +194,7 @@ groups:
   jobs:
   - upload-pks-standalone
   - deploy-pks-standalone
+  - config-pks-cli-user-standalone
 
 
 - name: wipe
@@ -318,6 +320,15 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
 
+- name: config-pks-cli-user
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-pks]
+      trigger: true
+
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
     params:
@@ -368,6 +379,15 @@ jobs:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
+
+- name: config-pks-cli-user-standalone
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pcf-ops-manager
+      params: {globs: []}
+      passed: [deploy-pks-standalone]
+      trigger: true
 
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
