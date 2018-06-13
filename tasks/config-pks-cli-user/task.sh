@@ -48,9 +48,14 @@ echo "Connecting to PKS UAA server [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN
 
 # login to PKS UAA
 uaac target https://${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}:8443 --skip-ssl-validation
-uaac token client get admin --secret $UAA_ADMIN_SECRET
+uaac_output=$(uaac token client get admin --secret $UAA_ADMIN_SECRET)
+uaac_status=$(echo $?)
+if [ "$uaac_status" != "0" ]; then
+  echo "Problem in getting uaa token : $uaac_output"
+fi
 
-user_exist=$(uaac users | grep username | grep -e " $PKS_CLI_USERNAME$" )
+echo "Checking for existing user ${PKS_CLI_USERNAME}"
+user_exist=$(uaac users | grep username | grep -e " ${PKS_CLI_USERNAME}$" || true )
 if [ "$user_exist" == "" ]; then
   echo "Creating PKS CLI administrator user per PK tile documentation https://docs.pivotal.io/runtimes/pks/1-0/manage-users.html#uaa-scopes"
 
