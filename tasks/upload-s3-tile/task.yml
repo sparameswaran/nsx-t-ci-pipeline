@@ -10,8 +10,8 @@ params:
   OPSMAN_DOMAIN_OR_IP_ADDRESS:
   OPSMAN_USERNAME:
   OPSMAN_PASSWORD:
-  NO_PROXY:
-  OM_IP:
+  PIVNET_API_TOKEN:
+  IAAS:
 
 inputs:
   - name: s3-tile
