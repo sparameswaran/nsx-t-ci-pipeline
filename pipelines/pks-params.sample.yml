@@ -59,7 +59,7 @@ icmp_checks_enabled: false     # Enable or disable ICMP checks
 
 infra_network_name: "INFRASTRUCTURE"
 infra_vsphere_network: infra       # vCenter Infrastructure network name
-infra_nw_cidr: 192.168.20.0/26              # Infrastructure network CIDR, ex: 10.0.0.0/22
+infra_nw_cidr: 192.168.20.0/24              # Infrastructure network CIDR, ex: 10.0.0.0/22
 infra_excluded_range: 192.168.20.0-192.168.20.9,192.168.20.25-192.168.20.64       # Infrastructure network exclusion range
 infra_nw_dns: 10.1.1.2                    # Infrastructure network DNS
 infra_nw_gateway: 192.168.20.1            # Infrastructure network Gateway
