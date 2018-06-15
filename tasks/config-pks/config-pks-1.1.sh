@@ -320,10 +320,7 @@ om-linux \
   --product-name pivotal-container-service \
   --product-properties "$pks_nsx_vcenter_properties"
 
-".properties.cloud_provider.vsphere.vcenter_worker_creds"
 has_vcenter_worker_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
-
-
 if [  "$has_vcenter_worker_creds" != "0" ]; then
   pks_nsx_vcenter_properties2=$(
       jq -n \
