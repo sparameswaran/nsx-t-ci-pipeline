@@ -1,6 +1,6 @@
 #!/bin/bash
 # Source: https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/tasks/pcf/pks/configure-pks-cli-user/task.sh
-set -eu
+#set -eu
 
 echo "Note - pre-requisite for this task to work:"
 echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] should be routable and accessible from the Concourse worker(s) network."
@@ -8,6 +8,8 @@ echo "- See PKS tile documentation for configuration details for vSphere [https:
 
 echo "Retrieving PKS tile properties from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
 # get PKS UAA admin credentails from OpsMgr
+check_staged_product_guid "pivotal-container-service-"
+
 PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
             -u $OPSMAN_USERNAME \
@@ -69,7 +71,8 @@ fi
 pks_admin_scope=$(uaac user get "$PKS_CLI_USERNAME" | grep "pks.clusters.admin" ||true )
 if [ "$pks_admin_scope" == "" ]; then
   uaac member add pks.clusters.admin "$PKS_CLI_USERNAME"
-  echo "PKS CLI administrator user [$PKS_CLI_USERNAME] given scope: pks.clusters.admin"
+  uaac member add pks.clusters.manage "$PKS_CLI_USERNAME" || true
+  echo "PKS CLI administrator user [$PKS_CLI_USERNAME] given scope: pks.clusters.admin, pks.clusters.manage"
 fi
 
 echo ""

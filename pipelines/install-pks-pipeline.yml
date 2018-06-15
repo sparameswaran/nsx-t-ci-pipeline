@@ -35,6 +35,11 @@ ops_dir_config_params: &ops-dir-config-params
   MAX_THREADS: ((max_threads))
   TRUSTED_CERTIFICATES: ((trusted_certificates))
   NSX_NETWORKING_ENABLED: ((nsx_networking_enabled))
+  NSX_MODE: ((nsx_mode))
+  NSX_ADDRESS: ((nsx_address))
+  NSX_USERNAME: ((nsx_username))
+  NSX_PASSWORD: ((nsx_password))
+  NSX_CA_CERTIFICATE: ((nsx_ca_certificate))
 
 pks_config_params: &pks-config-params
   IAAS: vsphere

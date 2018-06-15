@@ -295,12 +295,6 @@ pks_nsx_vcenter_properties=$(
           "password": $vcenter_password
         }
       },
-      ".properties.cloud_provider.vsphere.vcenter_worker_creds": {
-        "value": {
-          "identity": $vcenter_username,
-          "password": $vcenter_password
-        }
-      },
       ".properties.network_selector.nsx.nodes-ip-block-id": {
         "value": $nodes_ip_block_id
       },
@@ -325,6 +319,36 @@ om-linux \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_nsx_vcenter_properties"
+
+".properties.cloud_provider.vsphere.vcenter_worker_creds"
+has_vcenter_worker_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
+
+
+if [  "$has_vcenter_worker_creds" != "0" ]; then
+  pks_nsx_vcenter_properties2=$(
+      jq -n \
+        --arg vcenter_username "$PKS_VCENTER_USR" \
+        --arg vcenter_password "$PKS_VCENTER_PWD" \
+      '{
+        ".properties.cloud_provider.vsphere.vcenter_worker_creds": {
+          "value": {
+            "identity": $vcenter_username,
+            "password": $vcenter_password
+          }
+        }
+      }
+    '
+  )
+
+  om-linux \
+    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+    -u $OPSMAN_USERNAME \
+    -p $OPSMAN_PASSWORD \
+    --skip-ssl-validation \
+    configure-product \
+    --product-name pivotal-container-service \
+    --product-properties "$pks_nsx_vcenter_properties2"
+fi
 
 echo "Finished configuring NSX/vCenter properties"
 
