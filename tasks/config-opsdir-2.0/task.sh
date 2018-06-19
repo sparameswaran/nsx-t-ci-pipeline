@@ -47,7 +47,7 @@ if [ "$NSX_NETWORKING_ENABLED" == "true" ]; then
   --arg nsx_username "$NSX_USERNAME" \
   --arg nsx_password "$NSX_PASSWORD" \
   --arg nsx_ca_certificate "$NSX_CA_CERTIFICATE" \
-' .iaas_configuration +=
+' . +=
         {
           "nsx_mode": $nsx_mode,
           "nsx_address": $nsx_address,
