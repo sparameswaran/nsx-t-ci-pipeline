@@ -9,7 +9,8 @@ nsxt_major_minor_version: ^2\.1\.3.*$   # PCF Elastic Runtime minor version to t
 scs_major_minor_version: ^1\.5\..*$
 mysql_major_minor_version: ^1\.10\..*$
 rabbitmq_major_minor_version: ^1\.11\..*$
-pks_major_minor_version: ^1\..*$       # Can pick 1.0 (or v1.1 once it becomes GA and available on pivnet)
+pks_major_minor_version: ^1\.0.*$        # use PKS v1.0
+#pks_major_minor_version: ^1\.1.*$       # Use this once PKS v1.1 becomes GA
 
 # vCenter configuration
 vcenter_host: 10.1.1.10            # vCenter host or IP
