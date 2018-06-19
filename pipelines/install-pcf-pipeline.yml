@@ -292,7 +292,7 @@ resources:
   type: pivnet
   source:
     api_token: ((pivnet_token))
-    product_slug: pivotal-container-service
+    product_slug: elastic-runtime
     product_version: ((ert_major_minor_version))
     sort_by: semver
 
