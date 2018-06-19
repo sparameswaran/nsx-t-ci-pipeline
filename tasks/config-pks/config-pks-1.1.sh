@@ -3,16 +3,15 @@
 set -eu
 
 BOSH_CREDS=$(om-linux  \
-                  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS  \
-                  -u $OPSMAN_USERNAME  \
-                  -p $OPSMAN_PASSWORD  \
-                   -k curl -p '/api/v0/deployed/director/credentials/bosh_commandline_credentials' \
-                   2>/dev/null \
-                   | tr ' ' '\n' \
-                   | grep BOSH_CLIENT)
+              -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS  \
+              -u $OPSMAN_USERNAME  \
+              -p $OPSMAN_PASSWORD  \
+               -k curl -p '/api/v0/deployed/director/credentials/bosh_commandline_credentials' \
+               2>/dev/null \
+               | grep BOSH_CLIENT)
 
-export BOSH_CLIENT_ID=$(echo $BOSH_CREDS | grep 'BOSH_CLIENT=' | awk -F '=' '{print $2}' | tr -d ' ')
-export BOSH_CLIENT_SECRET=$(echo $BOSH_CREDS | grep 'BOSH_CLIENT_SECRET=' | awk -F '=' '{print $2}' | tr -d ' ')
+export BOSH_CLIENT_ID=$(echo $BOSH_CREDS | tr ' ' '\n' | grep 'BOSH_CLIENT=' | awk -F '=' '{print $2}' | tr -d ' ')
+export BOSH_CLIENT_SECRET=$(echo $BOSH_CREDS | tr ' ' '\n' |grep 'BOSH_CLIENT_SECRET=' | awk -F '=' '{print $2}' | tr -d ' ')
 
 if [ "$PKS_VRLI_ENABLED" == "true" ]; then
 

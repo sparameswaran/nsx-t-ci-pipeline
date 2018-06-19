@@ -137,6 +137,7 @@ pks_tile_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used
 pks_tile_floating_ip_pool_id: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
 pks_tile_nodes_ip_block_id: EDIT_ME # UUID of Node IP BLock in NSX Mgr to be used for PKS nodes in v1.1
 
+
 # Syslog Flags
 pks_tile_syslog_migration_enabled: disabled # can be set to 'enabled', if 'disabled' all syslog properties ignored
 pks_tile_syslog_address: #101.10.10.10
@@ -206,7 +207,15 @@ pks_tile_plan_details:
     worker_instances: 3    # The number of K8s worker instances
     errand_vm_type: micro
     addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
-    allow_privileged_containers: false  # Privileged containers run with host-like permissions. Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles. Use with caution."
+    # Privileged containers run with host-like permissions.
+    # Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles.
+    # Use with caution.
+    allow_privileged_containers: false # default false
+    # The admission controller will deny exec and attach commands to pods that run with escalated privileges that allow host access.
+    # If checked, the admission controller will be disabled.
+    # Clusters in this plan can then create security vulnerabilities and may impact other tiles.
+    # Use with caution.
+    disable_deny_escalating_exec: false # default false
 - plan_detail:
     name: "medium"  # the name that appears for end users to choose
     is_active: false
@@ -225,6 +234,11 @@ pks_tile_plan_details:
     errand_vm_type: micro
     addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
     allow_privileged_containers: false  # Privileged containers run with host-like permissions. Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles. Use with caution."
+    # The admission controller will deny exec and attach commands to pods that run with escalated privileges that allow host access.
+    # If checked, the admission controller will be disabled.
+    # Clusters in this plan can then create security vulnerabilities and may impact other tiles.
+    # Use with caution.
+    disable_deny_escalating_exec: false # default false
 - plan_detail:
     name: "large"  # the name that appears for end users to choose
     is_active: false
