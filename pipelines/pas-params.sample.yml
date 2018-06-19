@@ -340,7 +340,8 @@ diego_brain_nsx_lb_security_group:
 diego_brain_nsx_lb_port:
 
 
-## PKS section
+## PKS Tile section ##
+######################
 
 # Create DNS entry in the loadbalancer and DNAT/SNAT entries for following
 pks_tile_system_domain: pks.test.corp.com

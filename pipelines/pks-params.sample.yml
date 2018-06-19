@@ -65,13 +65,12 @@ infra_excluded_range: 192.168.20.0-192.168.20.9,192.168.20.25-192.168.20.64     
 infra_nw_dns: 10.1.1.2                    # Infrastructure network DNS
 infra_nw_gateway: 192.168.20.1            # Infrastructure network Gateway
 infra_nw_azs: PKS                         # Comma separated list of AZ's to be associated with this network
-nsx_networking_enabled: false             # (true|false) to use nsx networking feature
-# Ops mgr with only PKS tile does not require NSX-T mode to be enabled at vCenter level, unlike PAS.
-# So following params can be left blank
+
+nsx_networking_enabled: true              # (true|false) to use nsx networking feature
 nsx_mode: nsx-t                           # Valid values: nsx-t, nsx-v
-nsx_address:                              # address of nsx mgr
-nsx_username:                             # username for nsx access
-nsx_password:                             # password for nsx access
+nsx_address: nsx-t-mgr.test-domain.com    # address of nsx mgr
+nsx_username: admin                       # username for nsx access
+nsx_password: 23..d!                # password for nsx access
 
 # Careful with the indent and the | for multi-line input
 nsx_ca_certificate: |                     # cert for nsx
@@ -80,6 +79,7 @@ nsx_ca_certificate: |                     # cert for nsx
   asfsafsafasf
   .............
   -----END CERTIFICATE-----
+
 
 # Additional network for PKS Clusters - set to empty "" string for the vsphere network if its not required
 pks_network_name: "PKS-k8s-clusters"             # Logical switch for PKS-k8s-clusters
@@ -96,7 +96,8 @@ nsx_address: nsx-t-mgr.test-domain.com    # address of nsx-t mgr
 nsx_username: admin                       # username for nsx-t access
 nsx_password: 23..d!                      # password for nsx-t access
 
-## PKS Tile section
+## PKS Tile section ##
+######################
 
 # Create DNS entry in the loadbalancer and DNAT/SNAT entries for following
 pks_tile_system_domain: pks.test.corp.com
