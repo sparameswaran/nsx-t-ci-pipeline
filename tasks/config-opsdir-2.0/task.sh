@@ -9,6 +9,38 @@ source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
 
+
+openssl s_client  -servername $NSX_ADDRESS \
+                  -connect ${NSX_ADDRESS}:443 \
+                  </dev/null 2>/dev/null \
+                  | openssl x509 -text \
+                  >  /tmp/complete_nsx_manager_cert.log
+
+export NSX_MANAGER_CERT_ADDRESS=`cat /tmp/complete_nsx_manager_cert.log \
+                        | grep Subject | grep "CN=" \
+                        | tr , '\n' | grep 'CN=' \
+                        | sed -e 's/.* CN=//' `
+
+echo "Fully qualified domain name for NSX Manager: $NSX_ADDRESS"
+echo "Host name associated with NSX Manager cert: $NSX_MANAGER_CERT_ADDRESS"
+
+# Get all certs from the nsx manager
+openssl s_client -host $NSX_ADDRESS \
+                 -port 443 -prexit -showcerts \
+                 </dev/null 2>/dev/null  \
+                 >  /tmp/nsx_manager_all_certs.log
+
+# Get the very last CA cert from the showcerts result
+cat /tmp/nsx_manager_all_certs.log \
+                  |  awk '/BEGIN /,/END / {print }' \
+                  | tail -30                        \
+                  |  awk '/BEGIN /,/END / {print }' \
+                  >  /tmp/nsx_manager_cacert.log
+
+# Strip newlines and replace them with \r\n
+cat /tmp/nsx_manager_cacert.log | tr '\n' '#'| sed -e 's/#/\r\n/g'   > /tmp/nsx_manager_edited_cacert.log
+export NSX_CA_CERTIFICATE=$(cat /tmp/nsx_manager_edited_cacert.log)
+
 iaas_configuration=$(
   jq -n \
   --arg vcenter_host "$VCENTER_HOST" \
