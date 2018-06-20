@@ -66,9 +66,9 @@ infra_nw_dns: 10.1.1.2                    # Infrastructure network DNS
 infra_nw_gateway: 192.168.20.1            # Infrastructure network Gateway
 infra_nw_azs: PKS                         # Comma separated list of AZ's to be associated with this network
 
-nsx_networking_enabled: true              # (true|false) to use nsx networking feature
+nsx_networking_enabled: true              # (true|false) to use nsx networking feature. PKS v1.1+ requires it to be true
 nsx_mode: nsx-t                           # Valid values: nsx-t, nsx-v
-nsx_address: nsx-t-mgr.test-domain.com    # address of nsx mgr
+nsx_address: nsx-t-mgr.test-domain.com    # address of Nsx Mgr FQDN, not IP
 nsx_username: admin                       # username for nsx access
 nsx_password: 23..d!                # password for nsx access
 
@@ -90,11 +90,6 @@ pks_nw_dns: 10.1.1.2                # PKS-k8s-clusters network DNS
 pks_nw_gateway: 192.168.40.1        # PKS-k8s-clusters network Gateway
 pks_nw_azs: az1                     # Comma separated list of AZ's to be associated with this network
 is_service_network: true  # Required select service network option in Ops man true or false
-
-## NSX Mgr section
-nsx_address: nsx-t-mgr.test-domain.com    # address of nsx-t mgr
-nsx_username: admin                       # username for nsx-t access
-nsx_password: 23..d!                      # password for nsx-t access
 
 ## PKS Tile section ##
 ######################
@@ -133,10 +128,15 @@ pks_tile_cluster_service_network_name: PKS-k8s-clusters # Should match the PKS-k
 # ALERT - The underlying Edge instances should be large, 8 vcpus.
 # Otherwise the pks-nsx-t-precheck errrand would fail.
 pks_tile_nsx_skip_ssl_verification: true # can be true or false
-pks_tile_t0_router_id: EDIT_ME # UUID of T0 Router to be used for PKS
-pks_tile_ip_block_id: EDIT_ME # UUID of Container IP Block in NSX Mgr to be used for PKS
-pks_tile_floating_ip_pool_id: EDIT_ME #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
-pks_tile_nodes_ip_block_id: EDIT_ME # UUID of Node IP BLock in NSX Mgr to be used for PKS nodes in v1.1
+pks_tile_t0_router_id: EDIT_ME         # UUID of T0 Router to be used for PKS
+pks_tile_ip_block_id: EDIT_ME          # UUID of Container IP Block in NSX Mgr to be used for PKS
+pks_tile_floating_ip_pool_id: EDIT_ME  #  UUID of External Floating IP Pool in NSX Mgr to be used for PKS
+pks_tile_nodes_ip_block_id: EDIT_ME    # UUID of Node IP BLock in NSX Mgr to be used for PKS nodes in v1.1
+
+pks_tile_t0_router_name: EDIT_ME          # Name of T0 Router to be used for PKS
+pks_tile_container_ip_block_name: EDIT_ME # Name of Container IP Block in NSX Mgr to be used for PKS
+pks_tile_nodes_ip_block_name: EDIT_ME     # Name of Node IP Block in NSX Mgr to be used for PKS nodes in v1.1
+pks_tile_external_ip_pool_name: EDIT_ME   # Name of External Floating IP Pool in NSX Mgr to be used for PKS
 
 
 # Syslog Flags

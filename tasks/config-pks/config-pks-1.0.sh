@@ -10,8 +10,8 @@ pks_nsx_vcenter_properties=$(
     --arg nsx_api_ca_cert "$NSX_API_CA_CERT" \
     --arg nsx_skip_ssl_verification "$NSX_SKIP_SSL_VERIFICATION" \
     --arg pks_t0_router_id "$PKS_T0_ROUTER_ID" \
-    --arg ip_block_id "$PKS_IP_BLOCK_ID" \
-    --arg floating_ip_pool_id "$PKS_FLOATING_IP_POOL_ID" \
+    --arg ip_block_id "$PKS_CONTAINER_IP_BLOCK_ID" \
+    --arg floating_ip_pool_id "$PKS_EXTERNAL_IP_POOL_ID" \
     --arg vcenter_host "$PKS_VCENTER_HOST" \
     --arg vcenter_username "$PKS_VCENTER_USR" \
     --arg vcenter_password "$PKS_VCENTER_PWD" \

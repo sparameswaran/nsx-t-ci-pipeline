@@ -220,6 +220,8 @@ if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; the
   echo "Finished configuring Wavefront Monitoring properties"
 fi
 
+has_vcenter_worker_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
+
 pks_nsx_vcenter_properties=$(
   jq -n \
     --arg nsx_api_manager "$NSX_API_MANAGER" \
@@ -228,8 +230,8 @@ pks_nsx_vcenter_properties=$(
     --arg nsx_api_ca_cert "$NSX_API_CA_CERT" \
     --arg nsx_skip_ssl_verification "$NSX_SKIP_SSL_VERIFICATION" \
     --arg pks_t0_router_id "$PKS_T0_ROUTER_ID" \
-    --arg ip_block_id "$PKS_IP_BLOCK_ID" \
-    --arg floating_ip_pool_id "$PKS_FLOATING_IP_POOL_ID" \
+    --arg ip_block_id "$PKS_CONTAINER_IP_BLOCK_ID" \
+    --arg floating_ip_pool_id "$PKS_EXTERNAL_IP_POOL_ID" \
     --arg vcenter_host "$PKS_VCENTER_HOST" \
     --arg vcenter_username "$PKS_VCENTER_USR" \
     --arg vcenter_password "$PKS_VCENTER_PWD" \
@@ -241,6 +243,7 @@ pks_nsx_vcenter_properties=$(
     --arg bosh_client_id "$BOSH_CLIENT_ID" \
     --arg bosh_client_secret "$BOSH_CLIENT_SECRET" \
     --arg product_version "$product_version" \
+    --arg has_vcenter_worker_creds "$has_vcenter_worker_creds" \
     '
     {
       ".properties.cloud_provider": {
@@ -306,6 +309,22 @@ pks_nsx_vcenter_properties=$(
         }
       }
     }
+
+    +
+
+    if $has_vcenter_worker_creds != '0' then
+    {
+      ".properties.cloud_provider.vsphere.vcenter_worker_creds": {
+        "value": {
+          "identity": $vcenter_username,
+          "password": $vcenter_password
+        }
+      }
+    }
+    else
+    .
+    end
+
   '
 )
 
@@ -318,33 +337,6 @@ om-linux \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_nsx_vcenter_properties"
-
-has_vcenter_worker_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
-if [  "$has_vcenter_worker_creds" != "0" ]; then
-  pks_nsx_vcenter_properties2=$(
-      jq -n \
-        --arg vcenter_username "$PKS_VCENTER_USR" \
-        --arg vcenter_password "$PKS_VCENTER_PWD" \
-      '{
-        ".properties.cloud_provider.vsphere.vcenter_worker_creds": {
-          "value": {
-            "identity": $vcenter_username,
-            "password": $vcenter_password
-          }
-        }
-      }
-    '
-  )
-
-  om-linux \
-    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-    -u $OPSMAN_USERNAME \
-    -p $OPSMAN_PASSWORD \
-    --skip-ssl-validation \
-    configure-product \
-    --product-name pivotal-container-service \
-    --product-properties "$pks_nsx_vcenter_properties2"
-fi
 
 echo "Finished configuring NSX/vCenter properties"
 
@@ -458,7 +450,6 @@ om-linux \
   --product-properties "$pks_main_properties"
 
 echo "Finished configuring PKS plan and other properties!!"
-
 
 pksv1_1_properties='{}'
 if [ "$PKS_ALLOW_PUBLIC_IP" == "true" ]; then
