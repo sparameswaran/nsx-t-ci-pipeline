@@ -52,7 +52,7 @@ function create_pks_superuser {
     -extensions client_server_ssl \
     -sha256 \
     -days 730 \
-    -config /tmp/extended_openssl.conf \
+    -config < /tmp/extended_openssl.cnf \
     2>/dev/null
 
   # Register Cert
