@@ -39,8 +39,7 @@ ops_dir_config_params: &ops-dir-config-params
   NSX_ADDRESS: ((nsx_address))
   NSX_USERNAME: ((nsx_username))
   NSX_PASSWORD: ((nsx_password))
-  NSX_CA_CERTIFICATE: ((nsx_ca_certificate))
-
+  
 pks_config_params: &pks-config-params
   IAAS: vsphere
   OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
@@ -57,7 +56,6 @@ pks_config_params: &pks-config-params
   NSX_API_MANAGER: ((nsx_address))
   NSX_API_USER: ((nsx_username))
   NSX_API_PASSWORD: ((nsx_password))
-  NSX_API_CA_CERT: ((nsx_ca_certificate))
   NSX_SKIP_SSL_VERIFICATION: ((pks_tile_nsx_skip_ssl_verification))
   PKS_VCENTER_HOST: ((pks_tile_vcenter_host))
   PKS_VCENTER_USR: ((pks_tile_vcenter_usr))
@@ -70,10 +68,6 @@ pks_config_params: &pks-config-params
   PKS_CLI_PASSWORD: ((pks_tile_cli_password))
   PKS_CLI_EMAIL: ((pks_tile_cli_useremail))
   PKS_PLAN_DETAILS: ((pks_tile_plan_details))
-  PKS_T0_ROUTER_ID: ((pks_tile_t0_router_id))
-  PKS_IP_BLOCK_ID: ((pks_tile_ip_block_id))
-  PKS_FLOATING_IP_POOL_ID: ((pks_tile_floating_ip_pool_id))
-  PKS_NODES_IP_BLOCK_ID: ((pks_tile_nodes_ip_block_id))
   PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
   PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name))
   PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name))
@@ -127,6 +121,18 @@ pks_cli_config_params: &pks-cli-config-params
   PKS_CLI_USERNAME: ((pks_tile_cli_username))
   PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
   PKS_CLI_PASSWORD: ((pks_tile_cli_password))
+
+pks_config-pks-api-nats: &pks-config-pks-api-nats-params
+  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+  OPSMAN_USERNAME: ((opsman_admin_username))
+  OPSMAN_PASSWORD: ((opsman_admin_password))
+  NSX_API_MANAGER: ((nsx_address))
+  NSX_API_USER: ((nsx_username))
+  NSX_API_PASSWORD: ((nsx_password))
+  PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
+  PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
+  PKS_UAA_SYSTEM_DOMAIN_IP: ((pks_tile_uaa_system_domain_ip))
+  PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
 
 resource_types:
 - name: pivnet
@@ -198,7 +204,7 @@ groups:
   - deploy-director
   - upload-pks
   - deploy-pks
-  - config-pks-cli-user
+  - config-pks-controller
 
 # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
 - name: delete-pks-clusters
@@ -215,11 +221,11 @@ groups:
   jobs:
   - upload-pks-standalone
   - deploy-pks-standalone
-  - config-pks-cli-user-standalone
+  - config-pks-controller-standalone
 
-- name: config-pks-cli-user-after-install
+- name: config-pks-controller-after-install
   jobs:
-  - config-pks-cli-user-after-install
+  - config-pks-controller-after-install
 
 - name: wipe
   jobs:
@@ -344,13 +350,17 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
 
-- name: config-pks-cli-user
+- name: config-pks-controller
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
       params: {globs: []}
       passed: [deploy-pks]
       trigger: true
+
+  - task: config-pks-api-nats
+    file: nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.yml
+    params: *pks-config-pks-api-nats-params
 
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
@@ -393,7 +403,7 @@ jobs:
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
 
-- name: config-pks-cli-user-standalone
+- name: config-pks-controller-standalone
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
@@ -401,20 +411,26 @@ jobs:
       passed: [deploy-pks-standalone]
       trigger: true
 
+  - task: config-pks-api-nats
+    file: nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.yml
+    params: *pks-config-pks-api-nats-params
+
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
     params: *pks-cli-config-params
 
-
-- name: config-pks-cli-user-after-install
+- name: config-pks-controller-after-install
   plan:
   - aggregate:
     - get: nsx-t-ci-pipeline
 
+  - task: config-pks-api-nats
+    file: nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.yml
+    params: *pks-config-pks-api-nats-params
+
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
     params: *pks-cli-config-params
-
 
 - name: delete-clusters
   plan:

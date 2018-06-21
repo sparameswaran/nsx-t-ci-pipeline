@@ -90,14 +90,6 @@ nsx_address: nsx-t-mgr.test-domain.com    # address of nsx mgr
 nsx_username: admin                       # username for nsx access
 nsx_password: 23..d!                # password for nsx access
 
-# Careful with the indent and the | for multi-line input
-nsx_ca_certificate: |                     # cert for nsx
-  -----BEGIN CERTIFICATE-----
-  MIIDjDCCAnSasfasdfsfd324242342UAMIG3232GMS4wLAYDVQQD
-  asfsafsafasf
-  .............
-  -----END CERTIFICATE-----
-
 
 # To generate a correct self-signed cert
 # https://docs.vmware.com/en/VMware-NSX-T/2.0/com.vmware.nsxt.admin.doc/GUID-50C36862-A29D-48FA-8CE7-697E64E10E37.html
@@ -348,6 +340,7 @@ pks_tile_system_domain: pks.test.corp.com
 # Just provide the prefix like uaa or api for domain_prefix.
 # The prefix together with system domain would be used like api.pks.test.corp.com or uaa.pks.test.corp.com
 pks_tile_uaa_domain_prefix: api # Would be used for UAA as ${prefix}.${pks_system_domain}
+
 # IMPORTANT DNS RESOLUTION FOR PKS CONTROLLER
 # External IP that would be routable via the NSX T0 Router and mapped to ${pks_tile_uaa_domain_prefix}.${pks_system_domain}
 pks_tile_uaa_system_domain_ip: EDIT_ME
@@ -381,11 +374,6 @@ pks_tile_cluster_service_network_name: PKS-k8s-clusters # Should match the PKS-k
 # ALERT - The underlying Edge instances should be large, 8 vcpus.
 # Otherwise the pks-nsx-t-precheck errrand would fail.
 pks_tile_nsx_skip_ssl_verification: true # can be true or false
-
-pks_tile_t0_router_id: EDIT_ME         # UUID of T0 Router to be used for PKS
-pks_tile_floating_ip_pool_id: EDIT_ME  # UUID of External Floating IP Pool in NSX Mgr to be used for PKS
-pks_tile_ip_block_id: EDIT_ME          # UUID of Container IP Block in NSX Mgr to be used for PKS
-pks_tile_nodes_ip_block_id: EDIT_ME    # UUID of Node IP Block in NSX Mgr to be used for PKS nodes in v1.1
 
 pks_tile_t0_router_name: DefaultT0Router                               # EDIT - Name of T0 Router to be used for PKS
 pks_tile_external_ip_pool_name: snat-vip-pool-for-pks                  # EDIT - Name of External Floating IP Pool in NSX Mgr to be used for PKS
