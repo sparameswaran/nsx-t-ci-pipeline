@@ -9,7 +9,6 @@ source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
 
-
 iaas_configuration=$(
   jq -n \
   --arg vcenter_host "$VCENTER_HOST" \
@@ -42,11 +41,12 @@ iaas_configuration=$(
 )
 
 if [ "$NSX_NETWORKING_ENABLED" == "true" ]; then
+
   openssl s_client  -servername $NSX_ADDRESS \
-                  -connect ${NSX_ADDRESS}:443 \
-                  </dev/null 2>/dev/null \
-                  | openssl x509 -text \
-                  >  /tmp/complete_nsx_manager_cert.log
+                    -connect ${NSX_ADDRESS}:443 \
+                    </dev/null 2>/dev/null \
+                    | openssl x509 -text \
+                    >  /tmp/complete_nsx_manager_cert.log
 
   export NSX_MANAGER_CERT_ADDRESS=`cat /tmp/complete_nsx_manager_cert.log \
                           | grep Subject | grep "CN=" \
@@ -72,7 +72,7 @@ if [ "$NSX_NETWORKING_ENABLED" == "true" ]; then
   # Strip newlines and replace them with \r\n
   cat /tmp/nsx_manager_cacert.log | tr '\n' '#'| sed -e 's/#/\r\n/g'   > /tmp/nsx_manager_edited_cacert.log
   export NSX_CA_CERTIFICATE=$(cat /tmp/nsx_manager_edited_cacert.log)
-
+  
   iaas_configuration=$(echo $iaas_configuration | jq \
     --arg nsx_mode "$NSX_MODE" \
     --arg nsx_address "$NSX_ADDRESS" \
