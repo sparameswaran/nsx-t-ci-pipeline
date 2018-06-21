@@ -7,8 +7,16 @@ echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] sh
 check_dns_lookup=$(nslookup ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN})
 if [ "$?" != "0" ]; then
   echo "Warning!! Unable to resolve ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}"
-  echo "Proceeding with the assumption that ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} would resolve to IP: PKS_UAA_SYSTEM_DOMAIN_IP ultimately"
+  echo "Proceeding with the assumption that ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} would resolve to IP: $PKS_UAA_SYSTEM_DOMAIN_IP ultimately"
   echo ""
+else
+  resolved_ip=$(echo $check_dns_lookup | grep -A1 api | grep Address | awk '{print $2}' )
+  echo "Resolved ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} to $resolved_ip "
+  if [ "$resolved_ip" != "$PKS_UAA_SYSTEM_DOMAIN_IP" ]; then
+    echo "Warning!! ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} not resolving to $PKS_UAA_SYSTEM_DOMAIN_IP but instead to $resolved_ip!!"
+    echo "Proceeding with the assumption that ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} would resolve to IP: $PKS_UAA_SYSTEM_DOMAIN_IP ultimately"
+    echo ""
+  fi
 fi
 
 echo "Retrieving PKS Controller IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
@@ -99,4 +107,9 @@ if [ "$?" != 0 ]; then
   exit 1
 fi
 
-echo "Created NAT rules for PKS Controller API IP $PKS_CONTROLLER_IP to be accessible from $PKS_UAA_SYSTEM_DOMAIN_IP over the NSX-T Manager's T0 Router $PKS_T0_ROUTER_NAME"
+echo "DNS Entry expected to resolve ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} would resolve to External IP: $PKS_UAA_SYSTEM_DOMAIN_IP"
+echo "This ip should be routable via the T0 Router $PKS_T0_ROUTER_NAME"
+echo ""
+echo "Created NAT rules for PKS Controller API IP $PKS_CONTROLLER_IP to be accessible from external IP: $PKS_UAA_SYSTEM_DOMAIN_IP"
+echo "Note: Do a sanity check of the NAT rules in NSX Manager and delete any duplicate or older/wrong entries!!"
+echo ""

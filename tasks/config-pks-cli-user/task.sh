@@ -7,9 +7,8 @@ echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] sh
 echo "- See PKS tile documentation for configuration details for vSphere [https://docs.pivotal.io/runtimes/pks/1-0/installing-pks-vsphere.html#loadbalancer-pks-api] and GCP [https://docs.pivotal.io/runtimes/pks/1-0/installing-pks-gcp.html#loadbalancer-pks-api]"
 
 echo "Retrieving PKS tile properties from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
-# get PKS UAA admin credentails from OpsMgr
-check_staged_product_guid "pivotal-container-service-"
 
+# get PKS UAA admin credentials from OpsMgr
 PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
             -u $OPSMAN_USERNAME \

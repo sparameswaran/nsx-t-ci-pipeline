@@ -91,7 +91,8 @@ END
     -H 'content-type: application/json' \
     -d "$pi_request")
 
-  echo "Response from adding principal identity: $add_principal_ids_response"
+  echo "Response from adding principal identity: "
+  echo "$add_principal_ids_response"
   echo ""
 
   echo "Sleeping few seconds before testing the newly created superuser"
@@ -107,7 +108,8 @@ function check_created_super_user {
     --key "$NSX_SUPERUSER_KEY_FILE" \
     | jq -r .results[].display_name )
 
-  echo "Test Response with cert: $test_response "
+  echo "Found principal identities using cert!!"
+  echo "$test_response "
   echo ""
 }
 
