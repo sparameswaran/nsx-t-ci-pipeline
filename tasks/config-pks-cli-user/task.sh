@@ -1,6 +1,6 @@
 #!/bin/bash
 # Source: https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/tasks/pcf/pks/configure-pks-cli-user/task.sh
-#set -eu
+set -eu
 
 echo "Note - pre-requisite for this task to work:"
 echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] should be routable and accessible from the Concourse worker(s) network."

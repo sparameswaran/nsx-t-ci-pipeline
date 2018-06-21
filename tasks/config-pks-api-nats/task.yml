@@ -1,0 +1,25 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/rootfs
+
+inputs:
+- name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.sh
+
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPSMAN_USERNAME:
+  OPSMAN_PASSWORD:
+  NSX_API_MANAGER:
+  NSX_API_USER:
+  NSX_API_PASSWORD:
+  PKS_UAA_DOMAIN_PREFIX:
+  PKS_SYSTEM_DOMAIN:
+  PKS_UAA_SYSTEM_DOMAIN_IP:
+  PKS_T0_ROUTER_NAME:
