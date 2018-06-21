@@ -227,6 +227,8 @@ else
   product_version=1.1
   echo ""
   echo "Starting configuration of PKS v1.1+ properties"
+  source $ROOT_DIR/nsx-t-ci-pipeline/tasks/config-pks/config-pks-superuser.sh
+
   source $ROOT_DIR/nsx-t-ci-pipeline/tasks/config-pks/config-pks-1.1.sh
 fi
 

@@ -221,6 +221,7 @@ if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; the
 fi
 
 has_vcenter_worker_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
+has_nsx_t_superuser_certificate=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nsx-t-superuser-certificate" | wc -l || true)
 
 pks_nsx_vcenter_properties=$(
   jq -n \
@@ -244,6 +245,9 @@ pks_nsx_vcenter_properties=$(
     --arg bosh_client_secret "$BOSH_CLIENT_SECRET" \
     --arg product_version "$product_version" \
     --arg has_vcenter_worker_creds "$has_vcenter_worker_creds" \
+    --arg has_nsx_t_superuser_certificate "$has_nsx_t_superuser_certificate" \
+    --arg nsx_superuser_cert "$NSX_SUPERUSER_CERT" \
+    --arg nsx_superuser_key "$NSX_SUPERUSER_KEY" \
     '
     {
       ".properties.cloud_provider": {
@@ -266,12 +270,6 @@ pks_nsx_vcenter_properties=$(
       },
       ".properties.network_selector.nsx.nsx-t-host": {
           "value": $nsx_api_manager
-      },
-      ".properties.network_selector.nsx.credentials": {
-          "value": {
-            "identity": $nsx_api_user,
-            "password": $nsx_api_password
-          }
       },
       ".properties.network_selector.nsx.nsx-t-ca-cert": {
           "value": $nsx_api_ca_cert
@@ -324,6 +322,29 @@ pks_nsx_vcenter_properties=$(
     else
     .
     end
+
+    +
+
+    if $has_nsx_t_superuser_certificate != '0' then
+    {
+      ".properties.network_selector.nsx.nsx-t-superuser-certificate": {
+          "value": {
+            "cert_pem": $nsx_superuser_cert,
+            "private_key_pem": $nsx_superuser_key
+          }
+        }
+    }
+    else
+    {
+      ".properties.network_selector.nsx.credentials": {
+          "value": {
+            "identity": $nsx_api_user,
+            "password": $nsx_api_password
+          }
+        }
+    }
+    end
+
 
   '
 )
