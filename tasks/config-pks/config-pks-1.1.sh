@@ -310,7 +310,7 @@ pks_nsx_vcenter_properties=$(
 
     +
 
-    if $has_vcenter_worker_creds != '0' then
+    if $has_vcenter_worker_creds != "0" then
     {
       ".properties.cloud_provider.vsphere.vcenter_worker_creds": {
         "value": {

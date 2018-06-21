@@ -5,7 +5,9 @@ set -eu
 #Global variables
 export ROOT_DIR=`pwd`
 
-export PKS_SUPERUSER_NAME="pks-nsx-t-superuser-${PRODUCT_GUID}"
+# Snip off long name - openssl would break
+export PKS_GUID=$(echo $PRODUCT_GUID | sed -e 's/pivotal-container-service-//')
+export PKS_SUPERUSER_NAME="pks-nsx-t-superuser-${PKS_GUID}"
 export NSX_SUPERUSER_CERT_FILE="$ROOT_DIR/pks-nsx-t-superuser.crt"
 export NSX_SUPERUSER_KEY_FILE="$ROOT_DIR/pks-nsx-t-superuser.key"
 export NODE_ID=$(cat /proc/sys/kernel/random/uuid)
@@ -37,6 +39,7 @@ function create_pks_superuser {
     return
   fi
 
+  cat /etc/ssl/openssl.cnf <(printf '[client_server_ssl]\nextendedKeyUsage = clientAuth\n') > /tmp/extended_openssl.cnf
   # Create Cert
   openssl req \
     -newkey rsa:2048 \
@@ -49,7 +52,7 @@ function create_pks_superuser {
     -extensions client_server_ssl \
     -sha256 \
     -days 730 \
-    -config <( cat /etc/ssl/openssl.cnf <(printf '[client_server_ssl]\nextendedKeyUsage = clientAuth\n') ) \
+    -config /tmp/extended_openssl.conf \
     2>/dev/null
 
   # Register Cert
@@ -100,9 +103,9 @@ function check_created_super_user {
   # Test if certificate and key can be used to communicate with NSX-T
   test_response=$(curl -k -X GET \
     "https://${NSX_API_MANAGER}/api/v1/trust-management/principal-identities" \
-    --cert $(pwd)/"$NSX_SUPERUSER_CERT_FILE" \
-    --key $(pwd)/"$NSX_SUPERUSER_KEY_FILE") \
-    | jq -r .results[].display_name
+    --cert "$NSX_SUPERUSER_CERT_FILE" \
+    --key "$NSX_SUPERUSER_KEY_FILE" \
+    | jq -r .results[].display_name )
 
   echo "Test Response with cert: $test_response "
   echo ""
