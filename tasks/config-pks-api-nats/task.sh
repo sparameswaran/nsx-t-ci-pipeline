@@ -1,6 +1,28 @@
 #!/bin/bash
 set -eu
 
+function get_value() {
+  rule=$1
+  field=$2
+  echo $(echo $rule | jq -r ".${field}" )
+}
+
+function check_match_in_nat_rules {
+  rule1=$1
+  rule2=$2
+
+  for key in  'action' 'match_source_network' 'translated_network' 'match_destination_network'
+  do
+    value1=$(get_value "$rule1" 'action')
+    value2=$(get_value "$rule2" 'action')
+    if [ "$value1" != "$value2" ]; then
+      echo 1
+    fi
+  done
+  echo 0
+}
+
+
 echo "Note - pre-requisite for this task to work:"
 echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] should be routable and accessible via the NSX-T network."
 
@@ -20,7 +42,6 @@ else
 fi
 
 echo "Retrieving PKS Controller IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
-# get PKS UAA admin credentails from OpsMgr
 
 PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
@@ -57,6 +78,9 @@ if [ "$PKS_T0_ROUTER_ID" == "" -o "$PKS_T0_ROUTER_ID" == "null" ]; then
   exit 1
 fi
 
+
+
+
 dnat_rule_payload=$( jq -n \
   --arg pks_controller_ip $PKS_CONTROLLER_IP \
   --arg pks_uaa_system_domain_ip $PKS_UAA_SYSTEM_DOMAIN_IP \
@@ -87,24 +111,70 @@ snat_rule_payload=$( jq -n \
   '
 )
 
-dnat_output=$(curl -k -u "$NSX_API_USER:$NSX_API_PASSWORD" \
-      https://$NSX_API_MANAGER:443/api/v1/logical-routers/${PKS_T0_ROUTER_ID}/nat/rules \
-      -X POST \
-      -H 'Content-type: application/json' \
-      -d "$dnat_rule_payload")
-if [ "$?" != 0 ]; then
-  echo "Problem in creating DNAT entry: $dnat_output"
-  exit 1
+insert_dnat_rule=1
+insert_snat_rule=1
+
+existing_nat_rules_json=$(curl -k -u "$NSX_API_USER:$NSX_API_PASSWORD" \
+        https://$NSX_API_MANAGER:443/api/v1/logical-routers/${PKS_T0_ROUTER_ID}/nat/rules)
+#echo "Full existing rules: $existing_nat_rules_json"
+
+number_of_rules=$( echo $existing_nat_rules_json | jq '.result_count' )
+echo number_of_rules rules: $number_of_rules
+max_index=$(expr $number_of_rules - 1)
+for index in $(seq 0 $max_index )
+do
+  nat_rule=$( echo $existing_nat_rules_json | jq --argjson index $index '.results[$index]' )
+  #echo "Nat rule: $nat_rule"
+
+  translated_ip=$(echo $nat_rule | jq -r .translated_network )
+
+  nat_rule_type=$( echo $nat_rule | jq -r .action )
+
+  if [ "$translated_ip" == "$PKS_CONTROLLER_IP" -o "$translated_ip" == "$PKS_UAA_SYSTEM_DOMAIN_IP" ]; then
+
+    if [ "$nat_rule_type" == "DNAT" ]; then
+      match=$(check_match_in_nat_rules "$nat_rule" "$dnat_rule_payload")
+      if [ "$match" == "0" ]; then
+        #echo "Found Match for dnat rule: $nat_rule"
+        insert_dnat_rule=0
+      fi
+    else
+      match=$(check_match_in_nat_rules "$nat_rule" "$snat_rule_payload")
+      if [ "$match" == "0" ]; then
+        #echo "Found Match for snat rule: $nat_rule"
+        insert_snat_rule=0
+      fi
+    fi
+  fi
+
+done
+
+if [ $insert_dnat_rule -ne 0 ]; then
+  dnat_output=$(curl -k -u "$NSX_API_USER:$NSX_API_PASSWORD" \
+        https://$NSX_API_MANAGER:443/api/v1/logical-routers/${PKS_T0_ROUTER_ID}/nat/rules \
+        -X POST \
+        -H 'Content-type: application/json' \
+        -d "$dnat_rule_payload")
+  if [ "$?" != 0 ]; then
+    echo "Problem in creating DNAT entry: $dnat_output"
+    exit 1
+  fi
+else
+  echo "Found existing dnat rule that matches already, skipping rule creation in NATs on T0Router"
 fi
 
-dnat_output=$(curl -k -u "$NSX_API_USER:$NSX_API_PASSWORD" \
-      https://$NSX_API_MANAGER:443/api/v1/logical-routers/${PKS_T0_ROUTER_ID}/nat/rules \
-      -X POST \
-      -H 'Content-type: application/json' \
-      -d "$snat_rule_payload")
-if [ "$?" != 0 ]; then
-  echo "Problem in creating SNAT entry: $snat_output"
-  exit 1
+if [ $insert_snat_rule -ne 0 ]; then
+  snat_output=$(curl -k -u "$NSX_API_USER:$NSX_API_PASSWORD" \
+        https://$NSX_API_MANAGER:443/api/v1/logical-routers/${PKS_T0_ROUTER_ID}/nat/rules \
+        -X POST \
+        -H 'Content-type: application/json' \
+        -d "$snat_rule_payload")
+  if [ "$?" != 0 ]; then
+    echo "Problem in creating SNAT entry: $snat_output"
+    exit 1
+  fi
+else
+  echo "Found existing snat rule that matches already, skipping rule creation in NATs on T0Router"
 fi
 
 echo "DNS Entry expected to resolve ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} would resolve to External IP: $PKS_UAA_SYSTEM_DOMAIN_IP"

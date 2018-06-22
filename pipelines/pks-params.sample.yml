@@ -1,6 +1,6 @@
 # Pipeline resource configuration
 pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
-opsman_major_minor_version: ^2\.1\.2$   # PCF Ops Manager minor version to track
+opsman_major_minor_version: ^2\.1\..*$   # PCF Ops Manager minor version to track
 pks_major_minor_version: ^1\.0.*$       # use PKS v1.0
 #pks_major_minor_version: ^1\.1.*$       # Use this once PKS v1.1 becomes GA
 
