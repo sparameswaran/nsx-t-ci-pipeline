@@ -62,10 +62,12 @@ PKS_CONTROLLER_IP=$(om-linux \
                     2>/dev/null \
                     | jq -r '.[][0].ips[0]' )
 
-echo "Discovered PKS Controller running at: $PKS_CONTROLLER_IP"
+echo "Discovered PKS Controller running at: $PKS_CONTROLLER_IP!!"
+echo ""
 
-echo "Going to create NAT entry between External Address: $PKS_UAA_SYSTEM_DOMAIN_IP and PKS Controller internal IP: $PKS_CONTROLLER_IP"
-echo "   on T0Router: $PKS_T0_ROUTER_NAME in NSX Manager: $NSX_API_MANAGER"
+echo "Going to create NAT entry between External Address: $PKS_UAA_SYSTEM_DOMAIN_IP and PKS Controller Internal IP: $PKS_CONTROLLER_IP"
+echo "   on T0Router: $PKS_T0_ROUTER_NAME on NSX Manager: $NSX_API_MANAGER"
+echo ""
 
 export PKS_T0_ROUTER_ID=$(curl \
       -k -u "$NSX_API_USER:$NSX_API_PASSWORD" \
@@ -177,8 +179,9 @@ else
   echo "Found existing snat rule that matches already, skipping rule creation in NATs on T0Router"
 fi
 
-echo "DNS Entry expected to resolve ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} would resolve to External IP: $PKS_UAA_SYSTEM_DOMAIN_IP"
-echo "This ip should be routable via the T0 Router $PKS_T0_ROUTER_NAME"
+echo ""
+echo "DNS Entry of ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} expected to resolve External IP: $PKS_UAA_SYSTEM_DOMAIN_IP"
+echo "This ip should be routable via the T0 Router $PKS_T0_ROUTER_NAME" on $NSX_API_MANAGER
 echo ""
 echo "Created NAT rules for PKS Controller API IP $PKS_CONTROLLER_IP to be accessible from external IP: $PKS_UAA_SYSTEM_DOMAIN_IP"
 echo "Note: Do a sanity check of the NAT rules in NSX Manager and delete any duplicate or older/wrong entries!!"
