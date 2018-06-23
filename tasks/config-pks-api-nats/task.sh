@@ -24,7 +24,12 @@ function check_match_in_nat_rules {
 
 
 echo "Note - pre-requisite for this task to work:"
-echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] should be routable and accessible via the NSX-T network."
+echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] should be resolvable to $PKS_UAA_SYSTEM_DOMAIN_IP, routable and accessible via the NSX-T network."
+
+if [ "$PKS_UAA_SYSTEM_DOMAIN_IP" == "" ]; then
+  echo "No IP or value set for PKS_UAA_SYSTEM_DOMAIN_IP, skipping creation of NAT rule on NSX Manager from the PKS API Domain to internal PKS Controller IP!!"
+  exit 0
+fi
 
 check_dns_lookup=$(nslookup ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN})
 if [ "$?" != "0" ]; then
@@ -79,9 +84,6 @@ if [ "$PKS_T0_ROUTER_ID" == "" -o "$PKS_T0_ROUTER_ID" == "null" ]; then
   echo "Exiting !!"
   exit 1
 fi
-
-
-
 
 dnat_rule_payload=$( jq -n \
   --arg pks_controller_ip $PKS_CONTROLLER_IP \
