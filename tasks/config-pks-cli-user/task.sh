@@ -2,6 +2,13 @@
 # Source: https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/tasks/pcf/pks/configure-pks-cli-user/task.sh
 set -eu
 
+export ROOT_DIR=`pwd`
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/copy_binaries.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_versions.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
+source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
+
 echo "Note - pre-requisite for this task to work:"
 echo "- Your PKS API endpoint [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}] should be routable and accessible from the Concourse worker(s) network."
 echo "- See PKS tile documentation for configuration details for vSphere [https://docs.pivotal.io/runtimes/pks/1-0/installing-pks-vsphere.html#loadbalancer-pks-api] and GCP [https://docs.pivotal.io/runtimes/pks/1-0/installing-pks-gcp.html#loadbalancer-pks-api]"
