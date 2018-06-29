@@ -74,6 +74,7 @@ pks_config_params: &pks-config-params
   PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name))
   PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list))
   PKS_NODES_DNS_LIST: ((pks_tile_nodes_dns_list))
+  PKS_NSX_NAT_MODE: ((pks_tile_nsx_nat_mode))
   PKS_SYSLOG_MIGRATION_ENABLED: ((pks_tile_syslog_migration_enabled))
   PKS_SYSLOG_ADDRESS: ((pks_tile_syslog_address))
   PKS_SYSLOG_PORT: ((pks_tile_syslog_port))

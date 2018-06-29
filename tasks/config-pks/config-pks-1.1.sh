@@ -228,6 +228,10 @@ has_nsx_t_superuser_certificate=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep 
 has_cloud_config_dns=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.cloud-config-dns" | wc -l || true)
 has_vcenter_clusters=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.vcenter_cluster" | wc -l || true)
 
+if [ "$PKS_NSX_NAT_MODE" == '' -o "$PKS_NSX_NAT_MODE" == "null" ]; then
+  PKS_NSX_NAT_MODE=true
+fi
+
 pks_nsx_vcenter_properties=$(
   jq -n \
     --arg nsx_api_manager "$NSX_API_MANAGER" \
@@ -255,6 +259,7 @@ pks_nsx_vcenter_properties=$(
     --arg has_cloud_config_dns "$has_cloud_config_dns" \
     --arg pks_nodes_dns_list "$PKS_NODES_DNS_LIST" \
     --arg pks_vcenter_cluster_list "$PKS_VCENTER_CLUSTER_LIST" \
+    --arg pks_nsx_nat_mode "$PKS_NSX_NAT_MODE" \
     --arg has_vcenter_clusters "$has_vcenter_clusters" \
     --arg nsx_superuser_cert "$NSX_SUPERUSER_CERT" \
     --arg nsx_superuser_key "$NSX_SUPERUSER_KEY" \
@@ -277,6 +282,9 @@ pks_nsx_vcenter_properties=$(
       },
       ".properties.network_selector": {
           "value": "nsx"
+      },
+      ".properties.network_selector.nsx.nat_mode": {
+          "value": $pks_nsx_nat_mode
       },
       ".properties.network_selector.nsx.nsx-t-host": {
           "value": $nsx_api_manager
