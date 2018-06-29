@@ -130,6 +130,8 @@ pks_tile_t0_router_name: DefaultT0Router                               # EDIT - 
 pks_tile_external_ip_pool_name: snat-vip-pool-for-pks                  # EDIT - Name of External Floating IP Pool in NSX Mgr to be used for PKS
 pks_tile_container_ip_block_name: pod-container-ip-block-pks-with-tag  # EDIT - Name of Container IP Block in NSX Mgr to be used for PKS
 pks_tile_nodes_ip_block_name: node-container-ip-block-pks-with-tag     # EDIT - Name of Node IP Block in NSX Mgr to be used for PKS nodes in v1.1
+pks_tile_vcenter_cluster_list: Cluster1                                # EDIT - List of vcenter clusters for PKS to deploy k8s clusters
+pks_tile_nodes_dns_list: EDIT_ME                                       # EDIT - DNS server ip list for use by k8s nodes
 
 # Syslog Flags
 pks_tile_syslog_migration_enabled: disabled # can be set to 'enabled', if 'disabled' all syslog properties ignored

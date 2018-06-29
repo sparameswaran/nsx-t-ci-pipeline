@@ -220,8 +220,13 @@ if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; the
   echo "Finished configuring Wavefront Monitoring properties"
 fi
 
+has_bosh_client_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.bosh-client" | wc -l || true)
 has_vcenter_worker_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
 has_nsx_t_superuser_certificate=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nsx-t-superuser-certificate" | wc -l || true)
+
+# New PKS 1.1 GA has added 2 new flags
+has_cloud_config_dns=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.cloud-config-dns" | wc -l || true)
+has_vcenter_clusters=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.vcenter_cluster" | wc -l || true)
 
 pks_nsx_vcenter_properties=$(
   jq -n \
@@ -244,8 +249,13 @@ pks_nsx_vcenter_properties=$(
     --arg bosh_client_id "$BOSH_CLIENT_ID" \
     --arg bosh_client_secret "$BOSH_CLIENT_SECRET" \
     --arg product_version "$product_version" \
+    --arg has_bosh_client_creds "$has_bosh_client_creds" \
     --arg has_vcenter_worker_creds "$has_vcenter_worker_creds" \
     --arg has_nsx_t_superuser_certificate "$has_nsx_t_superuser_certificate" \
+    --arg has_cloud_config_dns "$has_cloud_config_dns" \
+    --arg pks_nodes_dns_list "$PKS_NODES_DNS_LIST" \
+    --arg pks_vcenter_cluster_list "$PKS_VCENTER_CLUSTER_LIST" \
+    --arg has_vcenter_clusters "$has_vcenter_clusters" \
     --arg nsx_superuser_cert "$NSX_SUPERUSER_CERT" \
     --arg nsx_superuser_key "$NSX_SUPERUSER_KEY" \
     '
@@ -297,14 +307,6 @@ pks_nsx_vcenter_properties=$(
       },
       ".properties.network_selector.nsx.nodes-ip-block-id": {
         "value": $nodes_ip_block_id
-      },
-      ".properties.network_selector.nsx.bosh-client-id": {
-        "value": $bosh_client_id
-      },
-      ".properties.network_selector.nsx.bosh-client-secret": {
-        "value": {
-          "secret" : $bosh_client_secret
-        }
       }
     }
 
@@ -316,6 +318,23 @@ pks_nsx_vcenter_properties=$(
         "value": {
           "identity": $vcenter_username,
           "password": $vcenter_password
+        }
+      }
+    }
+    else
+    .
+    end
+
+    +
+
+    if $has_bosh_client_creds != "0" then
+    {
+      ".properties.network_selector.nsx.bosh-client-id": {
+        "value": $bosh_client_id
+      },
+      ".properties.network_selector.nsx.bosh-client-secret": {
+        "value": {
+          "secret" : $bosh_client_secret
         }
       }
     }
@@ -344,8 +363,26 @@ pks_nsx_vcenter_properties=$(
         }
     }
     end
-
-
+    +
+    if $has_cloud_config_dns != "0" then
+    {
+      ".properties.network_selector.nsx.cloud-config-dns": {
+        "value": $pks_nodes_dns_list
+      }
+    }
+    else
+    .
+    end
+    +
+    if $has_vcenter_clusters != "0" then
+    {
+      ".properties.network_selector.nsx.vcenter_cluster": {
+        "value": $pks_vcenter_cluster_list
+      }
+    }
+    else
+    .
+    end
   '
 )
 

@@ -39,7 +39,7 @@ ops_dir_config_params: &ops-dir-config-params
   NSX_ADDRESS: ((nsx_address))
   NSX_USERNAME: ((nsx_username))
   NSX_PASSWORD: ((nsx_password))
-  
+
 pks_config_params: &pks-config-params
   IAAS: vsphere
   OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
@@ -72,6 +72,8 @@ pks_config_params: &pks-config-params
   PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name))
   PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name))
   PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name))
+  PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list))
+  PKS_NODES_DNS_LIST: ((pks_tile_nodes_dns_list))
   PKS_SYSLOG_MIGRATION_ENABLED: ((pks_tile_syslog_migration_enabled))
   PKS_SYSLOG_ADDRESS: ((pks_tile_syslog_address))
   PKS_SYSLOG_PORT: ((pks_tile_syslog_port))
