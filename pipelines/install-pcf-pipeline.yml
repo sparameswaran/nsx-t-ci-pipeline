@@ -189,101 +189,6 @@ ert_config_params: &ert-config-params
   ENABLE_GROOTFS: ((enable_grootfs))
   ROUTING_SSL_TERMINATOR: ((routing_ssl_terminator))
 
-pks_config_params: &pks-config-params
-  IAAS: vsphere
-  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-  OPSMAN_USERNAME: ((opsman_admin_username))
-  OPSMAN_PASSWORD: ((opsman_admin_password))
-  PKS_SINGLETON_JOB_AZ: ((pks_tile_singleton_job_az))
-  PKS_NW_AZS: ((pks_tile_nw_azs))
-  PKS_DEPLOYMENT_NETWORK_NAME: ((pks_tile_deployment_network_name))
-  PKS_CLUSTER_SERVICE_NETWORK_NAME: ((pks_tile_cluster_service_network_name))
-  PKS_SSL_CERT: ((pks_tile_cert_pem))
-  PKS_SSL_PRIVATE_KEY: ((pks_tile_private_key_pem))
-  PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
-  PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-  NSX_API_MANAGER: ((nsx_address))
-  NSX_API_USER: ((nsx_username))
-  NSX_API_PASSWORD: ((nsx_password))
-  NSX_SKIP_SSL_VERIFICATION: ((pks_tile_nsx_skip_ssl_verification))
-  PKS_VCENTER_HOST: ((pks_tile_vcenter_host))
-  PKS_VCENTER_USR: ((pks_tile_vcenter_usr))
-  PKS_VCENTER_PWD: ((pks_tile_vcenter_pwd))
-  PKS_VCENTER_DATA_CENTER: ((pks_tile_vcenter_data_center))
-  PKS_VCENTER_DATASTORE: ((pks_tile_vcenter_datastore))
-  PKS_VCENTER_CLUSTER: ((pks_tile_vcenter_cluster))
-  PKS_VM_FOLDER: ((pks_tile_vm_folder))
-  PKS_CLI_USER: ((pks_tile_cli_username))
-  PKS_CLI_PASSWORD: ((pks_tile_cli_password))
-  PKS_CLI_EMAIL: ((pks_tile_cli_useremail))
-  PKS_PLAN_DETAILS: ((pks_tile_plan_details))
-  PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
-  PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name))
-  PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name))
-  PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name))
-  PKS_SYSLOG_MIGRATION_ENABLED: ((pks_tile_syslog_migration_enabled))
-  PKS_SYSLOG_ADDRESS: ((pks_tile_syslog_address))
-  PKS_SYSLOG_PORT: ((pks_tile_syslog_port))
-  PKS_SYSLOG_TRANSPORT_PROTOCOL: ((pks_tile_syslog_transport_protocol))
-  PKS_SYSLOG_TLS_ENABLED: ((pks_tile_syslog_tls_enabled))
-  PKS_SYSLOG_PEER: ((pks_tile_syslog_peer))
-  PKS_SYSLOG_CA_CERT: ((pks_tile_syslog_ca_cert))
-  PKS_ALLOW_PUBLIC_IP: ((pks_tile_allow_public_ip))
-  PKS_VRLI_ENABLED: ((pks_tile_vrli_enabled))
-  PKS_VRLI_HOST: ((pks_tile_vrli_host))
-  PKS_VRLI_USE_SSL: ((pks_tile_vrli_use_ssl))
-  PKS_VRLI_SKIP_CERT_VERIFY: ((pks_tile_vrli_skip_cert_verify))
-  PKS_VRLI_CA_CERT: ((pks_tile_vrli_ca_cert))
-  PKS_VRLI_RATE_LIMIT: ((pks_tile_vrli_rate_limit))
-  PKS_ENABLE_HTTP_PROXY: ((pks_tile_enable_http_proxy))
-  PKS_HTTP_PROXY_URL: ((pks_tile_http_proxy_url))
-  PKS_HTTP_PROXY_USER: ((pks_tile_http_proxy_user))
-  PKS_HTTP_PROXY_PASSWORD: ((pks_tile_http_proxy_password))
-  PKS_HTTPS_PROXY_URL: ((pks_tile_https_proxy_url))
-  PKS_HTTPS_PROXY_USER: ((pks_tile_https_proxy_user))
-  PKS_HTTPS_PROXY_PASSWORD: ((pks_tile_https_proxy_password))
-  PKS_NO_PROXY: ((pks_tile_no_proxy))
-  PKS_UAA_USE_LDAP: ((pks_tile_uaa_use_ldap))
-  PKS_LDAP_URL: ((pks_tile_ldap_url))
-  PKS_LDAP_USER: ((pks_tile_ldap_user))
-  PKS_LDAP_PASSWORD: ((pks_tile_ldap_password))
-  PKS_LDAP_SEARCH_BASE: ((pks_tile_ldap_search_base))
-  PKS_LDAP_GROUP_SEARCH_BASE: ((pks_tile_ldap_group_search_base))
-  PKS_LDAP_SERVER_SSL_CERT: ((pks_tile_ldap_server_ssl_cert))
-  PKS_LDAP_SERVER_SSL_CERT_ALIAS: ((pks_tile_ldap_server_ssl_cert_alias))
-  PKS_LDAP_EMAIL_DOMAINS: ((pks_tile_ldap_email_domains))
-  PKS_LDAP_FIRST_NAME_ATTRIBUTE: ((pks_tile_ldap_first_name_attribute))
-  PKS_LDAP_LAST_NAME_ATTRIBUTE: ((pks_tile_ldap_last_name_attribute))
-  PKS_WAVEFRONT_API_URL: ((pks_tile_wavefront_api_url))
-  PKS_WAVEFRONT_TOKEN: ((pks_tile_wavefront_token))
-  PKS_WAVEFRONT_ALERT_TARGETS: ((pks_tile_wavefront_alert_targets))
-  PKS_TELEMETRY: ((pks_tile_telemetry))
-
-pks_cli_config_params: &pks-cli-config-params
-  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-  OPSMAN_USERNAME: ((opsman_admin_username))
-  OPSMAN_PASSWORD: ((opsman_admin_password))
-  #OPSMAN_CLIENT_ID: ((opsman_client_id))
-  #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
-  PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-  PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
-  PKS_CLI_USERNAME: ((pks_tile_cli_username))
-  PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
-  PKS_CLI_PASSWORD: ((pks_tile_cli_password))
-
-pks_config-pks-api-nats: &pks-config-pks-api-nats-params
-  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-  OPSMAN_USERNAME: ((opsman_admin_username))
-  OPSMAN_PASSWORD: ((opsman_admin_password))
-  NSX_API_MANAGER: ((nsx_address))
-  NSX_API_USER: ((nsx_username))
-  NSX_API_PASSWORD: ((nsx_password))
-  PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
-  PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
-  PKS_UAA_SYSTEM_DOMAIN_IP: ((pks_tile_uaa_system_domain_ip))
-  PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
-
-
 resource_types:
 - name: pivnet
   type: docker-image
@@ -320,32 +225,6 @@ resources:
     product_version: ((ert_major_minor_version))
     sort_by: semver
 
-# Comment this off if planning to use PKS v1.1 and its not on pivnet
-- name: pivotal-container-service
-  type: pivnet
-  source:
-    api_token: ((pivnet_token))
-    product_slug: pivotal-container-service
-    product_version: ((pks_major_minor_version))
-    sort_by: semver
-
-# Uncomment to use s3 bucket if PKS tile is NOT on pivnet...
-# - name: pivotal-container-service
-#   type: s3
-#   source:
-#     access_key_id: ((s3_creds_access_key_id))
-#     secret_access_key: ((s3_creds_secret_access_key))
-#     bucket: ((s3_bucket))
-#     regexp: ((s3_pks_tile_path)) #pks/pivotal-container-service-1.1.0.pivotal
-#     region_name: ((s3_region))
-
-# Uncomment to use file server if PKS tile is NOT on pivnet......
-# - name: pivotal-container-service
-#   type: file-url
-#   source:
-#     url: ((pks_tile_webserver))/((pks_tile))
-#     filename: ((pks_tile))
-
 - name: nsx-t-add-on-tile
   type: pivnet
   source:
@@ -354,11 +233,6 @@ resources:
     product_version: ((nsxt_major_minor_version))
     sort_by: semver
 
-# Used for PKS user creation and deletion of clusters
-# - name: pcf-pipelines-utils
-#   type: git
-#   source:
-#     uri: https://github.com/pivotalservices/concourse-pipeline-samples.git
 
 groups:
 
@@ -377,16 +251,6 @@ groups:
   - deploy-opsman
   - configure-director
   - deploy-director
-
-- name: pks-install
-  jobs:
-  - upload-pks
-  - deploy-pks
-  - config-pks-controller
-
-- name: config-pks-controller-after-install
-  jobs:
-  - config-pks-controller-after-install
 
 - name: wipe
   jobs:
@@ -596,76 +460,6 @@ jobs:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
-
-- name: upload-pks
-  plan:
-  - aggregate:
-    - get: nsx-t-ci-pipeline
-    - get: pivnet-product
-      resource: pivotal-container-service
-      params: {globs: ["pivotal-container-service*.pivotal"]}
-    - get: pcf-ops-manager
-      params: {globs: []}
-      passed: [deploy-director]
-      trigger: true
-
-  - task: upload-tile
-    file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml
-    params:
-      IAAS: "vsphere"
-      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-      OPSMAN_USERNAME: ((opsman_admin_username))
-      OPSMAN_PASSWORD: ((opsman_admin_password))
-      PIVNET_API_TOKEN: ((pivnet_token))
-      OM_IP: ((om_ip))
-
-- name: deploy-pks
-  plan:
-  - aggregate:
-    - get: nsx-t-ci-pipeline
-    - get: pcf-ops-manager
-      params: {globs: []}
-      passed: [upload-pks]
-      trigger: true
-
-  - task: configure-pks
-    file: nsx-t-ci-pipeline/tasks/config-pks/task.yml
-    params: *pks-config-params
-
-  - task: deploy-pks
-    file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
-    params:
-      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-      OPSMAN_USERNAME: ((opsman_admin_username))
-      OPSMAN_PASSWORD: ((opsman_admin_password))
-
-- name: config-pks-controller
-  plan:
-  - aggregate:
-    - get: nsx-t-ci-pipeline
-      passed: [deploy-pks]
-      trigger: true
-
-  - task: config-pks-api-nats
-    file: nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.yml
-    params: *pks-config-pks-api-nats-params
-
-  - task: config-pks-cli-user
-    file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
-    params: *pks-cli-config-params
-
-- name: config-pks-controller-after-install
-  plan:
-  - aggregate:
-    - get: nsx-t-ci-pipeline
-
-  - task: config-pks-api-nats
-    file: nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.yml
-    params: *pks-config-pks-api-nats-params
-
-  - task: config-pks-cli-user
-    file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
-    params: *pks-cli-config-params
 
 - name: wipe-env
   plan:

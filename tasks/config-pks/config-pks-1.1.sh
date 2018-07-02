@@ -352,7 +352,10 @@ pks_nsx_vcenter_properties=$(
 
     +
 
-    if $has_nsx_t_superuser_certificate != '0' then
+    # Set the super user private key and cert only on first generation
+    # On rerunning the config, the cert/key wont get recreated as it was already created on nsx Mgr
+    # In those cases, the cert and key would be empty
+    if $has_nsx_t_superuser_certificate != '0' and $nsx_superuser_key != '' and $nsx_superuser_cert != '' then
     {
       ".properties.network_selector.nsx.nsx-t-superuser-certificate": {
           "value": {
