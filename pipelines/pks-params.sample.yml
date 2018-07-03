@@ -60,10 +60,10 @@ icmp_checks_enabled: false     # Enable or disable ICMP checks
 
 infra_network_name: "PKS-Infra"
 infra_vsphere_network: "PKS-Infra"       # vCenter Infrastructure network name
-infra_nw_cidr: 192.168.20.0/24              # Infrastructure network CIDR, ex: 10.0.0.0/22
-infra_excluded_range: 192.168.20.0-192.168.20.9,192.168.20.25-192.168.20.64       # Infrastructure network exclusion range
+infra_nw_cidr: 172.23.1.0/24              # Infrastructure network CIDR, ex: 10.0.0.0/22
+infra_excluded_range: 172.23.1.0-172.23.1.9,172.23.1.25-172.23.1.64       # Infrastructure network exclusion range
 infra_nw_dns: 10.1.1.2                    # Infrastructure network DNS
-infra_nw_gateway: 192.168.20.1            # Infrastructure network Gateway
+infra_nw_gateway: 172.23.1.1              # Infrastructure network Gateway
 infra_nw_azs: PKS                         # Comma separated list of AZ's to be associated with this network
 
 nsx_networking_enabled: true              # (true|false) to use nsx networking feature. PKS v1.1+ requires it to be true
@@ -72,13 +72,13 @@ nsx_address: nsx-t-mgr.test-domain.com    # address of Nsx Mgr FQDN, not IP
 nsx_username: admin                       # username for nsx access
 nsx_password: 23..d!                # password for nsx access
 
-# Additional network for PKS Clusters - set to empty "" string for the vsphere network if its not required
-pks_network_name: "PKS-K8s-clusters"             # Logical switch for PKS-k8s-clusters
-pks_vsphere_network: "PKS-K8s-clusters"             # vCenter PKS-k8s-clusters  network name for PKS - if empty quotes, then this network would be skipped
-pks_nw_cidr: 192.168.40.0/24        # PKS-k8s-clusters network CIDR, ex: 10.0.0.0/22
-pks_excluded_range: 192.168.40.1    # PKS-k8s-clusters network exclusion range
-pks_nw_dns: 10.1.1.2                # PKS-k8s-clusters network DNS
-pks_nw_gateway: 192.168.40.1        # PKS-k8s-clusters network Gateway
+# Additional network for PKS Controller & Harbor
+pks_network_name: "PKS-Services"             # Logical switch for PKS-Services
+pks_vsphere_network: "PKS-Services"          # vCenter PKS-Services  network name for PKS - if empty quotes, then this network would be skipped
+pks_nw_cidr: 172.23.2.0/24          # PKS-Services network CIDR, ex: 10.0.0.0/22
+pks_excluded_range: 172.23.2.1      # PKS-Services network exclusion range
+pks_nw_dns: 10.1.1.2                # PKS-Services network DNS
+pks_nw_gateway: 172.23.2.1          # PKS-Services network Gateway
 pks_nw_azs: az1                     # Comma separated list of AZ's to be associated with this network
 is_service_network: true  # Required select service network option in Ops man true or false
 
@@ -118,9 +118,8 @@ pks_tile_vm_folder: EDIT_ME
 
 pks_tile_singleton_job_az: az1 # Check
 pks_tile_nw_azs: az1
-pks_tile_deployment_network_name: INFRASTRUCTURE        # Can be any network created already, default: INFRASTRUCTURE
-
-pks_tile_cluster_service_network_name: PKS-k8s-clusters # Should match the PKS-k8s-clusters network created already
+pks_tile_deployment_network_name: PKS-Services      # Can be any network created already, default: INFRASTRUCTURE
+pks_tile_cluster_service_network_name: PKS-Services # Should match the PKS-Services network created already
 
 # ALERT - The underlying Edge instances should be large, 8 vcpus.
 # Otherwise the pks-nsx-t-precheck errrand would fail.
@@ -199,6 +198,7 @@ pks_tile_plan_details:
     persistent_disk_type: "10240" # Used in PKS 1.0
     master_persistent_disk_type: "10240" # Used in PKS 1.1+
     worker_persistent_disk_type: "10240" # Used in PKS 1.1+
+    master_instances: 1    # The number of K8s worker instances
     worker_instances: 3    # The number of K8s worker instances
     errand_vm_type: micro
     addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
@@ -224,6 +224,7 @@ pks_tile_plan_details:
     persistent_disk_type: "10240" # Used in PKS 1.0
     master_persistent_disk_type: "10240" # Used in PKS 1.1+
     worker_persistent_disk_type: "10240" # Used in PKS 1.1+
+    master_instances: 2    # The number of K8s worker instances
     worker_instances: 5    # The number of K8s worker instances
     errand_vm_type: micro
     addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
