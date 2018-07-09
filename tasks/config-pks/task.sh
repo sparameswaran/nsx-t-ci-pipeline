@@ -32,7 +32,7 @@ openssl s_client -host $NSX_API_MANAGER \
 # Get the very last CA cert from the showcerts result
 cat /tmp/nsx_manager_all_certs.log \
                   |  awk '/BEGIN /,/END / {print }' \
-                  | tail -30                        \
+                  | tail -40                        \
                   |  awk '/BEGIN /,/END / {print }' \
                   >  /tmp/nsx_manager_cacert.log
 
