@@ -373,6 +373,8 @@ pks_nsx_vcenter_properties=$(
           }
         }
     }
+    else
+    .
     end
     +
     if $has_cloud_config_dns != "0" then
