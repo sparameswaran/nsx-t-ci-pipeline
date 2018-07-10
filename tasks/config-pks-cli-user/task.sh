@@ -84,4 +84,4 @@ fi
 echo ""
 echo "Next, download the PKS CLI from Pivotal Network and login to the PKS API to create a new K8s cluster [https://docs.pivotal.io/runtimes/pks/1-0/create-cluster.html]"
 echo "Example: "
-echo "   pks login -a ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} -u $PKS_CLI_USERNAME -p <pks-cli-password-provided>"
+echo "   pks login -a https://${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}:8443 -k -u $PKS_CLI_USERNAME -p <pks-cli-password-provided>"
