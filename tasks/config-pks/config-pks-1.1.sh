@@ -364,7 +364,7 @@ pks_nsx_vcenter_properties=$(
           }
         }
     }
-    else
+    elif $has_nsx_t_superuser_certificate == "0" then
     {
       ".properties.network_selector.nsx.credentials": {
           "value": {
