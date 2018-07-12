@@ -80,6 +80,7 @@ params:
   PKS_WAVEFRONT_TOKEN:
   PKS_WAVEFRONT_ALERT_TARGETS:
   PKS_TELEMETRY:
+  PKS_DISABLE_NSX_T_PRECHECK_ERRAND:
 
 inputs:
   - name: nsx-t-ci-pipeline

@@ -125,6 +125,10 @@ pks_tile_cluster_service_network_name: PKS-Services # Should match the PKS-Servi
 # Otherwise the pks-nsx-t-precheck errrand would fail.
 pks_tile_nsx_skip_ssl_verification: true # can be true or false
 
+# Disable PKS NSX-T Precheck Errand
+pks_tile_disable_nsx_t_precheck_errand: false                          # Default: false. Set to true if using medium edge sizes as PKS Errand would fail with smaller edges
+
+# PKS Main configs
 pks_tile_t0_router_name: DefaultT0Router                               # EDIT - Name of T0 Router to be used for PKS
 pks_tile_nsx_nat_mode: true                                            # Set to true
 pks_tile_external_ip_pool_name: snat-vip-pool-for-pks                  # EDIT - Name of External Floating IP Pool in NSX Mgr to be used for PKS

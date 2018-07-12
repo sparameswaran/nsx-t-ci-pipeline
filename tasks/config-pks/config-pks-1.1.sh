@@ -548,16 +548,20 @@ om-linux \
   --product-properties "$pksv1_1_properties"
 echo "Finished configuring additional PKS v1.1 specific properties!!"
 
-errand="pks-nsx-t-precheck"
+if [ "$PKS_DISABLE_NSX_T_PRECHECK_ERRAND" == ""      \
+  -o "$PKS_DISABLE_NSX_T_PRECHECK_ERRAND" == "false" \
+  -o "$PKS_DISABLE_NSX_T_PRECHECK_ERRAND" == "null"  ]; then
+  errand="pks-nsx-t-precheck"
 
-om-linux \
-  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  -u $OPSMAN_USERNAME \
-  -p $OPSMAN_PASSWORD \
-  --skip-ssl-validation \
-  set-errand-state \
-  --product-name "$PRODUCT_NAME" \
-  --errand-name $errand \
-  --post-deploy-state enabled
+  om-linux \
+    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+    -u $OPSMAN_USERNAME \
+    -p $OPSMAN_PASSWORD \
+    --skip-ssl-validation \
+    set-errand-state \
+    --product-name "$PRODUCT_NAME" \
+    --errand-name $errand \
+    --post-deploy-state enabled
 
-echo "Configured $errand to always run ..."
+  echo "Configured $errand to always run ..."
+fi
