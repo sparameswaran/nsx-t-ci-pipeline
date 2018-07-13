@@ -393,7 +393,6 @@ jobs:
       NSX_API_MANAGERS: ((nsx_address))
       NSX_API_USER: ((nsx_username))
       NSX_API_PASSWORD: ((nsx_password))
-      NSX_API_CA_CERT: ((nsx_ca_certificate))
       NSX_FOUNDATION_NAME: ((nsx_foundation_name))
       NSX_NCP_DEBUG_LOG: ((nsx_ncp_debug_log))
       NSX_SUBNET_PREFIX: ((nsx_subnet_prefix))
