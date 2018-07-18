@@ -32,7 +32,7 @@ openssl s_client -host $NSX_API_MANAGER \
 # Get the very last CA cert from the showcerts result
 cat /tmp/nsx_manager_all_certs.log \
                   |  awk '/BEGIN /,/END / {print }' \
-                  | tail -40                        \
+                  | tail -50                        \
                   |  awk '/BEGIN /,/END / {print }' \
                   >  /tmp/nsx_manager_cacert.log
 
@@ -228,7 +228,6 @@ else
   echo ""
   echo "Starting configuration of PKS v1.1+ properties"
   source $ROOT_DIR/nsx-t-ci-pipeline/tasks/config-pks/config-pks-superuser.sh
-
   source $ROOT_DIR/nsx-t-ci-pipeline/tasks/config-pks/config-pks-1.1.sh
 fi
 

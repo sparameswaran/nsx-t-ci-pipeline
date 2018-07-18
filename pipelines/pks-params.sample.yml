@@ -1,8 +1,7 @@
 # Pipeline resource configuration
 pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
-opsman_major_minor_version: ^2\.1\..*$   # PCF Ops Manager minor version to track
-pks_major_minor_version: ^1\.0.*$       # use PKS v1.0
-#pks_major_minor_version: ^1\.1.*$       # Use this once PKS v1.1 becomes GA
+opsman_major_minor_version: ^2\.1\.6.*$   # PCF Ops Manager minor version to track
+pks_major_minor_version: ^1\..*$         # use PKS v1.1
 
 # vCenter configuration
 vcenter_host: 10.1.1.10            # vCenter host or IP
@@ -13,8 +12,8 @@ vcenter_insecure: 1        # vCenter skip TLS cert validation; enter `1` to disa
 vcenter_ca_cert:           # vCenter CA cert at the API endpoint; enter a value if `vcenter_insecure: 0`
 
 # Ops Manager VM configuration
-om_vm_host: 172.23.1.5              # Optional - vCenter host to deploy Ops Manager in
-om_data_store: vsan2                  # vCenter datastore name to deploy Ops Manager in
+om_vm_host:                           # Optional - vCenter host to deploy Ops Manager in
+om_data_store: vsan                   # vCenter datastore name to deploy Ops Manager in
 opsman_domain_or_ip_address: opsmgr.test-cf-app.com              # FQDN to access Ops Manager without protocol (will use https), ex: opsmgr.example.com
 opsman_admin_username: admin          # Username for Ops Manager admin account
 opsman_admin_password: password123    # Password for Ops Manager admin account
@@ -22,34 +21,43 @@ om_ssh_pwd: pas..d123                 # SSH password for Ops Manager (ssh user i
 om_decryption_pwd: pas...rd123        # Decryption password for Ops Manager exported settings
 om_ntp_servers: us.pool.ntp.org       # Comma-separated list of NTP Servers
 om_dns_servers: 10.1.1.2              # Comma-separated list of DNS Servers
-om_gateway: 172.23.1.1              # Gateway for Ops Manager network
-om_netmask: 255.255.255.192           # Netmask for Ops Manager network
-om_ip: 172.23.1.5                   # IP to assign to Ops Manager VM
-om_vm_network: infra           # vCenter network name to use to deploy Ops Manager in
+om_gateway: 172.23.1.1                # Gateway for Ops Manager network
+om_netmask: 255.255.255.0             # Netmask for Ops Manager network
+om_ip: 172.23.1.5                     # IP to assign to Ops Manager VM
+om_vm_network: PKS-Infra              # vCenter network name to use to deploy Ops Manager in
 om_vm_name: opsmgr-nsx         # Name to use for Ops Manager VM
 opsman_disk_type: "thin"  # Disk type for Ops Manager VM (thick|thin)
 om_vm_power_state: true   # Whether to power on Ops Manager VM after creation
+om_vm_folder:             # Leave it blank
 
 # vCenter Cluster or Resource Pool to use to deploy Ops Manager.
 # Possible formats:
 #   cluster:       /<Data Center Name>/host/<Cluster Name>
 #   resource pool: /<Data Center Name>/host/<Cluster Name>/Resources/<Resource Pool Name>
-om_resource_pool: rpcluster-1
+om_resource_pool: pks-rp1
 
-ephemeral_storage_names:  vsan # Ephemeral Storage names in vCenter for use by PCF
+ephemeral_storage_names: vsan # Ephemeral Storage names in vCenter for use by PCF
 persistent_storage_names: vsan # Persistent Storage names in vCenter for use by PCF
 
-bosh_vm_folder: "nsx_vms"                 # vSphere datacenter folder (such as pcf_vms) where VMs will be placed
-bosh_template_folder: "nsx_templates"     # vSphere datacenter folder (such as pcf_templates) where templates will be placed
-bosh_disk_path: "nsx_disk"                # vSphere datastore folder (such as pcf_disk) where attached disk images will be created
+bosh_vm_folder: "pks_vms"                 # vSphere datacenter folder (such as pcf_vms) where VMs will be placed
+bosh_template_folder: "pks_templates"     # vSphere datacenter folder (such as pcf_templates) where templates will be placed
+bosh_disk_path: "pks_disk"                # vSphere datastore folder (such as pcf_disk) where attached disk images will be created
 
 trusted_certificates:         # Trusted certificates to be deployed along with all VM's provisioned by BOSH
 vm_disk_type: "thick"         # Disk type for BOSH provisioned VM. (thick|thin)
 
 # AZ configuration for Ops Director
-az_1_name: PKS                   # Logical name of availability zone. No spaces or special characters.
+az_1_name: az1                   # Logical name of availability zone. No spaces or special characters.
 az_1_cluster_name: Cluster1      # Name of cluster in vCenter for PKS
-az_1_rp_name: pks-rp             # Resource pool name in vCenter for PKS
+az_1_rp_name: pks-rp1            # Resource pool name in vCenter for PKS
+
+az_2_name: az2                   # Logical name of availability zone. No spaces or special characters.
+az_2_cluster_name: Cluster2      # Name of cluster in vCenter for PKS
+az_2_rp_name: pks-rp2             # Resource pool name in vCenter for PKS
+
+az_3_name: az3                   # Logical name of availability zone. No spaces or special characters.
+az_3_cluster_name: Cluster3      # Name of cluster in vCenter for PKS
+az_3_rp_name: pks-rp3            # Resource pool name in vCenter for PKS
 
 ntp_servers: us.pool.ntp.org                 # Comma-separated list of NTP servers to use for VMs deployed by BOSH
 enable_vm_resurrector: true   # Whether to enable BOSH VM resurrector
@@ -64,7 +72,7 @@ infra_nw_cidr: 172.23.1.0/24              # Infrastructure network CIDR, ex: 10.
 infra_excluded_range: 172.23.1.0-172.23.1.9,172.23.1.25-172.23.1.64       # Infrastructure network exclusion range
 infra_nw_dns: 10.1.1.2                    # Infrastructure network DNS
 infra_nw_gateway: 172.23.1.1              # Infrastructure network Gateway
-infra_nw_azs: PKS                         # Comma separated list of AZ's to be associated with this network
+infra_nw_azs: az1,az2,az3                 # Comma separated list of AZ's to be associated with this network
 
 nsx_networking_enabled: true              # (true|false) to use nsx networking feature. PKS v1.1+ requires it to be true
 nsx_mode: nsx-t                           # Valid values: nsx-t, nsx-v
@@ -79,7 +87,7 @@ pks_nw_cidr: 172.23.2.0/24          # PKS-Services network CIDR, ex: 10.0.0.0/22
 pks_excluded_range: 172.23.2.1      # PKS-Services network exclusion range
 pks_nw_dns: 10.1.1.2                # PKS-Services network DNS
 pks_nw_gateway: 172.23.2.1          # PKS-Services network Gateway
-pks_nw_azs: az1                     # Comma separated list of AZ's to be associated with this network
+pks_nw_azs: az1,az2,az3                     # Comma separated list of AZ's to be associated with this network
 is_service_network: true  # Required select service network option in Ops man true or false
 
 ## PKS Tile section ##
@@ -108,16 +116,17 @@ pks_tile_cert_pem: # Would be generated or provide
 
 pks_tile_private_key_pem: # Would be generated
 
-pks_tile_vcenter_host: EDIT_ME
-pks_tile_vcenter_usr: EDIT_ME
-pks_tile_vcenter_pwd: EDIT_ME
-pks_tile_vcenter_data_center: EDIT_ME
-pks_tile_vcenter_cluster: EDIT_ME
-pks_tile_vcenter_datastore: EDIT_ME
-pks_tile_vm_folder: EDIT_ME
+# All the following fields need to be filled in
+pks_tile_vcenter_host: EDIT_ME           # REQUIRED
+pks_tile_vcenter_usr: EDIT_ME            # REQUIRED
+pks_tile_vcenter_pwd: EDIT_ME            # REQUIRED
+pks_tile_vcenter_data_center: EDIT_ME    # REQUIRED
+pks_tile_vcenter_cluster: EDIT_ME        # REQUIRED
+pks_tile_vcenter_datastore: EDIT_ME      # REQUIRED
+pks_tile_vm_folder: EDIT_ME              # REQUIRED
 
-pks_tile_singleton_job_az: az1 # Check
-pks_tile_nw_azs: az1
+pks_tile_singleton_job_az: az1           # Check
+pks_tile_nw_azs: az1,az2,az3
 pks_tile_deployment_network_name: PKS-Services      # Can be any network created already, default: INFRASTRUCTURE
 pks_tile_cluster_service_network_name: PKS-Services # Should match the PKS-Services network created already
 
@@ -134,7 +143,7 @@ pks_tile_nsx_nat_mode: true                                            # Set to 
 pks_tile_external_ip_pool_name: snat-vip-pool-for-pks                  # EDIT - Name of External Floating IP Pool in NSX Mgr to be used for PKS
 pks_tile_container_ip_block_name: pod-container-ip-block-pks-with-tag  # EDIT - Name of Container IP Block in NSX Mgr to be used for PKS
 pks_tile_nodes_ip_block_name: node-container-ip-block-pks-with-tag     # EDIT - Name of Node IP Block in NSX Mgr to be used for PKS nodes in v1.1
-pks_tile_vcenter_cluster_list: Cluster1                                # EDIT - List of vcenter clusters for PKS to deploy k8s clusters
+pks_tile_vcenter_cluster_list: EDIT_ME                                 # EDIT - List of vcenter clusters for PKS to deploy k8s clusters
 pks_tile_nodes_dns_list: EDIT_ME                                       # EDIT - DNS server ip list for use by k8s nodes
 
 # Syslog Flags
@@ -196,7 +205,7 @@ pks_tile_plan_details:
     description: "Small plan"
     # AZ can be only a single value for PKS v1.0
     # There can be a comma separated list for PKS v1.1 which supports multiple AZs
-    az_placement: az1  # Specify the AZ in which the cluster will be created, single for PKS v1.0
+    az_placement: az1,az2,az3  # Specify the AZ in which the cluster will be created, single for PKS v1.0
     master_vm_type: medium
     worker_vm_type: medium
     persistent_disk_type: "10240" # Used in PKS 1.0
@@ -222,7 +231,7 @@ pks_tile_plan_details:
     description: "Medium plan"
     # AZ can be only a single value for PKS v1.0
     # There can be a comma separated list for PKS v1.1 which supports multiple AZs
-    az_placement: az1  # Specify the AZ in which the cluster will be created, single for PKS v1.0
+    az_placement: az1,az2,az3  # Specify the AZ in which the cluster will be created, single for PKS v1.0
     master_vm_type: medium
     worker_vm_type: medium
     persistent_disk_type: "10240" # Used in PKS 1.0
