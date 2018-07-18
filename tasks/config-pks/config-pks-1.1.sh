@@ -198,7 +198,7 @@ if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; the
     --arg pks_wavefront_alert_targets "$PKS_WAVEFRONT_ALERT_TARGETS" \
     '{
           ".properties.wavefront.enabled.wavefront_api_url": {
-            "value": pks_wavefront_api_url
+            "value": $pks_wavefront_api_url
           },
           ".properties..wavefront.enabled.wavefront_api_url": {
             "value": $pks_wavefront_token
