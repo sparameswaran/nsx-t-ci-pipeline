@@ -7,7 +7,7 @@ export ROOT_DIR=`pwd`
 
 # Snip off long name - openssl would break
 export PKS_GUID=$(echo $PRODUCT_GUID | sed -e 's/pivotal-container-service-//')
-export PKS_SUPERUSER_NAME="pks-nsx-t-superuser-${PKS_GUID}"
+export PKS_SUPERUSER_NAME="pks-superuser-${PKS_GUID}"
 export NSX_SUPERUSER_CERT_FILE="$ROOT_DIR/pks-nsx-t-superuser.crt"
 export NSX_SUPERUSER_KEY_FILE="$ROOT_DIR/pks-nsx-t-superuser.key"
 export NODE_ID=$(cat /proc/sys/kernel/random/uuid)
@@ -27,16 +27,11 @@ function check_existing_pks_superuser {
     echo 0
   else
     (>&2 echo "PKS Superuser : $PKS_SUPERUSER_NAME already exists on NSX Manager!!")
-    unique_portion=$(date '+%H%m')
-    export PKS_SUPERUSER_NAME="${PKS_SUPERUSER_NAME}-${unique_portion}"
-    (>&2 echo "Creating new PKS Superuser: $PKS_SUPERUSER_NAME")
-    echo 0
+    echo 1
   fi
 }
 
 function create_pks_superuser {
-
-  check_existing_pks_superuser
 
   cat /etc/ssl/openssl.cnf <(printf '[client_server_ssl]\nextendedKeyUsage = clientAuth\n') > /tmp/extended_openssl.cnf
   # Create Cert
@@ -111,6 +106,13 @@ function check_created_super_user {
   echo "$test_response "
   echo ""
 }
+
+user_exists=$(check_existing_pks_superuser)
+if [ "$user_exists" != "0" ]; then
+  unique_portion=$(date '+%H%M')
+  export PKS_SUPERUSER_NAME="${PKS_SUPERUSER_NAME}-${unique_portion}"
+  echo "Creating new PKS Superuser: ${PKS_SUPERUSER_NAME}")
+fi
 
 create_pks_superuser
 export NSX_SUPERUSER_CERT=$(cat $NSX_SUPERUSER_CERT_FILE | tr '\n' '#'| sed -e 's/#/\r\n/g')
