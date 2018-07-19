@@ -27,17 +27,16 @@ function check_existing_pks_superuser {
     echo 0
   else
     (>&2 echo "PKS Superuser : $PKS_SUPERUSER_NAME already exists on NSX Manager!!")
-    (>&2 echo "Not creating PKS Superuser")
-    echo 1
+    unique_portion=$(date '+%H%m')
+    export PKS_SUPERUSER_NAME="${PKS_SUPERUSER_NAME}-${unique_portion}"
+    (>&2 echo "Creating new PKS Superuser: $PKS_SUPERUSER_NAME")
+    echo 0
   fi
 }
 
 function create_pks_superuser {
 
-  status=$(check_existing_pks_superuser)
-  if [ "$status" != "0" ]; then
-    return
-  fi
+  check_existing_pks_superuser
 
   cat /etc/ssl/openssl.cnf <(printf '[client_server_ssl]\nextendedKeyUsage = clientAuth\n') > /tmp/extended_openssl.cnf
   # Create Cert
