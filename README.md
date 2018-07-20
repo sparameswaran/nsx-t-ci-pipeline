@@ -1,11 +1,11 @@
 # nsx-t-ci-pipeline
 
-Install Concourse and Pivotal PAS/PCF 2.1.x (also supported 2.0) with VMware NSX-T (Add-on) Tile for PCF.
-NOTE: The tool and scripts don't install the full VMware NSX-T or automate creation of NSX-T Routers or Logical switches. Check the [nsx-t-gen repo](https://github.com/sparameswaran/nsx-t-gen) for details on automated install of NSX-T v2.1.
+Install Concourse and Pivotal PKS v1.* and PAS/PCF 2.1.x (also supported 2.0) with VMware NSX-T (Add-on) Tile for PCF and PKS 1.x Tile with Ops Mgr 2.x.
+NOTE: The tool and scripts doesn't install the full VMware NSX-T or automate creation of NSX-T Routers or Logical switches. Check the [nsx-t-gen repo](https://github.com/sparameswaran/nsx-t-gen) for details on automated install of NSX-T v2.1.
 
 The tools in this repo only help in automating the install of [Concourse](http://concourse.ci/), followed by install of [Pivotal Ops Mr and PCF/PAS](https://network.pivotal.io) on [VMware NSX-T](https://docs.vmware.com/en/VMware-NSX-T/index.html) managed network infrastructure. The Pivotal Cloud Foundry or Application service (PAS) would use NSX-T for the CNI implementation, instead of the default Silk as CNI.
 
-Additional support has been added for installing PKS v1.0 Tile with Pivotal Ops Mgr.
+Additional support has been added for installing PKS v1.x Tile with Pivotal Ops Mgr.
 
 ![](docs/nsx-t-ci-pipeline.png)
 
@@ -73,12 +73,12 @@ The pipeline has been tested with following version:
 * Ops Mgr 2.1.2
 * NSX-T Tile 2.1.3
 * PAS Tile 2.1.4
+* PKS v1.0 and v1.1
 
 Tweak the versions in the params file.
 
 ## Installing PKS
-PKS v1.0 Tile can also be installed either on an existing Ops Mgr install (with or without PAS) or for a brand new install including new Ops Mgr. Use the install-pks-pipeline.yml for install of pure PKS (without PAS) with the pks-params.sample.yml for the parameter template. For users of PAS looking at installing and exploring PKS, they can use either the install-pcf-pipeline.yml with the `install-pks` group option or use the `pks-install-standalone` group from the install-pks-pipeline.yml.
+PKS v1.* Tile can also be installed either on an existing Ops Mgr install (with or without PAS) or for a brand new install including new Ops Mgr. Use the install-pks-pipeline.yml for install of pure PKS (without PAS) with the pks-params.sample.yml for the parameter template. For users of PAS looking at installing and exploring PKS, they can use the `pks-install-standalone` group from the install-pks-pipeline.yml.
 
-PKS v1.1 Tile support is experimental (as the tile is not yet GA).
 Note: The underlying Edge instances used for PKS should be large size, 8 vcpus.
-Otherwise, the pks-nsx-t-precheck errand bundled with PKS v1.1 would fail.
+Otherwise, the pks-nsx-t-precheck errand bundled with PKS v1.1 would fail. Turn off or disable the precheck errand in those cases via the pipeline parameter.
