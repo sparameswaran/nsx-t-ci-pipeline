@@ -111,7 +111,7 @@ user_exists=$(check_existing_pks_superuser)
 if [ "$user_exists" != "0" ]; then
   unique_portion=$(date '+%H%M')
   export PKS_SUPERUSER_NAME="${PKS_SUPERUSER_NAME}-${unique_portion}"
-  echo "Creating new PKS Superuser: ${PKS_SUPERUSER_NAME}")
+  echo "Creating new PKS Superuser: ${PKS_SUPERUSER_NAME}"
 fi
 
 create_pks_superuser
