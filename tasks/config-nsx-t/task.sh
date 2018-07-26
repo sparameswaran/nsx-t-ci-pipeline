@@ -153,56 +153,53 @@ if [[ "$PRODUCT_VERSION" =~ ^2.1.0 ]]; then
   return
 fi
 
-if [[ "$PRODUCT_VERSION" =~ ^2.1.3|^2.1.4|^2.2.0 ]]; then
-  # Set .properties.overlay_tz
-  # Set .properties.tier0_router
-  # Set .properties.container_ip_blocks[index][name]
-  # Set .properties.container_ip_blocks[index][cidr] -> optional
+# Set .properties.overlay_tz
+# Set .properties.tier0_router
+# Set .properties.container_ip_blocks[index][name]
+# Set .properties.container_ip_blocks[index][cidr] -> optional
 
-  # Convert yaml to json using yaml2json function
-  # strip off the tags
-  container_ip_blocks=$(echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" \
-                      | yaml2json \
-                      | jq '.container_ip_blocks' \
-                      | jq 'del(.[].tags)' )
+# Convert yaml to json using yaml2json function
+# strip off the tags
+container_ip_blocks=$(echo "$NSX_T_CONTAINER_IP_BLOCK_SPEC" \
+                    | yaml2json \
+                    | jq '.container_ip_blocks' \
+                    | jq 'del(.[].tags)' )
 
-  external_ip_pools=$(echo "$NSX_T_EXTERNAL_IP_POOL_SPEC" \
-                      | yaml2json \
-                      | jq '.external_ip_pools' \
-                      | jq 'del(.[].tags)' )
+external_ip_pools=$(echo "$NSX_T_EXTERNAL_IP_POOL_SPEC" \
+                    | yaml2json \
+                    | jq '.external_ip_pools' \
+                    | jq 'del(.[].tags)' )
 
-  nsx_t_additional_configs=$(
-    jq -n \
-      --arg nsx_overlay_tz "$NSX_T_OVERLAY_TRANSPORT_ZONE" \
-      --arg nsx_tier0_router "$NSX_T_T0ROUTER_NAME" \
-      --argjson container_ip_blocks "$container_ip_blocks" \
-      --argjson external_ip_pools "$external_ip_pools" \
-      '
-      {
-        ".properties.overlay_tz": {
-          "value": $nsx_overlay_tz
-        },
-        ".properties.tier0_router": {
-          "value": $nsx_tier0_router
-        },
-        ".properties.container_ip_blocks": {
-          "value": $container_ip_blocks
-        },
-        ".properties.external_ip_pools": {
-          "value": $external_ip_pools
-        }
-      }'
-    )
+nsx_t_additional_configs=$(
+  jq -n \
+    --arg nsx_overlay_tz "$NSX_T_OVERLAY_TRANSPORT_ZONE" \
+    --arg nsx_tier0_router "$NSX_T_T0ROUTER_NAME" \
+    --argjson container_ip_blocks "$container_ip_blocks" \
+    --argjson external_ip_pools "$external_ip_pools" \
+    '
+    {
+      ".properties.overlay_tz": {
+        "value": $nsx_overlay_tz
+      },
+      ".properties.tier0_router": {
+        "value": $nsx_tier0_router
+      },
+      ".properties.container_ip_blocks": {
+        "value": $container_ip_blocks
+      },
+      ".properties.external_ip_pools": {
+        "value": $external_ip_pools
+      }
+    }'
+  )
 
-  echo "Additional NSX 2.1.3 configs: ${nsx_t_additional_configs}"
+echo "Additional NSX configs: ${nsx_t_additional_configs}"
 
-  om-linux \
-    --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-    --username $OPSMAN_USERNAME \
-    --password $OPSMAN_PASSWORD \
-    --skip-ssl-validation \
-    configure-product \
-    --product-name $PRODUCT_NAME \
-    --product-properties "${nsx_t_additional_configs}"
-
-fi
+om-linux \
+  --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
+  --skip-ssl-validation \
+  configure-product \
+  --product-name $PRODUCT_NAME \
+  --product-properties "${nsx_t_additional_configs}"
