@@ -223,7 +223,6 @@ pks_tile_plan_details:
     # If checked, the admission controller will be disabled.
     # Clusters in this plan can then create security vulnerabilities and may impact other tiles.
     # Use with caution.
-    disable_deny_escalating_exec: false # default false
 - plan_detail:
     name: "medium"  # the name that appears for end users to choose
     is_active: false
@@ -246,7 +245,6 @@ pks_tile_plan_details:
     # If checked, the admission controller will be disabled.
     # Clusters in this plan can then create security vulnerabilities and may impact other tiles.
     # Use with caution.
-    disable_deny_escalating_exec: false # default false
 - plan_detail:
     name: "large"  # the name that appears for end users to choose
     is_active: false
