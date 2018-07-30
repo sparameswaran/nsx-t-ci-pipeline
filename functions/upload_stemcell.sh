@@ -45,13 +45,14 @@ function upload_stemcells() (
         pivnet-cli download-product-files -p "$product_slug" -r $stemcell_version_reqd -g "*${IAAS}*" --accept-eula
         if [ $? != 0 ]; then
           min_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $2}')
+          major_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $1}')
           if [ "$min_version" == "" ]; then
             for min_version in $(seq 0  100)
             do
-               pivnet-cli download-product-files -p "$product_slug" -r $stemcell_version_reqd.$min_version -g "*${IAAS}*" --accept-eula && break
+               pivnet-cli download-product-files -p "$product_slug" -r $major_version.$min_version -g "*${IAAS}*" --accept-eula && break
             done
           else
-            echo "Stemcell version $stemcell_version_reqd not found !!, giving up"
+            echo "No Stemcell version $major_version for "${IAAS}" found !!, giving up"
             exit 1
           fi
         fi
