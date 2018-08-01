@@ -44,7 +44,8 @@ if [ "$?" != "0" ]; then
   echo "Proceeding with the assumption that ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} would resolve to IP: $PKS_UAA_SYSTEM_DOMAIN_IP ultimately"
   echo ""
 else
-  resolved_ip=$(echo $check_dns_lookup | grep -A1 ${PKS_SYSTEM_DOMAIN} | grep Address | awk '{print $2}' )
+  # check_dns_lookup response gets squished into a single line, so take the last entry
+  resolved_ip=$(echo $check_dns_lookup | grep -A1 ${PKS_SYSTEM_DOMAIN} | awk '{print $NF}' )
   echo "Resolved ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} to $resolved_ip "
   if [ "$resolved_ip" != "$PKS_UAA_SYSTEM_DOMAIN_IP" ]; then
     echo "Warning!! ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} not resolving to $PKS_UAA_SYSTEM_DOMAIN_IP but instead to $resolved_ip!!"

@@ -1,0 +1,254 @@
+# Pipeline resource configuration
+pivnet_token: ((pivnet_token))    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
+opsman_major_minor_version: ((opsman_major_minor_version))   # PCF Ops Manager minor version to track
+pks_major_minor_version: ((pks_major_minor_version))         # use PKS v1.1
+
+# vCenter configuration
+vcenter_insecure: 1        # vCenter skip TLS cert validation; enter `1` to disable cert verification, `0` to enable verification
+vcenter_ca_cert:           # vCenter CA cert at the API endpoint; enter a value if `vcenter_insecure: 0`
+vcenter_host: ((vcenter_host))       # EDIT - this is for deployment of the ovas for the mgmt plane
+vcenter_usr: ((vcenter_usr))   # EDIT - this is for deployment of the ovas for the mgmt plane
+vcenter_pwd: ((vcenter_pwd))               # EDIT - this is for deployment of the ovas for the mgmt plane
+vcenter_datacenter: ((vcenter_datacenter))            # EDIT
+vcenter_datastore: ((vcenter_datastore))              # EDIT
+vcenter_cluster: ((vcenter_cluster))                  # EDIT
+
+ntpservers: ((ntpservers))                   # EDIT
+dnsserver: ((dnsserver))                     # EDIT
+dnsdomain: ((dnsdomain))                  # EDIT
+defaultgateway: ((defaultgateway))                # EDIT
+
+# Ops Manager VM configuration
+om_vm_host:                           # Optional - vCenter host to deploy Ops Manager in
+om_data_store: ((vcenter_datastore))                   # vCenter datastore name to deploy Ops Manager in
+opsman_domain_or_ip_address: opsmgr.((dnsdomain))              # FQDN to access Ops Manager without protocol (will use https), ex: opsmgr.example.com
+opsman_admin_username: ((opsman_admin_usr))          # Username for Ops Manager admin account
+opsman_admin_password: ((opsman_admin_password))    # Password for Ops Manager admin account
+om_ssh_pwd: ((om_ssh_pwd))                 # SSH password for Ops Manager (ssh user is ubuntu)
+om_decryption_pwd: ((om_decryption_pwd))       # Decryption password for Ops Manager exported settings
+om_ntp_servers: ((ntpservers))       # Comma-separated list of NTP Servers
+om_dns_servers: ((dnsserver))              # Comma-separated list of DNS Servers
+om_gateway: 172.23.1.1                # Gateway for Ops Manager network
+om_netmask: 255.255.255.0             # Netmask for Ops Manager network
+om_ip: 172.23.1.5                     # IP to assign to Ops Manager VM
+om_vm_network: PKS-Infra              # vCenter network name to use to deploy Ops Manager in
+om_vm_name: opsmgr-pks         # Name to use for Ops Manager VM
+opsman_disk_type: "thin"  # Disk type for Ops Manager VM (thick|thin)
+om_vm_power_state: true   # Whether to power on Ops Manager VM after creation
+om_vm_folder:             # Leave it blank
+
+# vCenter Cluster or Resource Pool to use to deploy Ops Manager.
+# Possible formats:
+#   cluster:       /<Data Center Name>/host/<Cluster Name>
+#   resource pool: /<Data Center Name>/host/<Cluster Name>/Resources/<Resource Pool Name>
+om_resource_pool: ((om_resource_pool))
+
+ephemeral_storage_names: ((bosh_vm_storage)) # Ephemeral Storage names in vCenter for use by PCF
+persistent_storage_names: ((bosh_vm_storage)) # Persistent Storage names in vCenter for use by PCF
+
+bosh_vm_folder: "pks_vms"                 # vSphere datacenter folder (such as pcf_vms) where VMs will be placed
+bosh_template_folder: "pks_templates"     # vSphere datacenter folder (such as pcf_templates) where templates will be placed
+bosh_disk_path: "pks_disk"                # vSphere datastore folder (such as pcf_disk) where attached disk images will be created
+
+trusted_certificates:         # Trusted certificates to be deployed along with all VM's provisioned by BOSH
+vm_disk_type: "thick"         # Disk type for BOSH provisioned VM. (thick|thin)
+
+# AZ configuration for Ops Director
+az_1_name: az1                   # Logical name of availability zone. No spaces or special characters.
+az_1_cluster_name: ((az_1_cluster))      # Name of cluster in vCenter for PKS
+az_1_rp_name: pks-rp1            # Resource pool name in vCenter for PKS
+
+az_2_name: az2                   # Logical name of availability zone. No spaces or special characters.
+az_2_cluster_name: ((az_2_cluster))      # Name of cluster in vCenter for PKS
+az_2_rp_name: pks-rp2             # Resource pool name in vCenter for PKS
+
+az_3_name: az3                   # Logical name of availability zone. No spaces or special characters.
+az_3_cluster_name: ((az_3_cluster))      # Name of cluster in vCenter for PKS
+az_3_rp_name: pks-rp3            # Resource pool name in vCenter for PKS
+
+ntp_servers: ((ntpservers))                   # Comma-separated list of NTP servers to use for VMs deployed by BOSH
+enable_vm_resurrector: true   # Whether to enable BOSH VM resurrector
+max_threads: 30               # Max threads count for deploying VMs
+
+# Network configuration for Ops Director
+icmp_checks_enabled: false     # Enable or disable ICMP checks
+
+infra_network_name: "PKS-Infra"
+infra_vsphere_network: "PKS-Infra"       # vCenter Infrastructure network name
+infra_nw_cidr: 172.23.1.0/24              # Infrastructure network CIDR, ex: 10.0.0.0/22
+infra_excluded_range: 172.23.1.0-172.23.1.9,172.23.1.25-172.23.1.64       # Infrastructure network exclusion range
+infra_nw_dns: ((dnsserver))                    # Infrastructure network DNS
+infra_nw_gateway: 172.23.1.1              # Infrastructure network Gateway
+infra_nw_azs: az1,az2,az3                 # Comma separated list of AZ's to be associated with this network
+
+nsx_networking_enabled: true              # (true|false) to use nsx networking feature. PKS v1.1+ requires it to be true
+nsx_mode: nsx-t                           # Valid values: nsx-t, nsx-v
+nsx_address: nsx-t-mgr.((dnsdomain))    # address of Nsx Mgr FQDN, not IP
+nsx_username: admin                       # username for nsx access
+nsx_password: ((nsx_t_manager_admin_pwd))                # password for nsx access
+
+# Additional network for PKS Controller & Harbor
+pks_network_name: "PKS-Services"             # Logical switch for PKS-Services
+pks_vsphere_network: "PKS-Services"          # vCenter PKS-Services  network name for PKS - if empty quotes, then this network would be skipped
+pks_nw_cidr: 172.23.2.0/24          # PKS-Services network CIDR, ex: 10.0.0.0/22
+pks_excluded_range: 172.23.2.1      # PKS-Services network exclusion range
+pks_nw_dns: ((dnsserver))                # PKS-Services network DNS
+pks_nw_gateway: 172.23.2.1          # PKS-Services network Gateway
+pks_nw_azs: az1,az2,az3                     # Comma separated list of AZ's to be associated with this network
+is_service_network: true  # Required select service network option in Ops man true or false
+
+## PKS Tile section ##
+######################
+
+# Create DNS entry in the loadbalancer and DNAT/SNAT entries for following
+pks_tile_system_domain: pks.((dnsdomain))
+# Just provide the prefix like uaa or api for domain_prefix.
+# The prefix together with system domain would be used like api.pks.test.corp.com or uaa.pks.test.corp.com
+pks_tile_uaa_domain_prefix: api # Would be used for UAA as ${prefix}.${pks_system_domain}
+
+# IMPORTANT DNS RESOLUTION FOR PKS CONTROLLER
+# External IP that would be routable via the NSX T0 Router and mapped to ${pks_tile_uaa_domain_prefix}.${pks_system_domain}
+pks_tile_uaa_system_domain_ip: ((pks_api_ip))
+
+pks_tile_cli_username: ((pks_api_admin_usr))
+pks_tile_cli_password: ((pks_api_admin_pwd))
+pks_tile_cli_useremail: pksadmin@((dnsdomain))
+pks_tile_cert_pem: # Would be generated or provide
+#cert_pem: |
+  # -----BEGIN CERTIFICATE-----
+  # MIIDjDCCAnSasfasdfsfd324242342UAMIG3232GMS4wLAYDVQQD
+  # asfsafsafasf
+  # .............
+  # -----END CERTIFICATE-----
+
+pks_tile_private_key_pem: # Would be generated
+
+# All the following fields need to be filled in
+pks_tile_vcenter_host: ((vcenter_host))           # REQUIRED
+pks_tile_vcenter_usr: ((vcenter_usr))            # REQUIRED
+pks_tile_vcenter_pwd: ((vcenter_pwd))            # REQUIRED
+pks_tile_vcenter_data_center: ((vcenter_datacenter))    # REQUIRED
+pks_tile_vcenter_cluster: ((vcenter_cluster))        # REQUIRED
+pks_tile_vcenter_datastore: ((vcenter_datastore))      # REQUIRED
+pks_tile_vm_folder: pks_vms              # REQUIRED
+
+pks_tile_singleton_job_az: az1           # Check
+pks_tile_nw_azs: az1,az2,az3
+pks_tile_deployment_network_name: PKS-Services      # Can be any network created already, default: INFRASTRUCTURE
+pks_tile_cluster_service_network_name: PKS-Services # Should match the PKS-Services network created already
+
+
+
+# ALERT - The underlying Edge instances should be large, 8 vcpus.
+# Otherwise the pks-nsx-t-precheck errrand would fail.
+pks_tile_nsx_skip_ssl_verification: true # can be true or false
+
+# Disable PKS NSX-T Precheck Errand
+pks_tile_disable_nsx_t_precheck_errand: false                          # Default: false. Set to true if using medium edge sizes as PKS Errand would fail with smaller edges
+
+# PKS Main configs
+pks_tile_t0_router_name: DefaultT0Router                               # EDIT - Name of T0 Router to be used for PKS
+pks_tile_nsx_nat_mode: true                                            # Set to true
+pks_tile_external_ip_pool_name: snat-vip-pool-for-pks                  # EDIT - Name of External Floating IP Pool in NSX Mgr to be used for PKS
+pks_tile_container_ip_block_name: pod-container-ip-block-pks           # EDIT - Name of Container IP Block in NSX Mgr to be used for PKS
+pks_tile_nodes_ip_block_name: node-container-ip-block-pks              # EDIT - Name of Node IP Block in NSX Mgr to be used for PKS nodes in v1.1
+pks_tile_vcenter_cluster_list: ((pks_vcenter_cluster_list))                                 # EDIT - List of vcenter clusters for PKS to deploy k8s clusters
+pks_tile_nodes_dns_list: ((dnsserver))                                       # EDIT - DNS server ip list for use by k8s nodes
+
+# Syslog Flags
+pks_tile_syslog_migration_enabled: disabled # can be set to 'enabled', if 'disabled' all syslog properties ignored
+pks_tile_syslog_address: #101.10.10.10
+pks_tile_syslog_port: # 0
+pks_tile_syslog_transport_protocol: #tcp
+pks_tile_syslog_tls_enabled: # true
+pks_tile_syslog_peer: # *.test.corp.com
+pks_tile_syslog_ca_cert:
+
+# Allow public ip
+pks_tile_allow_public_ip: true # leave it to empty or false to turn off public ip
+
+# vRealize Log Insight (vrli) flags
+pks_tile_vrli_enabled: false # Change to true and fill following fields for using vrli
+pks_tile_vrli_host:
+pks_tile_vrli_use_ssl: true
+pks_tile_vrli_skip_cert_verify: true
+pks_tile_vrli_ca_cert: # cert contents
+pks_tile_vrli_rate_limit: 0
+
+# PKS use Proxy
+pks_tile_enable_http_proxy: false # Change to true and fill following fields for using proxy
+pks_tile_http_proxy_url:
+pks_tile_http_proxy_user:
+pks_tile_http_proxy_password:
+pks_tile_https_proxy_url:
+pks_tile_https_proxy_user:
+pks_tile_https_proxy_password:
+pks_tile_no_proxy:
+
+# Use LDAP for PKS UAA
+# Default is to use internal uaa
+pks_tile_uaa_use_ldap: false # Change to true and fill following fields for using LDAP
+pks_tile_ldap_url:
+pks_tile_ldap_user:
+pks_tile_ldap_password:
+pks_tile_ldap_search_base:
+pks_tile_ldap_group_search_base:
+pks_tile_ldap_server_ssl_cert:
+pks_tile_ldap_server_ssl_cert_alias:
+pks_tile_ldap_email_domains:
+pks_tile_ldap_first_name_attribute:
+pks_tile_ldap_last_name_attribute:
+
+# PKS Wavefront integration
+pks_tile_wavefront_api_url: # wavefront api url, empty is disabled
+pks_tile_wavefront_token:   # wavefront access token
+pks_tile_wavefront_alert_targets:  # email ids to sent alerts
+
+pks_tile_telemetry: disabled # can be enabled or disabled
+
+pks_tile_plan_details:
+- plan_detail:
+    name: "small"  # the name that appears for end users to choose
+    plan_selector: plan1_selector # Dont change the value of selector - Needs to be planN_selector
+    is_active: true
+    description: "Small plan"
+    # AZ can be only a single value for PKS v1.0
+    # There can be a comma separated list for PKS v1.1 which supports multiple AZs
+    az_placement: az1,az2,az3  # Specify the AZ in which the cluster will be created, single for PKS v1.0
+    master_vm_type: medium
+    worker_vm_type: medium
+    persistent_disk_type: "10240" # Used in PKS 1.0
+    master_persistent_disk_type: "10240" # Used in PKS 1.1+
+    worker_persistent_disk_type: "10240" # Used in PKS 1.1+
+    master_instances: 1    # The number of K8s worker instances
+    worker_instances: 3    # The number of K8s worker instances
+    errand_vm_type: micro
+    addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
+    # Privileged containers run with host-like permissions.
+    # Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles.
+    # Use with caution.
+    allow_privileged_containers: false # default false
+- plan_detail:
+    name: "medium"  # the name that appears for end users to choose
+    is_active: false
+    plan_selector: plan2_selector # Dont change the value of selector - Needs to be planN_selector
+    description: "Medium plan"
+    # AZ can be only a single value for PKS v1.0
+    # There can be a comma separated list for PKS v1.1 which supports multiple AZs
+    az_placement: az1,az2,az3  # Specify the AZ in which the cluster will be created, single for PKS v1.0
+    master_vm_type: medium
+    worker_vm_type: medium
+    persistent_disk_type: "10240" # Used in PKS 1.0
+    master_persistent_disk_type: "10240" # Used in PKS 1.1+
+    worker_persistent_disk_type: "10240" # Used in PKS 1.1+
+    master_instances: 2    # The number of K8s worker instances
+    worker_instances: 5    # The number of K8s worker instances
+    errand_vm_type: micro
+    addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan
+    allow_privileged_containers: false  # Privileged containers run with host-like permissions. Allowing your users to deploy privileged containers in clusters using this plan can create security vulnerabilities and may impact other tiles. Use with caution."
+- plan_detail:
+    name: "large"  # the name that appears for end users to choose
+    is_active: false
+    plan_selector: plan3_selector # Dont change the value of selector - Needs to be planN_selector
+    # other fields not considered if its not active
+

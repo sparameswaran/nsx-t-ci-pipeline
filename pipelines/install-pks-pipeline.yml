@@ -132,7 +132,7 @@ pks_cli_config_params: &pks-cli-config-params
   PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
   PKS_CLI_PASSWORD: ((pks_tile_cli_password))
 
-pks_config-pks-api-nats: &pks-config-pks-api-nats-params
+pks_config_pks_api_nats: &pks-config-pks-api-nats-params
   OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
   OPSMAN_USERNAME: ((opsman_admin_username))
   OPSMAN_PASSWORD: ((opsman_admin_password))
@@ -143,6 +143,17 @@ pks_config-pks-api-nats: &pks-config-pks-api-nats-params
   PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
   PKS_UAA_SYSTEM_DOMAIN_IP: ((pks_tile_uaa_system_domain_ip))
   PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
+
+harbor_config_api_nats_params: &harbor-config-api-nats-params
+  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+  OPSMAN_USERNAME: ((opsman_admin_username))
+  OPSMAN_PASSWORD: ((opsman_admin_password))
+  NSX_API_MANAGER: ((nsx_address))
+  NSX_API_USER: ((nsx_username))
+  NSX_API_PASSWORD: ((nsx_password))
+  PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
+  HARBOR_APP_DOMAIN: ((harbor_tile_app_domain))
+  HARBOR_APP_DOMAIN_IP: ((harbor_tile_app_domain_ip))
 
 resource_types:
 - name: pivnet
@@ -210,6 +221,7 @@ groups:
   jobs:
   - upload-harbor
   - deploy-harbor
+  - config-harbor-app
 
 # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
 - name: delete-pks-clusters
@@ -434,6 +446,18 @@ jobs:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
       OPSMAN_USERNAME: ((opsman_admin_username))
       OPSMAN_PASSWORD: ((opsman_admin_password))
+
+- name: config-harbor-app
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+      params: {globs: []}
+      passed: [deploy-harbor]
+      trigger: true
+
+  - task: config-harbor-nats
+    file: nsx-t-ci-pipeline/tasks/config-harbor-nats/task.yml
+    params: *harbor-config-api-nats-params
 
 - name: upload-pks-standalone
   plan:
