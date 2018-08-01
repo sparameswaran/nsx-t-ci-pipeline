@@ -112,15 +112,15 @@ jobs:
               TILE_FILE_PATH=`find $TILE_DIRECTORY_PATH -name *.pivotal | sort | head\
               \ -1`\ntile_metadata=$(unzip -l $TILE_FILE_PATH | grep \"metadata\"\
               \ | grep \"ml$\" | awk '{print $NF}' );\nstemcell_version_reqd=$(unzip\
-              \ -p $TILE_FILE_PATH $tile_metadata | grep -A4 stemcell | grep \"version:\"\
-              \  | grep -Ei \"[0-9]{4,}\" | awk '{print $NF}' | sed -e \"s/'//g\"\
-              \  );\nif [ \"$stemcell_version_reqd\" != \"\" ]; then\n  pivnet-cli\
-              \ login --api-token=$PIVNET_API_TOKEN\n  pivnet-cli download-product-files\
-              \ -p \"stemcells\" -r $stemcell_version_reqd -g \"*${IAAS}*\" --accept-eula\n\
-              \  if [ $? != 0 ]; then\n   min_version=$(echo $stemcell_version_reqd\
-              \ | awk -F '.' '{print $2}')\n   if [ \"$min_version\" == \"\" ]; then\n\
-              \     for min_version in $(seq 0  100)\n     do\n        pivnet-cli\
-              \ download-product-files -p \"stemcells\" -r $stemcell_version_reqd.$min_version\
+              \ -p $TILE_FILE_PATH $tile_metadata | grep -A4 s\"stemcell_criteria:\"\
+              \ | grep \"version:\"  | grep -Ei \"[0-9]{2,}\" | awk '{print $NF}'\
+              \ | sed -e \"s/'//g;s/\\"//g\"  );\nif [ \"$stemcell_version_reqd\"\
+              \ != \"\" ]; then\n  pivnet-cli login --api-token=$PIVNET_API_TOKEN\n\
+              \  pivnet-cli download-product-files -p \"stemcells\" -r $stemcell_version_reqd\
+              \ -g \"*${IAAS}*\" --accept-eula\n  if [ $? != 0 ]; then\n   min_version=$(echo\
+              \ $stemcell_version_reqd | awk -F '.' '{print $2}')\n   if [ \"$min_version\"\
+              \ == \"\" ]; then\n     for min_version in $(seq 0  100)\n     do\n\
+              \        pivnet-cli download-product-files -p \"stemcells\" -r $stemcell_version_reqd.$min_version\
               \ -g \"*${IAAS}*\" --accept-eula && break\n     done\n   else\n    \
               \ echo \"Stemcell version $stemcell_version_reqd not found !!, giving\
               \ up\"\n     exit 1\n   fi\n  fi\n\n  SC_FILE_PATH=`find ./ -name bosh*.tgz`;\n\
@@ -437,11 +437,12 @@ jobs:
             TILE_FILE_PATH=`find $TILE_DIRECTORY_PATH -name *.pivotal | sort | head\
             \ -1`\ntile_metadata=$(unzip -l $TILE_FILE_PATH | grep \"metadata\" |\
             \ grep \"ml$\" | awk '{print $NF}' );\nstemcell_version_reqd=$(unzip -p\
-            \ $TILE_FILE_PATH $tile_metadata | grep -A4 stemcell | grep \"version:\"\
-            \  | grep -Ei \"[0-9]{4,}\" | awk '{print $NF}' | sed -e \"s/'//g\"  );\n\
-            if [ \"$stemcell_version_reqd\" != \"\" ]; then\n  pivnet-cli login --api-token=$PIVNET_API_TOKEN\n\
-            \  pivnet-cli download-product-files -p \"stemcells\" -r $stemcell_version_reqd\
-            \ -g \"*${IAAS}*\" --accept-eula\n  if [ $? != 0 ]; then\n   min_version=$(echo\
+            \ $TILE_FILE_PATH $tile_metadata | grep -A4 \"stemcell_criteria:\" | grep\
+            \ \"version:\"  | grep -Ei \"[0-9]{2,}\" | awk '{print $NF}' | sed -e\
+            \ \"s/'//g;s/\\\"//g\"  );\nif [ \"$stemcell_version_reqd\" != \"\"\
+            \ ]; then\n  pivnet-cli login --api-token=$PIVNET_API_TOKEN\n  pivnet-cli\
+            \ download-product-files -p \"stemcells\" -r $stemcell_version_reqd -g\
+            \ \"*${IAAS}*\" --accept-eula\n  if [ $? != 0 ]; then\n   min_version=$(echo\
             \ $stemcell_version_reqd | awk -F '.' '{print $2}')\n   if [ \"$min_version\"\
             \ == \"\" ]; then\n     for min_version in $(seq 0  100)\n     do\n  \
             \      pivnet-cli download-product-files -p \"stemcells\" -r $stemcell_version_reqd.$min_version\
@@ -703,51 +704,51 @@ resources:
   type: docker-image
 - name: output-git-pcf-pipelines
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/git/pcf-pipelines-tar(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/pcf-pipelines-tar(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-git-nsx-t-ci-pipeline
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/git/nsx-t-ci-pipeline-tar(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/nsx-t-ci-pipeline-tar(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-pivnet-non-tile-pcf-ops-manager
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/pivnet-non-tile/pcf-ops-manager-(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-non-tile/pcf-ops-manager-(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-tile-pivotal-container-service
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/pivnet-tile/pivotal-container-service/(.*).pivotal,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-tile/pivotal-container-service/(.*).pivotal,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-tile-stemcell-pivotal-container-service
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/pivnet-tile/pivotal-container-service-tarball/(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-tile/pivotal-container-service-tarball/(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-git-pcf-pipelines-utils
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/git/pcf-pipelines-utils-tar(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/pcf-pipelines-utils-tar(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-docker-pcfnorm-rootfs-latest-docker
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-docker-czero-cflinuxfs2-latest-docker
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-docker-czero-rootfs-latest-docker
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: output-docker-pivotalservices-pks-kubectl-latest-docker
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3

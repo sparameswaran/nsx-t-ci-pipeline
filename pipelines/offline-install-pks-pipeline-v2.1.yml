@@ -25,7 +25,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -70,7 +70,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -96,7 +96,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -156,7 +156,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -194,7 +194,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -234,7 +234,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -292,7 +292,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -325,7 +325,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -351,7 +351,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -386,7 +386,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -424,7 +424,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -446,7 +446,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -478,7 +478,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -500,7 +500,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -527,7 +527,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -549,7 +549,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -576,7 +576,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -604,7 +604,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -635,51 +635,51 @@ resource_types: []
 resources:
 - name: pcf-pipelines-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/git/pcf-pipelines-tar(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/pcf-pipelines-tar(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: nsx-t-ci-pipeline-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/git/nsx-t-ci-pipeline-tar(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/nsx-t-ci-pipeline-tar(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: pcf-ops-manager
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/pivnet-non-tile/pcf-ops-manager-(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-non-tile/pcf-ops-manager-(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: pivotal-container-service
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/pivnet-tile/pivotal-container-service/(.*).pivotal,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-tile/pivotal-container-service/(.*).pivotal,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: pivotal-container-service-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/pivnet-tile/pivotal-container-service-tarball/(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-tile/pivotal-container-service-tarball/(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: pcf-pipelines-utils-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/git/pcf-pipelines-utils-tar(.*).tgz,
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/pcf-pipelines-utils-tar(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: pcfnorm-rootfs-latest-docker-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: czero-cflinuxfs2-latest-docker-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: czero-rootfs-latest-docker-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/czero-rootfs-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: pivotalservices-pks-kubectl-latest-docker-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: install-pks-run-1/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
