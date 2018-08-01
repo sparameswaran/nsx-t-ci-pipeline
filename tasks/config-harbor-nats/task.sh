@@ -44,7 +44,7 @@ if [ "$?" != "0" ]; then
   echo "Proceeding with the assumption that api.${HARBOR_APP_DOMAIN} would resolve to IP: $HARBOR_APP_DOMAIN_IP ultimately"
   echo ""
 else
-  resolved_ip=$(echo $check_dns_lookup | grep -A1 api | grep Address | awk '{print $2}' )
+  resolved_ip=$(echo $check_dns_lookup | grep -A1 ${HARBOR_APP_DOMAIN} | grep Address | awk '{print $2}' )
   echo "Resolved api.${HARBOR_APP_DOMAIN} to $resolved_ip "
   if [ "$resolved_ip" != "$HARBOR_APP_DOMAIN_IP" ]; then
     echo "Warning!! api.${HARBOR_APP_DOMAIN} not resolving to $HARBOR_APP_DOMAIN_IP but instead to $resolved_ip!!"
