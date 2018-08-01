@@ -181,29 +181,19 @@ resources:
     product_version: ((pks_major_minor_version))
     sort_by: semver
 
-# Uncomment to use s3 bucket if PKS tile is NOT on pivnet...
-# - name: pivotal-container-service
-#   type: s3
-#   source:
-#     access_key_id: ((s3_creds_access_key_id))
-#     secret_access_key: ((s3_creds_secret_access_key))
-#     bucket: ((s3_bucket))
-#     regexp: ((s3_pks_tile_path)) #pks/pivotal-container-service-1.1.0.pivotal
-#     region_name: ((s3_region))
-
-# Uncomment to use file server if PKS tile is NOT on pivnet......
-# - name: pivotal-container-service
-#   type: file-url
-#   source:
-#     url: ((pks_tile_webserver))/((pks_tile))
-#     filename: ((pks_tile))
-
-
 # Used for PKS user creation and deletion of clusters
 - name: pcf-pipelines-utils
   type: git
   source:
     uri: https://github.com/pivotalservices/concourse-pipeline-samples.git
+
+- name: harbor-container-registry
+  type: pivnet
+  source:
+    api_token: ((pivnet_token))
+    product_slug: harbor-container-registry
+    product_version: ((harbor_product_version))
+    sort_by: semver
 
 groups:
 
@@ -215,6 +205,11 @@ groups:
   - upload-pks
   - deploy-pks
   - config-pks-controller
+
+- name: harbor-install-standalone
+  jobs:
+  - upload-harbor
+  - deploy-harbor
 
 # From https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/pipelines/pcf/pks/install-pks/pipeline.yml
 - name: delete-pks-clusters
@@ -375,6 +370,70 @@ jobs:
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
     params: *pks-cli-config-params
+
+- name: upload-harbor
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pivnet-product
+      resource: harbor-container-registry
+      params: {globs: ["harbor-container-registry*.pivotal"]}
+
+  - task: upload-tile
+    file: nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.yml
+    params:
+      IAAS: "vsphere"
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+      OPSMAN_USERNAME: ((opsman_admin_username))
+      OPSMAN_PASSWORD: ((opsman_admin_password))
+      PIVNET_API_TOKEN: ((pivnet_token))
+      OM_IP: ((om_ip))
+
+  - task: stage-harbor
+    file: nsx-t-ci-pipeline/tasks/stage-product/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+      OPSMAN_USERNAME: ((opsman_admin_username))
+      OPSMAN_PASSWORD: ((opsman_admin_password))
+
+- name: deploy-harbor
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+    - get: pcf-pipelines
+    - get: pcf-pipelines-utils
+    - get: pivnet-product
+      resource: harbor-container-registry
+      params: {globs: []}
+      passed: [upload-harbor]
+      trigger: true
+
+  - task: configure-harbor
+    file: pcf-pipelines-utils/tasks/pcf/configure-tile/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+      OPSMAN_USERNAME: ((opsman_admin_username))
+      OPSMAN_PASSWORD: ((opsman_admin_password))
+      TILE_PROPERTIES: ((harbor_properties))
+      TILE_NETWORK: ((harbor_networks))
+      TILE_RESOURCES: ((harbor_resources))
+      TILE_PRODUCT_NAME: harbor-container-registry
+
+  - task: disable-harbor-errands
+    file: pcf-pipelines/tasks/disable-errands/task.yml
+    params:
+      ERRANDS_TO_DISABLE: ((harbor_errands_to_disable))
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+      OPSMAN_USERNAME: ((opsman_admin_username))
+      OPSMAN_PASSWORD: ((opsman_admin_password))
+      PRODUCT_NAME: harbor-container-registry
+
+  - task: deploy-harbor
+    file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+      OPSMAN_USERNAME: ((opsman_admin_username))
+      OPSMAN_PASSWORD: ((opsman_admin_password))
 
 - name: upload-pks-standalone
   plan:

@@ -47,7 +47,7 @@ function upload_stemcells() (
           min_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $2}')
           major_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $1}')
           if [ "$min_version" == "" ]; then
-            for min_version in $(seq 0  100)
+            for min_version in $(seq 100 -1 0)
             do
                pivnet-cli download-product-files -p "$product_slug" -r $major_version.$min_version -g "*${IAAS}*" --accept-eula && break
             done
@@ -58,14 +58,17 @@ function upload_stemcells() (
         fi
     set -e
 
-        SC_FILE_PATH=`find ./ -name *.tgz`
+        SC_FILE_PATH=`find ./ -name "bosh*.tgz" | sort | tail -1 || true`
 
         if [ ! -f "$SC_FILE_PATH" ]; then
           echo "Stemcell file not found!"
           exit 1
         fi
 
-        om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k upload-stemcell -s $SC_FILE_PATH
+        for stemcell in $SC_FILE_PATH
+        do
+          om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD -k upload-stemcell -s $stemcell
+        done
       fi
     fi
 

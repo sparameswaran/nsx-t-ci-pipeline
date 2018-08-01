@@ -16,7 +16,6 @@ set -eu
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-desired_version=$(jq --raw-output '.Release.Version' < ./pivnet-product/metadata.json)
 
 AVAILABLE=$(om-linux \
   --skip-ssl-validation \
@@ -33,26 +32,27 @@ STAGED=$(om-linux \
 
 # Should the slug contain more than one product, pick only the first.
 FILE_PATH=`find ./pivnet-product -name *.pivotal | sort | head -1`
-unzip $FILE_PATH metadata/*
-
-PRODUCT_NAME="$(cat metadata/*.yml | grep '^name' | cut -d' ' -f 2)"
+TILE_METADATA=$(unzip -l $FILE_PATH | grep "metadata" | grep "ml$" | awk '{print $NF}' );
+PRODUCT_NAME="$(unzip -p $FILE_PATH  $TILE_METADATA | grep '^name' | cut -d' ' -f 2)"
 
 # Figure out which products are unstaged.
 UNSTAGED_ALL=$(jq -n --argjson available "$AVAILABLE" --argjson staged "$STAGED" \
   '$available - ($staged | map({"name": .type, "product_version": .product_version}))')
 
-UNSTAGED_PRODUCT=$(echo "$UNSTAGED_ALL" | jq \
-  --arg product_name "$PRODUCT_NAME" \
-  --arg product_version "$desired_version" \
-  'map(select(.name == $product_name)) | map(select(.product_version ))'
-)
+#desired_version=$(jq --raw-output '.Release.Version' < ./pivnet-product/metadata.json)
 
-# There should be only one such unstaged product.
-if [ "$(echo $UNSTAGED_PRODUCT | jq '. | length')" -ne "1" ]; then
-  echo "Need exactly one unstaged build for $PRODUCT_NAME version $desired_version"
-  jq -n "$UNSTAGED_PRODUCT"
-  exit 1
-fi
+# UNSTAGED_PRODUCT=$(echo "$UNSTAGED_ALL" | jq \
+#   --arg product_name "$PRODUCT_NAME" \
+#   --arg product_version "$desired_version" \
+#   'map(select(.name == $product_name)) | map(select(.product_version ))'
+# )
+
+# # There should be only one such unstaged product.
+# if [ "$(echo $UNSTAGED_PRODUCT | jq '. | length')" -ne "1" ]; then
+#   echo "Need exactly one unstaged build for $PRODUCT_NAME version $desired_version"
+#   jq -n "$UNSTAGED_PRODUCT"
+#   exit 1
+# fi
 
 full_version=$(echo "$UNSTAGED_PRODUCT" | jq -r '.[].product_version')
 
