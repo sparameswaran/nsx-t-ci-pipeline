@@ -1,0 +1,144 @@
+# Edit the fields as required
+# Needs to be used in conjunction with the pks params file
+# to pull ops mgr, azs, networks info etc.
+
+harbor_product_version: ^1\.5\..*$  # PKS tile version to install
+harbor_networks: |
+  network:
+    name: PKS-Services                    # EDIT ME
+  other_availability_zones:
+  - name: az1                             # EDIT ME
+  - name: az2                             # EDIT ME
+  - name: az3                             # EDIT ME
+  singleton_availability_zone:
+    name: az1                             # EDIT ME
+
+harbor_properties: |
+  ######## General
+  ### The FQDN (not IP) of Harbor instance. Its domain must match the wildcard domain used for generating Harbor certificate.
+  .properties.hostname:
+    # EDIT ME
+    value: harbor.test.corp.com                      # EDIT ME
+  ######## SSL certificate and private key for Harbor
+  ### SSL Certificate and key PEMs
+  .properties.server_cert_key:
+  #
+  # The "generate_cert_domains" parameter controls the automatic certificates
+  #   generation behavior for this property.
+  #
+  # If auto-generation of certs is desired, leave this parameter un-commented
+  #   and update the array of domain names to be used for cert generation.
+  #   e.g. ["harbortest.haas-167.pez.pivotal.io"].
+  #   Leave parameters cert_pem and private_key_pem with empty values in this case.
+  #
+  # Otherwise, either comment out or delete this parameter line and
+  #   provide the certificate (cert_pem) and private key (private_key_pem) values
+  #   in the corresponding parameters further below.
+  #
+    generate_cert_domains: ["*.harbor.test.corp.com"]            # EDIT ME
+    value:
+      cert_pem:
+      private_key_pem:
+  ### Certificate Authority (CA) for the server certificate. If using self-signed certificate, please paste the corresponding CA here. Leave empty if using root CA of Ops Manager.
+  .properties.server_cert_ca:
+    value:
+  ######## Credentials
+  ### The password for the system administrator
+  .properties.admin_password:
+    value:
+      # EDIT ME
+      secret: admin123!                                           # EDIT ME
+  ######## Authentication Mode
+  ### Options:
+  ### - db_auth        (Internal, i.e. Harbor internal user management)
+  ### - ldap_auth      (LDAP)
+  ### - uaa_auth_pks   (UAA in Pivotal Container Service)
+  ### - uaa_auth_pas   (UAA in Pivotal Application Service)
+  .properties.auth_mode:
+    value: db_auth
+  ### if "ldap_auth" is chosen for authentiaction mode, then uncomment and fill out the ldap parameters below
+  ### otherwise, leave this section commented out to avoid Ops Manager parameter settings errors
+  ###
+  ### The LDAP Endpoint URL.
+  # .properties.auth_mode.ldap_auth.url:
+  #   value: ( ( ldap_auth_url ) )
+  ### Verify LDAP server SSL certificate (flag) - true or false
+  # .properties.auth_mode.ldap_auth.verify_cert:
+  #   value: ( ( ldap_auth_verify_cert ) )
+  ### The DN of the user who has the permission to search the LDAP server.
+  # .properties.auth_mode.ldap_auth.searchdn:
+  #   value: ( ( ldap_auth_searchdn ) )
+  ### The password of the user who has the permission to search the LDAP server.
+  # .properties.auth_mode.ldap_auth.searchpwd:
+  #   value:
+  #     secret: ( ( ldap_auth_searchpwd ) )
+  ### The base DN from which to look up a user in LDAP server
+  # .properties.auth_mode.ldap_auth.basedn:
+  #   value: ( ( ldap_auth_basedn ) )
+  ### The attribute used in a search to match a user, it could be uid, cn, email, sAMAccountName or other attributes depending on your LDAP server
+  # .properties.auth_mode.ldap_auth.uid:
+  #   value: ( ( ldap_auth_uid ) )
+  ### Search filter for LDAP server. Make sure the syntax of the filter is correct
+  # .properties.auth_mode.ldap_auth.filter:
+  #   value: ( ( ldap_auth_filter ) )
+  ### The LDAP scope to search for users
+  ### Options:
+  ### - 0        (Base)
+  ### - 1        (nsx_networking_enabledevel)
+  ### - 2        (Subtree)
+  # .properties.auth_mode.ldap_auth.scope:
+  #   value: ( ( ldap_auth_scope ) )
+  ### The timeout (in seconds) when connecting to the LDAP Server
+  # .properties.auth_mode.ldap_auth.timeout:
+  #   value: ( ( ldap_auth_timeout ) )
+  ######## Container Registry Storage
+  ### Container Registry's filesystem
+  ### Options:
+  ### - filesystem     (Local File System)
+  ### - s3             (AWS S3)
+  .properties.registry_storage:
+    value: filesystem
+  ### if "s3" is chosen for Container Registry Storage, then uncomment and fill out the s3 parameters below
+  ### otherwise, leave this section commented out to avoid Ops Manager parameter settings errors
+  ###
+  ### S3 Access Key
+  # .properties.registry_storage.s3.access_key:
+  #   value: ( ( s3_registry_storage_access_key ) )
+  ### S3 Secret Key
+  # .properties.registry_storage.s3.secret_key:
+  #   value:
+  #     secret: ( ( s3_registry_storage_secret_key ) )
+  ### S3 Region
+  # .properties.registry_storage.s3.region:
+  #   value: ( ( s3_registry_storage_region ) )
+  ### S3 Endpoint URL of your S3-compatible file store
+  # .properties.registry_storage.s3.endpoint_url:
+  #   value: ( ( s3_registry_storage_endpoint_url ) )
+  ### S3 Bucket Name
+  # .properties.registry_storage.s3.bucket:
+  #   value: ( ( s3_registry_storage_bucket ) )
+  ### S3 Root Directory in the Bucket
+  # .properties.registry_storage.s3.root_directory:
+  #   value: ( ( s3_registry_storage_root_directory ) )
+  ######## Clair Settings
+  ### Determine if include Clair in the deployment to support vulnerability scanning (flag: true or false)
+  .properties.with_clair:
+    value: true
+  ######## with_notary Settings
+  ### Determine if include Notary in the deployment to support content trust (flag: true or false)
+  .properties.with_notary:
+    value: true
+######## Errands to disable
+harbor_errands_to_disable: ""
+  # smoke-testing, uaa-deregistration
+
+######## Resources
+harbor_resources: |
+  harbor-app:
+    instance_type:
+      id: large.disk
+    persistent_disk:
+      size_mb: "102400"
+  smoke-testing:
+    instance_type:
+      id: medium

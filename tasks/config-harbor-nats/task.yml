@@ -1,0 +1,24 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/rootfs
+
+inputs:
+- name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/config-harbor-nats/task.sh
+
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPSMAN_USERNAME:
+  OPSMAN_PASSWORD:
+  NSX_API_MANAGER:
+  NSX_API_USER:
+  NSX_API_PASSWORD:
+  PKS_T0_ROUTER_NAME:
+  HARBOR_APP_DOMAIN:
+  HARBOR_APP_DOMAIN_IP:
