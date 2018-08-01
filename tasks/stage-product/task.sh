@@ -54,7 +54,8 @@ UNSTAGED_ALL=$(jq -n --argjson available "$AVAILABLE" --argjson staged "$STAGED"
 #   exit 1
 # fi
 
-full_version=$(echo "$UNSTAGED_PRODUCT" | jq -r '.[].product_version')
+full_version=$(echo "$UNSTAGED_ALL" | jq -r  --arg product_name $PRODUCT_NAME \
+                    '.[] | select (.name | contains($product_name)) | .product_version' )
 
 om-linux --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
    --skip-ssl-validation \

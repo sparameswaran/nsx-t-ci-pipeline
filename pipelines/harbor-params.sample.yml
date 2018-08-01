@@ -51,7 +51,7 @@ harbor_properties: |
   .properties.admin_password:
     value:
       # EDIT ME
-      secret: admin123!                                           # EDIT ME
+      secret: EDIT_ME_ADMIN_PASWD                                          # EDIT ME
   ######## Authentication Mode
   ### Options:
   ### - db_auth        (Internal, i.e. Harbor internal user management)
