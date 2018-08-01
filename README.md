@@ -82,3 +82,28 @@ PKS v1.* Tile can also be installed either on an existing Ops Mgr install (with 
 
 Note: The underlying Edge instances used for PKS should be large size, 8 vcpus.
 Otherwise, the pks-nsx-t-precheck errand bundled with PKS v1.1 would fail. Turn off or disable the precheck errand in those cases via the pipeline parameter.
+
+## Installing Harbor
+Harbor v1.* Tile can also be installed on an existing Ops Mgr install. Use the install-pks-pipeline.yml for install with the `harbor-install-standalone` group job option. Use both the pks-params.sample.yml and harbor.params.sample.yml as templates to fill all required fields.
+
+## Exposing PKS Controller and Harbor to outside
+
+Note: Both Harbor and PKS use vms (harbor app vm and PKS controller vm respectively) for mgmt layer. Since these run inside the internal private network, the pipeline makes it easy to expose them to the outside using NAT settings on the NSX-T T0 Router so users can invoke cli commands or access the mgmt function from outside. This functionality requires the setup of a domain endpoint thats addressable and resolvable to a pre-determined external accessible ip (from the NSX-T external ip pool, routed via the NSX T0 Router).
+
+Sample config for PKS:
+```
+# Create DNS entry in the loadbalancer and DNAT/SNAT entries for following
+pks_tile_system_domain: pks.test.corp.com
+# Just provide the prefix like uaa or api for domain_prefix.
+# The prefix together with system domain would be used like api.pks.test.corp.com or uaa.pks.test.corp.com
+pks_tile_uaa_domain_prefix: api # Would be used for UAA as ${prefix}.${pks_system_domain}
+
+# External IP that would be routable via the NSX T0 Router and mapped to ${pks_tile_uaa_domain_prefix}.${pks_system_domain}
+pks_tile_uaa_system_domain_ip: EDIT_ME
+```
+
+Sample config for Harbor:
+```
+harbor_tile_app_domain: EDIT_ME_HARBOR_APP_DOMAIN
+harbor_tile_app_domain_ip: EDIT_ME
+```
