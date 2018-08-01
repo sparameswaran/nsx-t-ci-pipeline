@@ -207,7 +207,7 @@ resources:
   type: git
   source:
     uri: https://github.com/sparameswaran/nsx-t-ci-pipeline.git
-    branch: master
+    branch: nsxt-2.1
 
 - name: pcf-ops-manager
   type: pivnet
