@@ -54,7 +54,7 @@ else
   fi
 fi
 
-echo "Retrieving PKS Controller IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
+echo "Retrieving Harbor App IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
 
 PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
@@ -78,7 +78,7 @@ INTERNAL_HARBOR_APP_IP=$(om-linux \
 echo "Discovered Harbor App running at: $INTERNAL_HARBOR_APP_IP!!"
 echo ""
 
-echo "Going to create NAT entry between External Address: $HARBOR_APP_DOMAIN_IP and PKS Controller Internal IP: $INTERNAL_HARBOR_APP_IP"
+echo "Going to create NAT entry between External Address: $HARBOR_APP_DOMAIN_IP and Harbor App Internal IP: $INTERNAL_HARBOR_APP_IP"
 echo "   on T0Router: $PKS_T0_ROUTER_NAME on NSX Manager: $NSX_API_MANAGER"
 echo ""
 
@@ -193,6 +193,6 @@ echo ""
 echo "DNS Entry of api.${HARBOR_APP_DOMAIN} expected to resolve External IP: $HARBOR_APP_DOMAIN_IP"
 echo "This ip should be routable via the T0 Router $PKS_T0_ROUTER_NAME" on $NSX_API_MANAGER
 echo ""
-echo "Created NAT rules for PKS Controller API IP $INTERNAL_HARBOR_APP_IP to be accessible from external IP: $HARBOR_APP_DOMAIN_IP"
+echo "Created NAT rules for Harbor App API IP $INTERNAL_HARBOR_APP_IP to be accessible from external IP: $HARBOR_APP_DOMAIN_IP"
 echo "Note: Do a sanity check of the NAT rules in NSX Manager and delete any duplicate or older/wrong entries!!"
 echo ""
