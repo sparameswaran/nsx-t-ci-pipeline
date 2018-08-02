@@ -54,7 +54,7 @@ else
   fi
 fi
 
-echo "Retrieving PKS Controller IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
+echo "Retrieving Harbor App IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
 
 PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
@@ -78,7 +78,7 @@ INTERNAL_HARBOR_APP_IP=$(om-linux \
 echo "Discovered Harbor App running at: $INTERNAL_HARBOR_APP_IP!!"
 echo ""
 
-echo "Going to create NAT entry between External Address: $HARBOR_APP_DOMAIN_IP and PKS Controller Internal IP: $INTERNAL_HARBOR_APP_IP"
+echo "Going to create NAT entry between External Address: $HARBOR_APP_DOMAIN_IP and Harbor App Internal IP: $INTERNAL_HARBOR_APP_IP"
 echo "   on T0Router: $PKS_T0_ROUTER_NAME on NSX Manager: $NSX_API_MANAGER"
 echo ""
 
