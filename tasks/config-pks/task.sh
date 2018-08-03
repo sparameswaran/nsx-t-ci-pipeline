@@ -9,9 +9,9 @@ source $ROOT_DIR/nsx-t-ci-pipeline/functions/generate_cert.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/yaml2json.sh
 source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
 
-connect_status=$(curl -kv https://${NSX_API_MANAGERS} )
+connect_status=$(curl -kv https://${NSX_API_MANAGER} )
 if [ "$connect_status" != "0" ]; then
-  echo "Error in connecting to ${NSX_API_MANAGERS} over 443, please check and correct the NSX Mgr address or dns entries and retry!!"
+  echo "Error in connecting to ${NSX_API_MANAGER} over 443, please check and correct the NSX Mgr address or dns entries and retry!!"
   exit -1
 fi
 
