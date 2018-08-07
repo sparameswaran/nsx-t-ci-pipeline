@@ -15,7 +15,7 @@ tile_metadata=$(unzip -l $TILE_FILE_PATH | grep "metadata" | grep "ml$" | awk '{
 stemcell_version_reqd=$(unzip -p $TILE_FILE_PATH $tile_metadata | grep -A5 "stemcell_criteria:" | grep "version:" \
                                                | grep -Ei "[0-9]{2,}" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
 
-stemcell_os=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A5 "stemcell_criteria:"  \
+stemcell_os=$(unzip -p $TILE_FILE_PATH $tile_metadata | grep -A5 "stemcell_criteria:"  \
                                  | grep "os:" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
 
 
