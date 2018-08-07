@@ -3,7 +3,8 @@
 function upload_stemcells() (
 
   set -eu
-  local stemcell_versions="$1"
+  local stemcell_os=$1
+  local stemcell_versions="$2"
 
   for stemcell_version_reqd in $stemcell_versions
   do
@@ -42,6 +43,13 @@ function upload_stemcells() (
 
         pivnet-cli login --api-token="$PIVNET_API_TOKEN"
     set +e
+        # Override the product_slug for xenial
+        if [[ "$stemcell_os" =~ "trusty" ]]; then
+          product_slug="stemcells"
+        elif [[ "$stemcell_os" =~ "xenial" ]]; then
+          product_slug="stemcells-ubuntu-xenial"
+        fi
+
         pivnet-cli download-product-files -p "$product_slug" -r $stemcell_version_reqd -g "*${IAAS}*" --accept-eula
         if [ $? != 0 ]; then
           min_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $2}')

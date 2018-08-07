@@ -23,6 +23,8 @@ fi
 tile_metadata=$(unzip -l pivnet-product/*.pivotal | grep "metadata" | grep "ml$" | awk '{print $NF}')
 STEMCELL_VERSION_FROM_TILE=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A5 "stemcell_criteria:"  \
                                   | grep "version:" | grep -Ei "[0-9]+{2}" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
+STEMCELL_OS_FROM_TILE=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A5 "stemcell_criteria:"  \
+                                  | grep "os:" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
 
 SC_FILE_PATH=$(find . -name "bosh*.tgz" | sort | head -1 || true)
 if [ "$SC_FILE_PATH" != "" ]; then
@@ -35,7 +37,7 @@ if [ "$SC_FILE_PATH" != "" ]; then
 else
   source nsx-t-ci-pipeline/functions/upload_stemcell.sh
   echo "No cached stemcell; Will download and then upload stemcell: $SC_FILE_PATH to Ops Mgr"
-  upload_stemcells "$STEMCELL_VERSION_FROM_TILE $STEMCELL_VERSION_FROM_PRODUCT_METADATA"
+  upload_stemcells $STEMCELL_OS_FROM_TILE "$STEMCELL_VERSION_FROM_TILE $STEMCELL_VERSION_FROM_PRODUCT_METADATA"
 fi
 
 # Should the slug contain more than one product, pick only the first.

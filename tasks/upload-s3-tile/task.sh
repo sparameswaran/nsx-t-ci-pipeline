@@ -15,43 +15,54 @@ tile_metadata=$(unzip -l $TILE_FILE_PATH | grep "metadata" | grep "ml$" | awk '{
 stemcell_version_reqd=$(unzip -p $TILE_FILE_PATH $tile_metadata | grep -A4 "stemcell_criteria:" | grep "version:" \
                                                | grep -Ei "[0-9]{2,}" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
 
+stemcell_os=$(unzip -p $TILE_FILE_PATH $tile_metadata | grep -A5 "stemcell_criteria:"  \
+                                | grep "os:" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
+
 
 if [ -n "$stemcell_version_reqd" ]; then
- diagnostic_report=$(
-   om-linux \
-     --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-     --username $OPSMAN_USERNAME \
-     --password $OPSMAN_PASSWORD \
-     --skip-ssl-validation \
-     curl --silent --path "/api/v0/diagnostic_report"
- )
+diagnostic_report=$(
+  om-linux \
+    --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+    --username $OPSMAN_USERNAME \
+    --password $OPSMAN_PASSWORD \
+    --skip-ssl-validation \
+    curl --silent --path "/api/v0/diagnostic_report"
+)
 
- stemcell=$(
-   echo $diagnostic_report |
-   jq \
-     --arg version "$stemcell_version_reqd" \
-     --arg glob "$IAAS" \
-   '.stemcells[] | select(contains($version) and contains($glob))'
- )
- if [[ -z "$stemcell" ]]; then
-   echo "Downloading stemcell $stemcell_version_reqd"
+stemcell=$(
+  echo $diagnostic_report |
+  jq \
+    --arg version "$stemcell_version_reqd" \
+    --arg glob "$IAAS" \
+  '.stemcells[] | select(contains($version) and contains($glob))'
+)
+if [[ -z "$stemcell" ]]; then
+  echo "Downloading stemcell $stemcell_version_reqd"
 
-   pivnet-cli login --api-token="$PIVNET_API_TOKEN"
+  pivnet-cli login --api-token="$PIVNET_API_TOKEN"
 set +e
-   pivnet-cli download-product-files -p "stemcells" -r $stemcell_version_reqd -g "*${IAAS}*" --accept-eula
-   if [ $? != 0 ]; then
-     min_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $2}')
-     major_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $1}')
-     if [ "$min_version" == "" ]; then
-       for min_version in $(seq 0  100)
-       do
-          pivnet-cli download-product-files -p "stemcells" -r $major_version.$min_version -g "*${IAAS}*" --accept-eula && break
-       done
-     else
-       echo "No Stemcell for version $major_version for ${IAAS} found !!, giving up"
-       exit 1
-     fi
-   fi
+
+ # Override the product_slug for xenial
+ if [[ "$stemcell_os" =~ "trusty" ]]; then
+   product_slug="stemcells"
+ elif [[ "$stemcell_os" =~ "xenial" ]]; then
+   product_slug="stemcells-ubuntu-xenial"
+ fi
+
+  pivnet-cli download-product-files -p "$product_slug" -r $stemcell_version_reqd -g "*${IAAS}*" --accept-eula
+  if [ $? != 0 ]; then
+    min_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $2}')
+    major_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $1}')
+    if [ "$min_version" == "" ]; then
+      for min_version in $(seq 100 -1 0)
+      do
+         pivnet-cli download-product-files -p "$product_slug" -r $major_version.$min_version -g "*${IAAS}*" --accept-eula && break
+      done
+    else
+      echo "No Stemcell for version $major_version for ${IAAS} found !!, giving up"
+      exit 1
+    fi
+  fi
 set -e
 
    SC_FILE_PATH=`find ./ -name *.tgz`
