@@ -12,8 +12,11 @@ source $ROOT_DIR/nsx-t-ci-pipeline/functions/check_null_variables.sh
 TILE_FILE_PATH=`find ./s3-tile -name *.pivotal | sort | head -1`
 
 tile_metadata=$(unzip -l $TILE_FILE_PATH | grep "metadata" | grep "ml$" | awk '{print $NF}')
-stemcell_version_reqd=$(unzip -p $TILE_FILE_PATH $tile_metadata | grep -A4 "stemcell_criteria:" | grep "version:" \
+stemcell_version_reqd=$(unzip -p $TILE_FILE_PATH $tile_metadata | grep -A5 "stemcell_criteria:" | grep "version:" \
                                                | grep -Ei "[0-9]{2,}" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
+
+stemcell_os=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A5 "stemcell_criteria:"  \
+                                 | grep "os:" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
 
 
 if [ -n "$stemcell_version_reqd" ]; then
@@ -38,14 +41,22 @@ if [ -n "$stemcell_version_reqd" ]; then
 
    pivnet-cli login --api-token="$PIVNET_API_TOKEN"
 set +e
-   pivnet-cli download-product-files -p "stemcells" -r $stemcell_version_reqd -g "*${IAAS}*" --accept-eula
+
+  # Override the product_slug for xenial
+  if [[ "$stemcell_os" =~ "trusty" ]]; then
+    product_slug="stemcells"
+  elif [[ "$stemcell_os" =~ "xenial" ]]; then
+    product_slug="stemcells-ubuntu-xenial"
+  fi
+
+   pivnet-cli download-product-files -p "$product_slug" -r $stemcell_version_reqd -g "*${IAAS}*" --accept-eula
    if [ $? != 0 ]; then
      min_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $2}')
      major_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $1}')
      if [ "$min_version" == "" ]; then
-       for min_version in $(seq 0  100)
+       for min_version in $(seq 100 -1 0)
        do
-          pivnet-cli download-product-files -p "stemcells" -r $major_version.$min_version -g "*${IAAS}*" --accept-eula && break
+          pivnet-cli download-product-files -p "$product_slug" -r $major_version.$min_version -g "*${IAAS}*" --accept-eula && break
        done
      else
        echo "No Stemcell for version $major_version for ${IAAS} found !!, giving up"
