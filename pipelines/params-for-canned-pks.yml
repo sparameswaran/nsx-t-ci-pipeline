@@ -9,7 +9,7 @@ vcenter_ca_cert:           # vCenter CA cert at the API endpoint; enter a value 
 vcenter_host: ((vcenter_host))       # EDIT - this is for deployment of the ovas for the mgmt plane
 vcenter_usr: ((vcenter_usr))   # EDIT - this is for deployment of the ovas for the mgmt plane
 vcenter_pwd: ((vcenter_pwd))               # EDIT - this is for deployment of the ovas for the mgmt plane
-vcenter_datacenter: ((vcenter_datacenter))            # EDIT
+vcenter_data_center: ((vcenter_datacenter))            # EDIT
 vcenter_datastore: ((vcenter_datastore))              # EDIT
 vcenter_cluster: ((vcenter_cluster))                  # EDIT
 
@@ -251,4 +251,3 @@ pks_tile_plan_details:
     is_active: false
     plan_selector: plan3_selector # Dont change the value of selector - Needs to be planN_selector
     # other fields not considered if its not active
-
