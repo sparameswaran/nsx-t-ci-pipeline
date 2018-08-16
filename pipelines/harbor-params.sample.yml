@@ -15,14 +15,14 @@ harbor_networks: |
 
 # Replace all EDIT_ME_HARBOR_APP_DOMAIN with correct harbor app domain thats exposed/addressable over NSX
 harbor_tile_app_domain: EDIT_ME_HARBOR_APP_DOMAIN                      # EDIT ME - Make sure this matches the property specified in the block below
-harbor_tile_app_domain_ip: EDIT_ME
+harbor_tile_app_domain_ip: EDIT_ME_HARBOR_EXTERNAL_IP
 
 harbor_properties: |
   ######## General
   ### The FQDN (not IP) of Harbor instance. Its domain must match the wildcard domain used for generating Harbor certificate.
   .properties.hostname:
     # EDIT ME
-    value: EDIT_ME_HARBOR_APP_DOMAIN                      # EDIT ME
+    value: harbor.EDIT_ME_HARBOR_APP_DOMAIN                      # EDIT ME
   ######## SSL certificate and private key for Harbor
   ### SSL Certificate and key PEMs
   .properties.server_cert_key:
@@ -32,14 +32,14 @@ harbor_properties: |
   #
   # If auto-generation of certs is desired, leave this parameter un-commented
   #   and update the array of domain names to be used for cert generation.
-  #   e.g. ["harbortest.haas-167.pez.pivotal.io"].
+  #   e.g. ["harbor.corp.local.io"].
   #   Leave parameters cert_pem and private_key_pem with empty values in this case.
   #
   # Otherwise, either comment out or delete this parameter line and
   #   provide the certificate (cert_pem) and private key (private_key_pem) values
   #   in the corresponding parameters further below.
   #
-    generate_cert_domains: ["*.EDIT_ME_HARBOR_APP_DOMAIN"]            # EDIT ME
+    generate_cert_domains: ["harbor.EDIT_ME_HARBOR_APP_DOMAIN"]            # EDIT ME
     value:
       cert_pem:
       private_key_pem:
@@ -51,7 +51,7 @@ harbor_properties: |
   .properties.admin_password:
     value:
       # EDIT ME
-      secret: admin123!                                           # EDIT ME
+      secret: EDIT_ME_ADMIN_PASWD                                          # EDIT ME
   ######## Authentication Mode
   ### Options:
   ### - db_auth        (Internal, i.e. Harbor internal user management)
