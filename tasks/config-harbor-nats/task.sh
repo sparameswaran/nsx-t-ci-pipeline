@@ -29,27 +29,28 @@ function check_match_in_nat_rules {
   echo 0
 }
 
+export HARBOR_APP_FQDN=$(echo "$HABBOR_TILE_PROPERTIES" | yaml2json | jq -r '.".properties.hostname".value')
 
 echo "Note - pre-requisite for this task to work:"
-echo "- Your Harbor App harbor.${HARBOR_APP_DOMAIN} should be resolvable to $HARBOR_APP_DOMAIN_IP, routable and accessible via the NSX-T network."
+echo "- Your Harbor App ${HARBOR_APP_FQDN} should be resolvable to $HARBOR_APP_DOMAIN_IP, routable and accessible via the NSX-T network."
 
 if [ "$HARBOR_APP_DOMAIN_IP" == "" ]; then
   echo "No IP or value set for HARBOR_APP_DOMAIN_IP, skipping creation of NAT rule on NSX Manager from the Harbor App Domain to internal Harbor App IP!!"
   exit 0
 fi
 
-check_dns_lookup=$(nslookup harbor.${HARBOR_APP_DOMAIN})
+check_dns_lookup=$(nslookup ${HARBOR_APP_FQDN})
 if [ "$?" != "0" ]; then
-  echo "Warning!! Unable to resolve harbor.${HARBOR_APP_DOMAIN}"
-  echo "Proceeding with the assumption that harbor.${HARBOR_APP_DOMAIN} would resolve to IP: $HARBOR_APP_DOMAIN_IP ultimately"
+  echo "Warning!! Unable to resolve ${HARBOR_APP_FQDN}"
+  echo "Proceeding with the assumption that ${HARBOR_APP_FQDN} would resolve to IP: $HARBOR_APP_DOMAIN_IP ultimately"
   echo ""
 else
   # check_dns_lookup response gets squished into a single line, so take the last entry
   resolved_ip=$(echo $check_dns_lookup | grep -A1 ${HARBOR_APP_DOMAIN} | awk '{print $NF}' )
-  echo "Resolved harbor.${HARBOR_APP_DOMAIN} to $resolved_ip "
+  echo "Resolved ${HARBOR_APP_FQDN} to $resolved_ip "
   if [ "$resolved_ip" != "$HARBOR_APP_DOMAIN_IP" ]; then
-    echo "Warning!! harbor.${HARBOR_APP_DOMAIN} not resolving to $HARBOR_APP_DOMAIN_IP but instead to $resolved_ip!!"
-    echo "Proceeding with the assumption that harbor.${HARBOR_APP_DOMAIN} would resolve to IP: $HARBOR_APP_DOMAIN_IP ultimately"
+    echo "Warning!! ${HARBOR_APP_FQDN} not resolving to $HARBOR_APP_DOMAIN_IP but instead to $resolved_ip!!"
+    echo "Proceeding with the assumption that ${HARBOR_APP_FQDN} would resolve to IP: $HARBOR_APP_DOMAIN_IP ultimately"
     echo ""
   fi
 fi
@@ -190,7 +191,7 @@ else
 fi
 
 echo ""
-echo "DNS Entry of harbor.${HARBOR_APP_DOMAIN} expected to resolve External IP: $HARBOR_APP_DOMAIN_IP"
+echo "DNS Entry of ${HARBOR_APP_FQDN} expected to resolve External IP: $HARBOR_APP_DOMAIN_IP"
 echo "This ip should be routable via the T0 Router $PKS_T0_ROUTER_NAME" on $NSX_API_MANAGER
 echo ""
 echo "Created NAT rules for Harbor App API IP $INTERNAL_HARBOR_APP_IP to be accessible from external IP: $HARBOR_APP_DOMAIN_IP"
