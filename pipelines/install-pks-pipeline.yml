@@ -154,6 +154,7 @@ harbor_config_api_nats_params: &harbor-config-api-nats-params
   PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
   HARBOR_APP_DOMAIN: ((harbor_tile_app_domain))
   HARBOR_APP_DOMAIN_IP: ((harbor_tile_app_domain_ip))
+  HABBOR_TILE_PROPERTIES: ((harbor_properties))
 
 resource_types:
 - name: pivnet
