@@ -14,7 +14,7 @@ harbor_networks: |
     name: az1                             # EDIT ME
 
 # Replace all EDIT_ME_HARBOR_APP_DOMAIN with correct harbor app domain thats exposed/addressable over NSX
-harbor_tile_app_domain: harbor.((dnsdomain))                       # EDIT ME - Make sure this matches the property specified in the block below
+harbor_tile_app_domain: ((dnsdomain))                       # EDIT ME - Make sure this matches the property specified in the block below
 harbor_tile_app_domain_ip: ((harbor_app_external_ip))
 
 harbor_properties: |
@@ -32,14 +32,14 @@ harbor_properties: |
   #
   # If auto-generation of certs is desired, leave this parameter un-commented
   #   and update the array of domain names to be used for cert generation.
-  #   e.g. ["harbortest.haas-167.pez.pivotal.io"].
+  #   e.g. ["harbor.corp.local.io"].
   #   Leave parameters cert_pem and private_key_pem with empty values in this case.
   #
   # Otherwise, either comment out or delete this parameter line and
   #   provide the certificate (cert_pem) and private key (private_key_pem) values
   #   in the corresponding parameters further below.
   #
-    generate_cert_domains: ["*.harbor.((dnsdomain))"]            # EDIT ME
+    generate_cert_domains: ["harbor.((dnsdomain))"]            # EDIT ME
     value:
       cert_pem:
       private_key_pem:

@@ -93,7 +93,7 @@ pks_api_admin_pwd: pksadmin123
 pks_api_ip: 1.1.1.1      # PKS
 
 # Harbor details
-# Harbor would be accessible at api.harbor.((dnsdomain))
+# Harbor would be accessible at harbor.((dnsdomain))
 harbor_admin_pwd: harboradmin123
 harbor_app_external_ip: 3.3.3.3      # External exposed IP for Harbor
 harbor_app_disk_size: 102400         # in MBs
