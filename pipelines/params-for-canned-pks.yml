@@ -1,4 +1,4 @@
-# These need to be filled in only for offline version of nsx-t-gen install
+# These need to be filled in only for offline version of PKS install
 # Minio offline bucket params
 iaas: vsphere
 final_s3_endpoint: ((final_s3_endpoint))        # EDIT the minio address/port
