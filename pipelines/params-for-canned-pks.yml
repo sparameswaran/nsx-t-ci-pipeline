@@ -1,3 +1,12 @@
+# These need to be filled in only for offline version of PKS install
+# Minio offline bucket params
+iaas: vsphere
+final_s3_endpoint: ((final_s3_endpoint))        # EDIT the minio address/port
+final_s3_bucket: ((final_s3_bucket))
+final_s3_access_key_id: ((final_s3_access_key_id))
+final_s3_secret_access_key: ((final_s3_secret_access_key))
+offline_run_id: ""
+
 # Pipeline resource configuration
 pivnet_token: ((pivnet_token))    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
 opsman_major_minor_version: ((opsman_major_minor_version))   # PCF Ops Manager minor version to track
