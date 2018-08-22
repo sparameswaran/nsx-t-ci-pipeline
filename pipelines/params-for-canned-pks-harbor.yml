@@ -6,12 +6,13 @@ harbor_product_version: ^1\.5\..*$  # PKS tile version to install
 harbor_networks: |
   network:
     name: PKS-Services                    # EDIT ME
+  singleton_availability_zone:
+    name: az1                             # EDIT ME
   other_availability_zones:
   - name: az1                             # EDIT ME
   - name: az2                             # EDIT ME
   - name: az3                             # EDIT ME
-  singleton_availability_zone:
-    name: az1                             # EDIT ME
+
 
 # Replace all EDIT_ME_HARBOR_APP_DOMAIN with correct harbor app domain thats exposed/addressable over NSX
 harbor_tile_app_domain: ((dnsdomain))                       # EDIT ME - Make sure this matches the property specified in the block below
