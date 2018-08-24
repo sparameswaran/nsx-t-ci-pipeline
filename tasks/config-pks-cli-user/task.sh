@@ -54,6 +54,16 @@ fi
 
 echo "Connecting to PKS UAA server [${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}]..."
 
+set +e
+check_dns_lookup=$(nslookup ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN})
+if [ "$?" != "0" ]; then
+  echo "Warning!! Unable to resolve ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}"
+  echo "Error!! Cannot proceed with client creation without being able to resolve ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} to external IP: $PKS_UAA_SYSTEM_DOMAIN_IP"
+  echo ""
+  exit -1
+fi
+set -e
+
 # login to PKS UAA
 uaac target https://${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}:8443 --skip-ssl-validation
 uaac_output=$(uaac token client get admin --secret $UAA_ADMIN_SECRET)

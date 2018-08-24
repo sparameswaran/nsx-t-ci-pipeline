@@ -39,6 +39,7 @@ if [ "$HARBOR_APP_DOMAIN_IP" == "" ]; then
   exit 0
 fi
 
+set +e
 check_dns_lookup=$(nslookup ${HARBOR_APP_FQDN})
 if [ "$?" != "0" ]; then
   echo "Warning!! Unable to resolve ${HARBOR_APP_FQDN}"
@@ -54,6 +55,7 @@ else
     echo ""
   fi
 fi
+set -e
 
 echo "Retrieving Harbor App IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
 
