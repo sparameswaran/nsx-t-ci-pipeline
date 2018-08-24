@@ -38,6 +38,7 @@ if [ "$PKS_UAA_SYSTEM_DOMAIN_IP" == "" ]; then
   exit 0
 fi
 
+set +e
 check_dns_lookup=$(nslookup ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN})
 if [ "$?" != "0" ]; then
   echo "Warning!! Unable to resolve ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}"
@@ -53,6 +54,7 @@ else
     echo ""
   fi
 fi
+set -e
 
 echo "Retrieving PKS Controller IP from Ops Manager [https://$OPSMAN_DOMAIN_OR_IP_ADDRESS]..."
 

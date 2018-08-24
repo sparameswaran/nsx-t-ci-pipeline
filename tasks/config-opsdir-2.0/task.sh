@@ -43,8 +43,10 @@ iaas_configuration=$(
 if [ "$NSX_NETWORKING_ENABLED" == "true" ]; then
 
   # Check if NSX Manager is accessible before pulling down its cert
+  set +e
   curl -kv https://${NSX_ADDRESS} >/dev/null 2>/dev/null
   connect_status=$?
+  set -e
 
   if [ "$connect_status" != "0" ]; then
     echo "Error in connecting to ${NSX_ADDRESS} over 443, please check and correct the NSX Mgr address or dns entries and retry!!"
