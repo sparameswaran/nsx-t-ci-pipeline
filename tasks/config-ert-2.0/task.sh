@@ -58,8 +58,8 @@ om-linux \
 
 check_staged_product_guid "cf-"
 
-has_blobstore_internal_access_subnet=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nfs_server\.blobstore_internal_access_rules" | wc -l || true)
-has_grootfs=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties\.enable_grootfs" | wc -l || true)
+has_blobstore_internal_access_subnet=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".nfs_server\.blobstore_internal_access_rules" | wc -l || true)
+has_grootfs=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".properties\.enable_grootfs" | wc -l || true)
 
 # Check if product is older 2.0 or not
 if [[ "$PRODUCT_VERSION" =~ ^2.0 ]]; then

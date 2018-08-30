@@ -57,12 +57,12 @@ function check_staged_product_guid {
                   | grep "guid" | grep "\"$product_code" \
                   | awk -F '"' '{print $4}' )
 
-   export STAGED_PRODUCT_PROPERTIES=$(om-linux \
-                            -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-                            -u $OPSMAN_USERNAME \
-                            -p $OPSMAN_PASSWORD -k \
-                            curl -p "/api/v0/staged/products/${PRODUCT_GUID}/properties" \
-                            2>/dev/null)
+   om-linux \
+        -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+        -u $OPSMAN_USERNAME \
+        -p $OPSMAN_PASSWORD -k \
+        curl -p "/api/v0/staged/products/${PRODUCT_GUID}/properties" \
+        2>/dev/null > /tmp/staged_product_${PRODUCT_GUID}.json
 
   echo "Staged Product: $product_code with guid: $PRODUCT_GUID"
 }

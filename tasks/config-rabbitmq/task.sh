@@ -45,8 +45,8 @@ prod_network=$(
 )
 
 
-has_odb_plan_vm_type=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.on_demand_broker_plan.*rabbitmq_vm_type" | wc -l || true)
-has_odb_plan_disk_type=$(echo $STAGED_PRODUCT_PROPERTIES | jq . |grep ".properties.on_demand_broker_plan.*rabbitmq_persistent_disk_type" | wc -l || true)
+has_odb_plan_vm_type=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".properties.on_demand_broker_plan.*rabbitmq_vm_type" | wc -l || true)
+has_odb_plan_disk_type=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . |grep ".properties.on_demand_broker_plan.*rabbitmq_persistent_disk_type" | wc -l || true)
 
 
 prod_properties=$(cat <<-EOF
