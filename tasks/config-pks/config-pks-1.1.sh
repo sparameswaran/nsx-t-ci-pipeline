@@ -225,13 +225,13 @@ if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; the
   echo "Finished configuring Wavefront Monitoring properties"
 fi
 
-has_bosh_client_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.bosh-client" | wc -l || true)
-has_vcenter_worker_creds=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
-has_nsx_t_superuser_certificate=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".nsx-t-superuser-certificate" | wc -l || true)
+has_bosh_client_creds=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".properties.network_selector.nsx.bosh-client" | wc -l || true)
+has_vcenter_worker_creds=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
+has_nsx_t_superuser_certificate=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".nsx-t-superuser-certificate" | wc -l || true)
 
 # New PKS 1.1 GA has added 2 new flags
-has_cloud_config_dns=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.cloud-config-dns" | wc -l || true)
-has_vcenter_clusters=$(echo $STAGED_PRODUCT_PROPERTIES | jq . | grep ".properties.network_selector.nsx.vcenter_cluster" | wc -l || true)
+has_cloud_config_dns=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".properties.network_selector.nsx.cloud-config-dns" | wc -l || true)
+has_vcenter_clusters=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".properties.network_selector.nsx.vcenter_cluster" | wc -l || true)
 
 if [ "$PKS_NSX_NAT_MODE" == '' -o "$PKS_NSX_NAT_MODE" == "null" ]; then
   PKS_NSX_NAT_MODE=true
