@@ -21,12 +21,14 @@ AVAILABLE=$(om-linux \
   --skip-ssl-validation \
   --username "${OPSMAN_USERNAME}" \
   --password "${OPSMAN_PASSWORD}" \
+  --connect-timeout 3200 --request-timeout 3200 \
   --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
   curl -path /api/v0/available_products)
 STAGED=$(om-linux \
   --skip-ssl-validation \
   --username "${OPSMAN_USERNAME}" \
   --password "${OPSMAN_PASSWORD}" \
+  --connect-timeout 3200 --request-timeout 3200 \
   --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
   curl -path /api/v0/staged/products)
 
@@ -61,6 +63,7 @@ om-linux --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
    --skip-ssl-validation \
    --username "${OPSMAN_USERNAME}" \
    --password "${OPSMAN_PASSWORD}" \
+   --connect-timeout 3200 --request-timeout 3200 \
    stage-product \
    --product-name "${PRODUCT_NAME}" \
    --product-version "${full_version}"

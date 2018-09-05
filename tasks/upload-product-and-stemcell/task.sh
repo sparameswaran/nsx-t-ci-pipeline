@@ -5,7 +5,7 @@ FILE_PATH=`find ./pivnet-product -name *.pivotal | sort | head -1`
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
          -u $OPSMAN_USERNAME \
          -p $OPSMAN_PASSWORD \
-         -k --request-timeout 3600 \
+         -k --connect-timeout 3200 --request-timeout 3200 \
          upload-product -p $FILE_PATH
 
 
@@ -15,7 +15,7 @@ if [ "$SC_FILE_PATH" != "" ]; then
   om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
           -u $OPSMAN_USERNAME \
           -p $OPSMAN_PASSWORD \
-          -k --request-timeout 3600 \
+          -k --connect-timeout 3200 --request-timeout 3200 \
           upload-stemcell -s $SC_FILE_PATH
   exit 0
 fi

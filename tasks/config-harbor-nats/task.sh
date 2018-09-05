@@ -63,6 +63,8 @@ PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
             -u $OPSMAN_USERNAME \
             -p $OPSMAN_PASSWORD \
+            --connect-timeout 3200 \
+            --request-timeout 3200 \
             --skip-ssl-validation \
             curl -p /api/v0/deployed/products \
             2>/dev/null)
@@ -73,6 +75,8 @@ INTERNAL_HARBOR_APP_IP=$(om-linux \
                     -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                     -u $OPSMAN_USERNAME \
                     -p $OPSMAN_PASSWORD \
+                    --connect-timeout 3200 \
+                    --request-timeout 3200 \
                     --skip-ssl-validation \
                     curl -p /api/v0/deployed/products/$HARBOR_GUID/status \
                     2>/dev/null \

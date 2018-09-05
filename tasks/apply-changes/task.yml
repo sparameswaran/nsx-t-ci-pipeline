@@ -4,16 +4,19 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: {repository: czero/cflinuxfs2}
+  source:
+    repository: bash
 
 params:
   OPSMAN_DOMAIN_OR_IP_ADDRESS:
   OPSMAN_USERNAME:
   OPSMAN_PASSWORD:
 
-  
+
+
 inputs:
   - name: nsx-t-ci-pipeline
+  - name: om
 
 run:
   path: nsx-t-ci-pipeline/tasks/apply-changes/task.sh

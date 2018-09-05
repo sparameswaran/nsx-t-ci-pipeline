@@ -88,6 +88,8 @@ om-linux \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_nsx_vcenter_properties"
@@ -175,6 +177,8 @@ om-linux \
   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   --skip-ssl-validation \
   configure-product \
   --product-name "$PRODUCT_NAME" \
@@ -188,6 +192,8 @@ om-linux \
   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \  
   --skip-ssl-validation \
   set-errand-state \
   --product-name "$PRODUCT_NAME" \

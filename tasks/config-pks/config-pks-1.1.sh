@@ -50,6 +50,8 @@ if [ "$PKS_VRLI_ENABLED" == "true" ]; then
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_vrli_properties"
@@ -102,6 +104,8 @@ if [ "$PKS_ENABLE_HTTP_PROXY" == "true" ]; then
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_proxy_properties"
@@ -185,6 +189,8 @@ om-linux \
 -u $OPSMAN_USERNAME \
 -p $OPSMAN_PASSWORD \
 --skip-ssl-validation \
+--connect-timeout 3200 \
+--request-timeout 3200 \
 configure-product \
 --product-name pivotal-container-service \
 --product-properties "$pks_uaa_properties"
@@ -219,6 +225,8 @@ if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; the
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_wavefront_properties"
@@ -410,6 +418,8 @@ om-linux \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_nsx_vcenter_properties"
@@ -433,6 +443,8 @@ om-linux \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name pivotal-container-service \
   --product-properties "$pks_telemetry_properties"
@@ -521,6 +533,8 @@ om-linux \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name "$PRODUCT_NAME" \
   --product-properties "$pks_main_properties"
@@ -548,6 +562,8 @@ om-linux \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name "$PRODUCT_NAME" \
   --product-properties "$pksv1_1_properties"
@@ -563,6 +579,8 @@ if [ "$PKS_DISABLE_NSX_T_PRECHECK_ERRAND" == ""      \
     -u $OPSMAN_USERNAME \
     -p $OPSMAN_PASSWORD \
     --skip-ssl-validation \
+	  --connect-timeout 3200 \
+	  --request-timeout 3200 \
     set-errand-state \
     --product-name "$PRODUCT_NAME" \
     --errand-name $errand \
