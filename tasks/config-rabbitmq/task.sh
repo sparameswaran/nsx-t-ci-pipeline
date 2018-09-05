@@ -16,6 +16,8 @@ om \
     -t $OPSMAN_DOMAIN_OR_IP_ADDRESS \
     -u $OPSMAN_USERNAME \
     -p $OPSMAN_PASSWORD  \
+	  --connect-timeout 3200 \
+	  --request-timeout 3200 \
     -k stage-product \
     -p $PRODUCT_NAME \
     -v $PRODUCT_VERSION
@@ -127,6 +129,8 @@ EOF
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
+  --connect-timeout 3200 \
+  --request-timeout 3200 \
   -k configure-product \
   -n $PRODUCT_NAME \
   -pn "$prod_network" \
@@ -136,11 +140,13 @@ om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   -u $OPSMAN_USERNAME \
   -p $OPSMAN_PASSWORD \
+  --connect-timeout 3200 \
+  --request-timeout 3200 \
   -k configure-product \
   -n $PRODUCT_NAME \
   -p "$prod_properties" \
 
-PRODUCT_GUID=$(om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD \
+PRODUCT_GUID=$(om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD --connect-timeout 3200 --request-timeout 3200 \
                      curl -p "/api/v0/staged/products" -x GET \
                      | jq '.[] | select(.installation_name | contains("p-rabbitmq")) | .guid' | tr -d '"')
 
@@ -154,6 +160,6 @@ RABBITMQ_ERRANDS=$(cat <<-EOF
 EOF
 )
 
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD \
+om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPSMAN_USERNAME -p $OPSMAN_PASSWORD --connect-timeout 3200 --request-timeout 3200 \
                           curl -p "/api/v0/staged/products/$PRODUCT_GUID/errands" \
                           -x PUT -d "$RABBITMQ_ERRANDS"

@@ -14,6 +14,8 @@ enabled_errands=$(
     --skip-ssl-validation \
     --username $OPSMAN_USERNAME \
     --password $OPSMAN_PASSWORD \
+	  --connect-timeout 3200 \
+	  --request-timeout 3200 \
     errands \
     --product-name "$PRODUCT_NAME" |
   tail -n+4 | head -n-1 | grep -v false | cut -d'|' -f2 | tr -d ' '
@@ -53,6 +55,8 @@ while read errand; do
     --skip-ssl-validation \
     --username "$OPSMAN_USERNAME" \
     --password "$OPSMAN_PASSWORD" \
+	  --connect-timeout 3200 \
+	  --request-timeout 3200 \
     set-errand-state \
     --product-name "$PRODUCT_NAME" \
     --errand-name $errand \

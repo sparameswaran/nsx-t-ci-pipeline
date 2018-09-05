@@ -52,6 +52,8 @@ om-linux \
     -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
     -u $OPSMAN_USERNAME \
     -p $OPSMAN_PASSWORD \
+	  --connect-timeout 3200 \
+	  --request-timeout 3200 \
     -k stage-product \
     -p $PRODUCT_NAME \
     -v $PRODUCT_VERSION

@@ -62,6 +62,8 @@ PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
             -u $OPSMAN_USERNAME \
             -p $OPSMAN_PASSWORD \
+            --connect-timeout 3200 \
+            --request-timeout 3200 \
             --skip-ssl-validation \
             curl -p /api/v0/deployed/products \
             2>/dev/null)
@@ -73,6 +75,8 @@ PKS_CONTROLLER_IP=$(om-linux \
                     -u $OPSMAN_USERNAME \
                     -p $OPSMAN_PASSWORD \
                     --skip-ssl-validation \
+                    --connect-timeout 3200 \
+                    --request-timeout 3200 \
                     curl -p /api/v0/deployed/products/$PKS_GUID/status \
                     2>/dev/null \
                     | jq -r '.[][0].ips[0]' )

@@ -26,6 +26,7 @@ if [[ $opsman_available == "available" ]]; then
     --client-secret "${OPSMAN_CLIENT_SECRET}" \
     --username "$OPSMAN_USERNAME" \
     --password "$OPSMAN_PASSWORD" \
+    --connect-timeout 3200 --request-timeout 3200 \
     pending-changes
     )
   # If there are any pending changes, then revert them before starting deletion
@@ -38,6 +39,7 @@ if [[ $opsman_available == "available" ]]; then
       --client-secret "${OPSMAN_CLIENT_SECRET}" \
       --username "$OPSMAN_USERNAME" \
       --password "$OPSMAN_PASSWORD" \
+      --connect-timeout 3200 --request-timeout 3200 \
       revert-staged-changes
   fi
 
@@ -48,6 +50,7 @@ if [[ $opsman_available == "available" ]]; then
     --client-secret "${OPSMAN_CLIENT_SECRET}" \
     --username "$OPSMAN_USERNAME" \
     --password "$OPSMAN_PASSWORD" \
+    --connect-timeout 3200 --request-timeout 3200 \
     delete-installation
 fi
 

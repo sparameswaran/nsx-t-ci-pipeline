@@ -20,6 +20,8 @@ PRODUCTS=$(om-linux \
             -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
             -u $OPSMAN_USERNAME \
             -p $OPSMAN_PASSWORD \
+            --connect-timeout 3200 \
+            --request-timeout 3200 \
             --skip-ssl-validation \
             curl -p /api/v0/staged/products \
             2>/dev/null)
@@ -31,6 +33,8 @@ UAA_ADMIN_SECRET=$(om-linux \
                     -u $OPSMAN_USERNAME \
                     -p $OPSMAN_PASSWORD \
                     --skip-ssl-validation \
+                    --connect-timeout 3200 \
+                    --request-timeout 3200 \
                     curl -p /api/v0/deployed/products/$PKS_GUID/credentials/.properties.uaa_admin_secret \
                     2>/dev/null \
                     | jq -rc '.credential.value.secret')
@@ -42,6 +46,8 @@ if [ "$UAA_ADMIN_SECRET" == "" -o "$UAA_ADMIN_SECRET" == "null" ]; then
                       -u $OPSMAN_USERNAME \
                       -p $OPSMAN_PASSWORD \
                       --skip-ssl-validation \
+                      --connect-timeout 3200 \
+                      --request-timeout 3200 \
                       curl -p /api/v0/deployed/products/$PKS_GUID/credentials/.properties.pks_uaa_management_admin_client \
                       2>/dev/null \
                       | jq -rc '.credential.value.secret')

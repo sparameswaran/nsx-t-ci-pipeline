@@ -133,6 +133,8 @@ nsx_t_properties=$(
 TILE_RELEASE=$(om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
                           -u $OPSMAN_USERNAME \
                           -p $OPSMAN_PASSWORD \
+                          --connect-timeout 3200 \
+                          --request-timeout 3200 \
                           -k available-products \
                           | grep -e "nsx-cf-cni\|VMware-NSX-T")
 
@@ -142,6 +144,8 @@ PRODUCT_VERSION=`echo $TILE_RELEASE | cut -d"|" -f3 | tr -d " "`
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
       -u $OPSMAN_USERNAME \
       -p $OPSMAN_PASSWORD \
+	    --connect-timeout 3200 \
+	    --request-timeout 3200 \
       -k stage-product \
       -p $PRODUCT_NAME \
       -v $PRODUCT_VERSION
@@ -152,6 +156,8 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name $PRODUCT_NAME \
   --product-properties "$nsx_t_properties"
@@ -210,6 +216,8 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   --skip-ssl-validation \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-product \
   --product-name $PRODUCT_NAME \
   --product-properties "${nsx_t_additional_configs}"

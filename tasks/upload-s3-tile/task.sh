@@ -26,6 +26,7 @@ if [ -n "$stemcell_version_reqd" ]; then
      --username $OPSMAN_USERNAME \
      --password $OPSMAN_PASSWORD \
      --skip-ssl-validation \
+     --connect-timeout 3200 --request-timeout 3200 \
      curl --silent --path "/api/v0/diagnostic_report"
   )
 
@@ -75,7 +76,7 @@ if [ -n "$stemcell_version_reqd" ]; then
     om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
             -u $OPSMAN_USERNAME \
             -p $OPSMAN_PASSWORD \
-            -k --request-timeout 3600 \
+            -k --connect-timeout 3200 --request-timeout 3200 \
             upload-stemcell -s $SC_FILE_PATH
 
   fi
@@ -84,5 +85,5 @@ fi
 om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
          -u $OPSMAN_USERNAME \
          -p $OPSMAN_PASSWORD \
-         -k --request-timeout 3600 \
+         -k --connect-timeout 3200 --request-timeout 3200 \
          upload-product -p $TILE_FILE_PATH

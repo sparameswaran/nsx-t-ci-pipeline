@@ -26,6 +26,7 @@ function get_cred {
               --skip-ssl-validation \
               --username $OPSMAN_USERNAME \
               --password $OPSMAN_PASSWORD \
+              --connect-timeout 3200 --request-timeout 3200 \
                 credentials \
               --product-name $PRODUCT_NAME \
               --credential-reference $prod_cred_type \

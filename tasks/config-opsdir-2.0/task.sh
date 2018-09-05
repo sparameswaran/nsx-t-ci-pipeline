@@ -386,6 +386,8 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   curl -p '/api/v0/staged/director/properties' \
   -x PUT -d  "$wrapped_iaas_config" \
   2>/dev/null
@@ -401,6 +403,8 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-bosh \
   --director-configuration "$director_config" \
   2>/dev/null
@@ -415,6 +419,8 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   configure-bosh \
   --security-configuration "$security_configuration" \
   2>/dev/null
@@ -429,6 +435,8 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   curl -p "/api/v0/staged/director/availability_zones" \
   -x PUT -d "$az_configuration" \
   2>/dev/null
@@ -443,6 +451,8 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   -k curl -p "/api/v0/staged/director/networks" \
   -x PUT -d "$network_configuration" \
   2>/dev/null
@@ -459,6 +469,8 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
+	--connect-timeout 3200 \
+	--request-timeout 3200 \
   -k curl -p "/api/v0/staged/director/network_and_az" \
   -x PUT -d "$wrapped_network_az_assignment" \
    2>/dev/null
