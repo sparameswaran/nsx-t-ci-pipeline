@@ -50,7 +50,7 @@ resources:
     api_token: {{pivnet_token}}
     product_slug: vmware-nsx-t
     product_version: {{nsxt_major_minor_version}}
-    sort_by: semver   
+    sort_by: semver
 
 - name: pcf-scs
   type: pivnet
@@ -193,9 +193,6 @@ jobs:
       AZ_3: {{az_3_name}}
       AZ_3_CLUSTER_NAME: {{az_3_cluster_name}}
       AZ_3_RP_NAME: {{az_3_rp_name}}
-      AZ_4: {{az_4_name}}
-      AZ_4_CLUSTER_NAME: {{az_4_cluster_name}}
-      AZ_4_RP_NAME: {{az_4_rp_name}}
       NTP_SERVERS: {{ntp_servers}}
       ENABLE_VM_RESURRECTOR: {{enable_vm_resurrector}}
       MAX_THREADS: {{max_threads}}
@@ -625,7 +622,7 @@ jobs:
       params: {globs: []}
       passed: [deploy-ert, install-mysql, install-rabbitmq]
       trigger: true
-    
+
   - task: deploy
     file: nsx-t-ci-pipeline/tasks/apply-changes/task.yml
     params:
