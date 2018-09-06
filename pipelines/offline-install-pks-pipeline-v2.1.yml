@@ -126,7 +126,7 @@ jobs:
     params: &id005 {AZ_1: ((az_1_name)), AZ_1_CLUSTER_NAME: ((az_1_cluster_name)),
       AZ_1_RP_NAME: ((az_1_rp_name)), AZ_2: ((az_2_name)), AZ_2_CLUSTER_NAME: ((az_2_cluster_name)),
       AZ_2_RP_NAME: ((az_2_rp_name)), AZ_3: ((az_3_name)), AZ_3_CLUSTER_NAME: ((az_3_cluster_name)),
-      AZ_3_RP_NAME: ((az_3_rp_name)), AZ_4: null, AZ_4_CLUSTER_NAME: null, AZ_4_RP_NAME: null,
+      AZ_3_RP_NAME: ((az_3_rp_name)),
       BOSH_DISK_PATH: ((bosh_disk_path)), BOSH_TEMPLATE_FOLDER: ((bosh_template_folder)),
       BOSH_VM_FOLDER: ((bosh_vm_folder)), DEPLOYMENT_EXCLUDED_RANGE: null, DEPLOYMENT_NETWORK_NAME: null,
       DEPLOYMENT_NW_AZS: null, DEPLOYMENT_NW_CIDR: null, DEPLOYMENT_NW_DNS: null,

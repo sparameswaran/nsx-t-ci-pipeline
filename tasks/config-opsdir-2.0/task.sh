@@ -147,20 +147,20 @@ if [ "$AZ_3" != "" -a "$AZ_3" != "null" ]; then
   )
 fi
 
-if [ "$AZ_4" != "" -a "$AZ_4" != "null" ]; then
-  az_configuration=$(echo $az_configuration | jq \
-    --arg az4_name "$AZ_4" \
-    --arg az4_cluster "$AZ_4_CLUSTER_NAME" \
-    --arg az4_rp "$AZ_4_RP_NAME" \
-' .availability_zones +=
-        [{
-          "name": $az4_name,
-          "cluster": $az4_cluster,
-          "resource_pool": $az4_rp
-        }]
-'
-)
-fi
+# if [ "$AZ_4" != "" -a "$AZ_4" != "null" ]; then
+#   az_configuration=$(echo $az_configuration | jq \
+#     --arg az4_name "$AZ_4" \
+#     --arg az4_cluster "$AZ_4_CLUSTER_NAME" \
+#     --arg az4_rp "$AZ_4_RP_NAME" \
+# ' .availability_zones +=
+#         [{
+#           "name": $az4_name,
+#           "cluster": $az4_cluster,
+#           "resource_pool": $az4_rp
+#         }]
+# '
+# )
+# fi
 
 network_configuration=$(
   jq -n \

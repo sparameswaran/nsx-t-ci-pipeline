@@ -13,7 +13,6 @@ harbor_networks: |
   - name: az2                             # EDIT ME
   - name: az3                             # EDIT ME
 
-
 # Replace all EDIT_ME_HARBOR_APP_DOMAIN with correct harbor app domain thats exposed/addressable over NSX
 harbor_tile_app_domain: ((dnsdomain))                       # EDIT ME - Make sure this matches the property specified in the block below
 harbor_tile_app_domain_ip: ((harbor_app_external_ip))
