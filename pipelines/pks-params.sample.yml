@@ -3,84 +3,6 @@ pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet
 opsman_major_minor_version: ^2\.1\.6.*$   # PCF Ops Manager minor version to track
 pks_major_minor_version: ^1\..*$         # use PKS v1.1
 
-# Additional parameters if using the pipeline in offline mode using the offline-install-pks-pipeline*.yml
-# Uncomment and fill the values
-# offline_run_id: ""                                                                 # EDIT ME
-# offline_gen_s3_endpoint: &my_s3_endpoint http://10.85.24.5:9000/                   # EDIT ME
-# offline_gen_s3_bucket: &my_s3_bucket offline-bucket                                # EDIT ME
-# offline_gen_s3_access_key_id: &my_s3_access_key_id my_access_id                    # EDIT ME
-# offline_gen_s3_secret_access_key: &my_s3_secret_access_key my_secret_access_key    # EDIT ME
-
-
-# vCenter details to deploy the Mgmt OVAs (Mgr, Edge, Controller)
-vcenter_host: vcsa-01.corp.local.io       # EDIT - this is for deployment of the ovas for the mgmt plane
-vcenter_usr: administrator@vsphere.local  # EDIT - this is for deployment of the ovas for the mgmt plane
-vcenter_pwd: 39adladfasdfl!               # EDIT - this is for deployment of the ovas for the mgmt plane
-vcenter_datacenter: Datacenter            # EDIT
-vcenter_datastore: Datastore              # EDIT
-vcenter_cluster: Cluster                  # EDIT
-vcenter_manager: vcenter-1                # EDIT
-vcenter_rp:                               # EDIT - can be blank - resource pool where mgmt plane vms would get deployed
-
-# OVA general network settings
-ntpservers: 10.13.12.2                    # EDIT
-mgmt_portgroup: 'VM Network'              # EDIT
-dnsserver: 10.13.12.2                     # EDIT
-dnsdomain: corp.local.io                  # EDIT
-defaultgateway: 10.13.12.1                # EDIT
-netmask: 255.255.255.0                    # EDIT
-
-# Host a Webserver to serve the ova images and ovftool
-# Please edit the endpoint and the file names
-nsx_image_webserver: http://10.85.24.5:9080
-
-# Download NSX-T 2.1 bits from
-# https://my.vmware.com/group/vmware/details?downloadGroup=NSX-T-210&productId=673
-nsx_mgr_ova: nsx-unified-appliance-2.1.0.0.0.7395503.ova
-nsx_controller_ova: nsx-controller-2.1.0.0.0.7395493.ova
-nsx_edge_ova: nsx-edge-2.1.0.0.0.7395502.ova
-# Ensure ovftool is minimally v4.2
-# https://my.vmware.com/group/vmware/details?productId=614&downloadGroup=OVFTOOL420#
-ovftool_image: VMware-ovftool-4.2.0-5965791-lin.x86_64.bundle
-
-# The Esxi Hosts can be added to transport nodes in two ways:
-# a) specify the esxi hosts individually - first checked for
-# b) or use compute_vcenter_manager to add hosts under a specific vcenter as transport nodes
-
-# Specify passwd of the esxi hosts that should be used for nsx-t
-esxi_hosts_root_pwd: rootPasswd  # EDIT - Root password for the esxi hosts
-
-# Specify FQDN, ip (and passwd if they are different) for each of the esxi hosts that should be used for nsx-t
-esxi_hosts_config:
-
-# Listing the individual hosts that needs to be used
-# esxi_hosts_config: |
-#   esxi_hosts:
-#   - name: esxi-host1.corp.local.io
-#     ip: 10.13.12.10
-#     root_pwd: rootPasswd
-# - name: esxi-host2.corp.local.io
-#   ip: 10.13.12.11
-#   root_pwd: rootPasswd
-
-# Handle multiple vcenter and compute clusters for Esxi Hosts
-# This would override esxi_hosts_config
-compute_manager_configs: |
-  compute_managers:
-  - vcenter_name: vcenter-01
-    vcenter_host: vcenter-01.corp.local
-    vcenter_usr: administrator@vsphere.local
-    vcenter_pwd: VMWare1!
-    clusters:
-    # Multiple clusters under same vcenter can be specified
-    - vcenter_cluster: Cluster1
-      overlay_profile_mtu: 1600 # Min 1600
-      overlay_profile_vlan: EDIT_ME # VLAN ID for the TEP/Overlay network
-      # Specify an unused vmnic on esxi host to be used for nsx-t
-      # can be multiple vmnics separated by comma
-      uplink_vmnics: vmnic1 # vmnic1,vmnic2...
-    # - vcenter_cluster: Cluster2
-    #   overlay_profile_mtu: 1600 # Min 1600
 # vCenter configuration
 vcenter_host: 10.1.1.10            # vCenter host or IP
 vcenter_usr: administrator@vsphere.local             # vCenter username. If user is tied to a domain, then escape the \, example `domain\\user`
@@ -212,7 +134,8 @@ pks_tile_cluster_service_network_name: PKS-Services # Should match the PKS-Servi
 # Otherwise the pks-nsx-t-precheck errrand would fail.
 pks_tile_nsx_skip_ssl_verification: true # can be true or false
 
-# Disable PKS NSX-T Precheck Errand
+# WARNING!! dont disable PKS NSX-T Precheck Errand
+# Tags get set as part of the errand for the Routers, IP Blocks, IP Pools etc.
 pks_tile_disable_nsx_t_precheck_errand: false                          # Default: false. Set to true if using medium edge sizes as PKS Errand would fail with smaller edges
 
 # PKS Main configs

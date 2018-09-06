@@ -24,7 +24,7 @@ jobs:
   plan:
   - aggregate:
     - {get: pcf-pipelines-tarball}
-    - {get: pcfnorm-rootfs-latest-docker-tarball}
+    - {get: pcfnorm-rootfs-1.0.17-docker-tarball}
     - get: pcf-ops-manager
       params:
         globs: ['*.ova']
@@ -32,7 +32,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -65,7 +65,7 @@ jobs:
   plan:
   - aggregate:
     - {get: pcf-pipelines-tarball}
-    - {get: pcfnorm-rootfs-latest-docker-tarball}
+    - {get: pcfnorm-rootfs-1.0.17-docker-tarball}
     - {get: nsx-t-ci-pipeline-tarball}
     - {get: czero-cflinuxfs2-latest-docker-tarball}
     - get: pcf-ops-manager
@@ -77,7 +77,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -453,7 +453,7 @@ jobs:
   - aggregate:
     - {get: nsx-t-ci-pipeline-tarball}
     - {get: pcf-pipelines-tarball}
-    - {get: pcfnorm-rootfs-latest-docker-tarball}
+    - {get: pcfnorm-rootfs-1.0.17-docker-tarball}
     - {get: pcf-pipelines-utils-tarball}
     - {get: czero-rootfs-latest-docker-tarball}
     - get: harbor-container-registry-tarball
@@ -494,7 +494,7 @@ jobs:
       image_resource:
         params: {unpack: true}
         source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
           secret_access_key: ((final_s3_secret_access_key))}
         type: s3
       inputs:
@@ -874,9 +874,9 @@ resources:
     endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-tile/harbor-container-registry-tarball/(.*).tgz,
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
-- name: pcfnorm-rootfs-latest-docker-tarball
+- name: pcfnorm-rootfs-1.0.17-docker-tarball
   source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
-    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-latest-docker.(.*),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
     secret_access_key: ((final_s3_secret_access_key))}
   type: s3
 - name: czero-cflinuxfs2-latest-docker-tarball

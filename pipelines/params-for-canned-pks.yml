@@ -1,11 +1,10 @@
-# These need to be filled in only for offline version of PKS install
 # Minio offline bucket params
 iaas: vsphere
 final_s3_endpoint: ((final_s3_endpoint))        # EDIT the minio address/port
 final_s3_bucket: ((final_s3_bucket))
 final_s3_access_key_id: ((final_s3_access_key_id))
 final_s3_secret_access_key: ((final_s3_secret_access_key))
-offline_run_id: ""
+offline_run_id: ((offline_run_id))
 
 # Pipeline resource configuration
 pivnet_token: ((pivnet_token))    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
@@ -13,22 +12,22 @@ opsman_major_minor_version: ((opsman_major_minor_version))   # PCF Ops Manager m
 pks_major_minor_version: ((pks_major_minor_version))         # use PKS v1.1
 
 # vCenter configuration
-vcenter_insecure: 1        # vCenter skip TLS cert validation; enter `1` to disable cert verification, `0` to enable verification
-vcenter_ca_cert:           # vCenter CA cert at the API endpoint; enter a value if `vcenter_insecure: 0`
+vcenter_insecure: 1                  # vCenter skip TLS cert validation; enter `1` to disable cert verification, `0` to enable verification
+vcenter_ca_cert:                     # vCenter CA cert at the API endpoint; enter a value if `vcenter_insecure: 0`
 vcenter_host: ((vcenter_host))       # EDIT - this is for deployment of the ovas for the mgmt plane
-vcenter_usr: ((vcenter_usr))   # EDIT - this is for deployment of the ovas for the mgmt plane
+vcenter_usr: ((vcenter_usr))               # EDIT - this is for deployment of the ovas for the mgmt plane
 vcenter_pwd: ((vcenter_pwd))               # EDIT - this is for deployment of the ovas for the mgmt plane
-vcenter_data_center: ((vcenter_datacenter))            # EDIT
-vcenter_datastore: ((vcenter_datastore))              # EDIT
-vcenter_cluster: ((vcenter_cluster))                  # EDIT
+vcenter_data_center: ((vcenter_datacenter))          # EDIT
+vcenter_datastore: ((vcenter_datastore))             # EDIT
+vcenter_cluster: ((compute_vcenter_cluster))         # EDIT
 
 ntpservers: ((ntpservers))                   # EDIT
 dnsserver: ((dnsserver))                     # EDIT
-dnsdomain: ((dnsdomain))                  # EDIT
-defaultgateway: ((defaultgateway))                # EDIT
+dnsdomain: ((dnsdomain))                     # EDIT
+defaultgateway: ((defaultgateway))           # EDIT
 
 # Ops Manager VM configuration
-om_vm_host:                           # Optional - vCenter host to deploy Ops Manager in
+om_vm_host:                                           # Optional - vCenter host to deploy Ops Manager in
 om_data_store: ((vcenter_datastore))                   # vCenter datastore name to deploy Ops Manager in
 opsman_domain_or_ip_address: opsmgr.((dnsdomain))              # FQDN to access Ops Manager without protocol (will use https), ex: opsmgr.example.com
 opsman_admin_username: ((opsman_admin_usr))          # Username for Ops Manager admin account
@@ -50,7 +49,7 @@ om_vm_folder:             # Leave it blank
 # Possible formats:
 #   cluster:       /<Data Center Name>/host/<Cluster Name>
 #   resource pool: /<Data Center Name>/host/<Cluster Name>/Resources/<Resource Pool Name>
-om_resource_pool: ((om_resource_pool))
+om_resource_pool: ((resource_pool1))
 
 ephemeral_storage_names: ((bosh_vm_storage)) # Ephemeral Storage names in vCenter for use by PCF
 persistent_storage_names: ((bosh_vm_storage)) # Persistent Storage names in vCenter for use by PCF
@@ -63,17 +62,17 @@ trusted_certificates:         # Trusted certificates to be deployed along with a
 vm_disk_type: "thick"         # Disk type for BOSH provisioned VM. (thick|thin)
 
 # AZ configuration for Ops Director
-az_1_name: az1                   # Logical name of availability zone. No spaces or special characters.
-az_1_cluster_name: ((az_1_cluster))      # Name of cluster in vCenter for PKS
-az_1_rp_name: pks-rp1            # Resource pool name in vCenter for PKS
+az_1_name: az1                        # Logical name of availability zone. No spaces or special characters.
+az_1_cluster_name: ((az_1_cluster))   # Name of cluster in vCenter for PKS
+az_1_rp_name: ((resource_pool1))      # Resource pool name in vCenter for PKS
 
-az_2_name: az2                   # Logical name of availability zone. No spaces or special characters.
-az_2_cluster_name: ((az_2_cluster))      # Name of cluster in vCenter for PKS
-az_2_rp_name: pks-rp2             # Resource pool name in vCenter for PKS
+az_2_name: az2                        # Logical name of availability zone. No spaces or special characters.
+az_2_cluster_name: ((az_2_cluster))   # Name of cluster in vCenter for PKS
+az_2_rp_name: ((resource_pool2))      # Resource pool name in vCenter for PKS
 
-az_3_name: az3                   # Logical name of availability zone. No spaces or special characters.
-az_3_cluster_name: ((az_3_cluster))      # Name of cluster in vCenter for PKS
-az_3_rp_name: pks-rp3            # Resource pool name in vCenter for PKS
+az_3_name: az3                        # Logical name of availability zone. No spaces or special characters.
+az_3_cluster_name: ((az_3_cluster))   # Name of cluster in vCenter for PKS
+az_3_rp_name: ((resource_pool3))      # Resource pool name in vCenter for PKS
 
 ntp_servers: ((ntpservers))                   # Comma-separated list of NTP servers to use for VMs deployed by BOSH
 enable_vm_resurrector: true   # Whether to enable BOSH VM resurrector
@@ -152,8 +151,10 @@ pks_tile_cluster_service_network_name: PKS-Services # Should match the PKS-Servi
 # Otherwise the pks-nsx-t-precheck errrand would fail.
 pks_tile_nsx_skip_ssl_verification: true # can be true or false
 
-# Disable PKS NSX-T Precheck Errand
+# WARNING!! Dont disable PKS NSX-T Precheck Errand
+# The errand needs to be run to tag the ip blocks, routers, ip pools all correctly and to also check the NSX-T Health and status
 pks_tile_disable_nsx_t_precheck_errand: false                          # Default: false. Set to true if using medium edge sizes as PKS Errand would fail with smaller edges
+
 
 # PKS Main configs
 pks_tile_t0_router_name: DefaultT0Router                               # EDIT - Name of T0 Router to be used for PKS
@@ -260,4 +261,3 @@ pks_tile_plan_details:
     is_active: false
     plan_selector: plan3_selector # Dont change the value of selector - Needs to be planN_selector
     # other fields not considered if its not active
-
