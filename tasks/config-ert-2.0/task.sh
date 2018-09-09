@@ -624,7 +624,7 @@ echo "{
   \"syslog_scheduler\": { \"instances\": $SYSLOG_SCHEDULER_INSTANCES },
   \"tcp_router\": { \"instances\": $TCP_ROUTER_INSTANCES },
   \"uaa\": { \"instances\": $UAA_INSTANCES }
-} " > > job_instances_config.json
+} " > job_instances_config.json
 
 # Merge the default resource config with actual instances
 JOB_RESOURCES_CONFIG=$(jq -s '.[0] * .[1]' original_resource_config.json job_instances_config.json )
