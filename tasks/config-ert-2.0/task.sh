@@ -576,6 +576,7 @@ cf_network=$(
 
 
 JOB_RESOURCES_CONFIG='{ }'
+JOB_INSTANCE_COUNT_CONFIG='{ }'
 
 # Need to get the individual job resources defn to get instance count, persistent disk, security groups etc.
 for job_name_id in $(om-linux   \
@@ -597,42 +598,29 @@ do
                     curl -p "/api/v0/staged/products/${PRODUCT_GUID}/jobs/${JOB_ID}/resource_config" )
   JOB_RESOURCES_CONFIG=$(echo "$JOB_RESOURCES_CONFIG { \"$JOB_NAME\" : $JOB_CONFIG }" | jq -s add)
   #echo modififed JOB_RESOURCES_CONFIG is $JOB_RESOURCES_CONFIG
+  
+  # We can only set instance count for those that are defined as part of the tile
+  # Sometimes the job names changes...
+  JOB_INSTANCES_COUNT_VARIABLE=$(echo "${JOB_NAME}_INSTANCES" | awk '{ print toupper($0) }' | sed -e 's/-/_/g')
+
+  # Only set instance count for those that are defined
+  set +e
+    variable_defined=$(env | grep $JOB_INSTANCES_COUNT_VARIABLE)
+    if [ "$variable_defined" != "" ]; then
+      JOB_INSTANCES_COUNT=${!JOB_INSTANCES_COUNT_VARIABLE}
+      JOB_INSTANCE_COUNT_CONFIG=$(echo "$JOB_INSTANCE_COUNT_CONFIG { \"$JOB_NAME\" : { \"instances\": $JOB_INSTANCES_COUNT } }" | jq -s add)
+    fi
+  set -e
 done
 
 echo $JOB_RESOURCES_CONFIG > original_resource_config.json
-
-echo "{
-  \"backup_restore\": { \"instances\": $BACKUP_PREPARE_INSTANCES },
-  \"clock_global\": { \"instances\": $CLOCK_GLOBAL_INSTANCES },
-  \"cloud_controller\": { \"instances\": $CLOUD_CONTROLLER_INSTANCES },
-  \"cloud_controller_worker\": { \"instances\": $CLOUD_CONTROLLER_WORKER_INSTANCES },
-  \"consul_server\": { \"instances\": $CONSUL_SERVER_INSTANCES },
-  \"credhub\": { \"instances\": $CREDHUB_INSTANCES },
-  \"diego_brain\": { \"instances\": $DIEGO_BRAIN_INSTANCES },
-  \"diego_cell\": { \"instances\": $DIEGO_CELL_INSTANCES },
-  \"diego_database\": { \"instances\": $DIEGO_DATABASE_INSTANCES },
-  \"doppler\": { \"instances\": $DOPPLER_INSTANCES },
-  \"ha_proxy\": { \"instances\": $HA_PROXY_INSTANCES },
-  \"loggregator_trafficcontroller\": { \"instances\": $LOGGREGATOR_TC_INSTANCES },
-  \"mysql\": { \"instances\": $MYSQL_INSTANCES },
-  \"mysql_monitor\": { \"instances\": $MYSQL_MONITOR_INSTANCES },
-  \"mysql_proxy\": { \"instances\": $MYSQL_PROXY_INSTANCES },
-  \"nats\": { \"instances\": $NATS_INSTANCES },
-  \"nfs_server\": { \"instances\": $NFS_SERVER_INSTANCES },
-  \"router\": { \"instances\": $ROUTER_INSTANCES },
-  \"syslog_adapter\": { \"instances\": $SYSLOG_ADAPTER_INSTANCES },
-  \"syslog_scheduler\": { \"instances\": $SYSLOG_SCHEDULER_INSTANCES },
-  \"tcp_router\": { \"instances\": $TCP_ROUTER_INSTANCES },
-  \"uaa\": { \"instances\": $UAA_INSTANCES }
-} " > job_instances_config.json
+echo $JOB_INSTANCE_COUNT_CONFIG > job_instances_config.json
 
 # Merge the default resource config with actual instances
 JOB_RESOURCES_CONFIG=$(jq -s '.[0] * .[1]' original_resource_config.json job_instances_config.json )
 
 # We need full set of parameters for a given job before we can apply the security group, instances along with persistent disk etc.
-cf_resources=$(
-  echo $
-  jq -n \
+cf_resources=$(jq -n \
     --arg iaas "$IAAS" \
     --arg ha_proxy_elb_name "$HA_PROXY_LB_NAME" \
     --arg ha_proxy_floating_ips "$HAPROXY_FLOATING_IPS" \
