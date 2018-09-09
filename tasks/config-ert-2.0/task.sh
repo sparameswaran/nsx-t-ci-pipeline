@@ -574,30 +574,34 @@ cf_network=$(
 
 )
 
+JOB_RESOURCE_CONFIG="{
+  \"backup_restore\": { \"instances\": $BACKUP_PREPARE_INSTANCES },
+  \"clock_global\": { \"instances\": $CLOCK_GLOBAL_INSTANCES },
+  \"cloud_controller\": { \"instances\": $CLOUD_CONTROLLER_INSTANCES },
+  \"cloud_controller_worker\": { \"instances\": $CLOUD_CONTROLLER_WORKER_INSTANCES },
+  \"consul_server\": { \"instances\": $CONSUL_SERVER_INSTANCES },
+  \"credhub\": { \"instances\": $CREDHUB_INSTANCES },
+  \"diego_brain\": { \"instances\": $DIEGO_BRAIN_INSTANCES },
+  \"diego_cell\": { \"instances\": $DIEGO_CELL_INSTANCES },
+  \"diego_database\": { \"instances\": $DIEGO_DATABASE_INSTANCES },
+  \"doppler\": { \"instances\": $DOPPLER_INSTANCES },
+  \"ha_proxy\": { \"instances\": $HA_PROXY_INSTANCES },
+  \"loggregator_trafficcontroller\": { \"instances\": $LOGGREGATOR_TC_INSTANCES },
+  \"mysql\": { \"instances\": $MYSQL_INSTANCES },
+  \"mysql_monitor\": { \"instances\": $MYSQL_MONITOR_INSTANCES },
+  \"mysql_proxy\": { \"instances\": $MYSQL_PROXY_INSTANCES },
+  \"nats\": { \"instances\": $NATS_INSTANCES },
+  \"nfs_server\": { \"instances\": $NFS_SERVER_INSTANCES },
+  \"router\": { \"instances\": $ROUTER_INSTANCES },
+  \"syslog_adapter\": { \"instances\": $SYSLOG_ADAPTER_INSTANCES },
+  \"syslog_scheduler\": { \"instances\": $SYSLOG_SCHEDULER_INSTANCES },
+  \"tcp_router\": { \"instances\": $TCP_ROUTER_INSTANCES },
+  \"uaa\": { \"instances\": $UAA_INSTANCES }
+}"
+
 cf_resources=$(
   jq -n \
     --arg iaas "$IAAS" \
-    --argjson consul_server_instances $CONSUL_SERVER_INSTANCES \
-    --argjson nats_instances $NATS_INSTANCES \
-    --argjson nfs_server_instances $NFS_SERVER_INSTANCES \
-    --argjson mysql_proxy_instances $MYSQL_PROXY_INSTANCES \
-    --argjson mysql_instances $MYSQL_INSTANCES \
-    --argjson backup_prepare_instances $BACKUP_PREPARE_INSTANCES \
-    --argjson diego_database_instances $DIEGO_DATABASE_INSTANCES \
-    --argjson uaa_instances $UAA_INSTANCES \
-    --argjson cloud_controller_instances $CLOUD_CONTROLLER_INSTANCES \
-    --argjson ha_proxy_instances $HA_PROXY_INSTANCES \
-    --argjson router_instances $ROUTER_INSTANCES \
-    --argjson mysql_monitor_instances $MYSQL_MONITOR_INSTANCES \
-    --argjson clock_global_instances $CLOCK_GLOBAL_INSTANCES \
-    --argjson cloud_controller_worker_instances $CLOUD_CONTROLLER_WORKER_INSTANCES \
-    --argjson diego_brain_instances $DIEGO_BRAIN_INSTANCES \
-    --argjson diego_cell_instances $DIEGO_CELL_INSTANCES \
-    --argjson loggregator_tc_instances $LOGGREGATOR_TC_INSTANCES \
-    --argjson tcp_router_instances $TCP_ROUTER_INSTANCES \
-    --argjson syslog_adapter_instances $SYSLOG_ADAPTER_INSTANCES \
-    --argjson doppler_instances $DOPPLER_INSTANCES \
-    --argjson internet_connected $INTERNET_CONNECTED \
     --arg ha_proxy_elb_name "$HA_PROXY_LB_NAME" \
     --arg ha_proxy_floating_ips "$HAPROXY_FLOATING_IPS" \
     --arg tcp_router_nsx_security_group "${TCP_ROUTER_NSX_SECURITY_GROUP}" \
@@ -615,31 +619,15 @@ cf_resources=$(
     --arg diego_brain_nsx_lb_pool_name "${DIEGO_BRAIN_NSX_LB_POOL_NAME}" \
     --arg diego_brain_nsx_lb_security_group "${DIEGO_BRAIN_NSX_LB_SECURITY_GROUP}" \
     --arg diego_brain_nsx_lb_port "${DIEGO_BRAIN_NSX_LB_PORT}" \
+    --arg mysql_nsx_security_group "${MYSQL_NSX_SECURITY_GROUP}" \
+    --arg mysql_nsx_lb_edge_name "${MYSQL_NSX_LB_EDGE_NAME}" \
+    --arg mysql_nsx_lb_pool_name "${MYSQL_NSX_LB_POOL_NAME}" \
+    --arg mysql_nsx_lb_security_group "${MYSQL_NSX_LB_SECURITY_GROUP}" \
+    --arg mysql_nsx_lb_port "${MYSQL_NSX_LB_PORT}" \
+    --argjson job_resource_config "${JOB_RESOURCE_CONFIG}" \
     '
-    {
-      "consul_server": { "instances": $consul_server_instances },
-      "nats": { "instances": $nats_instances },
-      "nfs_server": { "instances": $nfs_server_instances },
-      "mysql_proxy": { "instances": $mysql_proxy_instances },
-      "mysql": { "instances": $mysql_instances },
-      "backup-prepare": { "instances": $backup_prepare_instances },
-      "diego_database": { "instances": $diego_database_instances },
-      "uaa": { "instances": $uaa_instances },
-      "cloud_controller": { "instances": $cloud_controller_instances },
-      "ha_proxy": { "instances": $ha_proxy_instances },
-      "router": { "instances": $router_instances },
-      "mysql_monitor": { "instances": $mysql_monitor_instances },
-      "clock_global": { "instances": $clock_global_instances },
-      "cloud_controller_worker": { "instances": $cloud_controller_worker_instances },
-      "diego_brain": { "instances": $diego_brain_instances },
-      "diego_cell": { "instances": $diego_cell_instances },
-      "loggregator_trafficcontroller": { "instances": $loggregator_tc_instances },
-      "tcp_router": { "instances": $tcp_router_instances },
-      "syslog_adapter": { "instances": $syslog_adapter_instances },
-      "doppler": { "instances": $doppler_instances }
-    }
-
-    +
+    $job_resource_config
+    |
 
     if $ha_proxy_elb_name != "" and $ha_proxy_elb_name != "null" then
       .ha_proxy |= . + { "elb_names": [ $ha_proxy_elb_name ] }
@@ -647,7 +635,7 @@ cf_resources=$(
       .
     end
 
-    +
+    |
 
     if $ha_proxy_floating_ips != "" and $ha_proxy_floating_ips != "null" then
       .ha_proxy |= . + { "floating_ips": $ha_proxy_floating_ips }
@@ -655,13 +643,22 @@ cf_resources=$(
       .
     end
 
-    +
+    |
 
     # NSX LBs
 
+    if $tcp_router_nsx_security_group != "" and $tcp_router_nsx_security_group != "null" then
+      .tcp_router |= . + {
+        "nsx_security_groups": ($tcp_router_nsx_security_group| split(",") )
+      }
+    else
+      .
+    end
+
+    |
+
     if $tcp_router_nsx_lb_edge_name != "" and $tcp_router_nsx_lb_edge_name != "null" then
       .tcp_router |= . + {
-        "nsx_security_groups": [$tcp_router_nsx_security_group],
         "nsx_lbs": [
           {
             "edge_name": $tcp_router_nsx_lb_edge_name,
@@ -675,11 +672,20 @@ cf_resources=$(
       .
     end
 
-    +
+    |
+
+    if $router_nsx_security_group != "" and $router_nsx_security_group != "null" then
+      .router |= . + {
+        "nsx_security_groups": ($router_nsx_security_group | split(",") )
+      }
+    else
+      .
+    end
+
+    |
 
     if $router_nsx_lb_edge_name != "" and $router_nsx_lb_edge_name != "null" then
       .router |= . + {
-        "nsx_security_groups": [$router_nsx_security_group],
         "nsx_lbs": [
           {
             "edge_name": $router_nsx_lb_edge_name,
@@ -693,17 +699,55 @@ cf_resources=$(
       .
     end
 
-    +
+    |
+
+    if $diego_brain_nsx_security_group != "" and $diego_brain_nsx_security_group != "null" then
+      .diego_brain |= . + {
+        "nsx_security_groups": ($diego_brain_nsx_security_group | split(",") )
+      }
+    else
+      .
+    end
+
+    |
 
     if $diego_brain_nsx_lb_edge_name != "" and $diego_brain_nsx_lb_edge_name != "null" then
       .diego_brain |= . + {
-        "nsx_security_groups": [$diego_brain_nsx_security_group],
         "nsx_lbs": [
           {
             "edge_name": $diego_brain_nsx_lb_edge_name,
             "pool_name": $diego_brain_nsx_lb_pool_name,
             "security_group": $diego_brain_nsx_lb_security_group,
             "port": $diego_brain_nsx_lb_port
+          }
+        ]
+      }
+    else
+      .
+    end
+
+    |
+
+    # MySQL
+
+    if $mysql_nsx_security_group != "" and $mysql_nsx_security_group != "null" then
+      .mysql |= . + {
+        "nsx_security_groups": ($mysql_nsx_security_group | split(",") )
+      }
+    else
+      .
+    end
+
+    |
+
+    if $mysql_nsx_lb_edge_name != ""  and $mysql_nsx_lb_edge_name != "null" then
+      .mysql |= . + {
+        "nsx_lbs": [
+          {
+            "edge_name": $mysql_nsx_lb_edge_name,
+            "pool_name": $mysql_nsx_lb_pool_name,
+            "security_group": $mysql_nsx_lb_security_group,
+            "port": $mysql_nsx_lb_port
           }
         ]
       }

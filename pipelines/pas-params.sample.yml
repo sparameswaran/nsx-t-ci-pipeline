@@ -294,6 +294,7 @@ backup_prepare_instances: 0
 diego_database_instances: 3
 uaa_instances: 2
 cloud_controller_instances: 2
+credhub_instances: 0  # EDIT ME
 ha_proxy_instances: 0
 router_instances: 2
 mysql_monitor_instances: 1
@@ -303,27 +304,42 @@ diego_brain_instances: 2
 diego_cell_instances: 3
 loggregator_traffic_controller_instances: 3
 syslog_adapter_instances: 3
+syslog_scheduler_instances: 2
 doppler_instances: 3
 tcp_router_instances: 2
 ert_errands_to_run_on_change: all
 internet_connected: true
 
-# leave nsx fields empty if you are not leveraging the nsx features for a given component
+# Sample association of PAS Components with NSX-T NS Groups
+# router_nsx_security_group: PAS1-Router443-NSG,PAS1-Router80-NSG   # defined on the NSX-T side
+router_nsx_security_group:
+
+# diego_brain_nsx_security_group: PAS1-SSHProxy2222-NSG         # defined on the NSX-T side
+diego_brain_nsx_security_group:
+
+# tcp_router_nsx_security_group: PAS1-TcpRouter-NSG             # defined on the NSX-T side
 tcp_router_nsx_security_group:
+
+# mysql_nsx_security_group: PAS1-Mysql-NSG
+mysql_nsx_security_group:
+
+# leave nsx fields empty if you are not leveraging the nsx features for a given component
 tcp_router_nsx_lb_edge_name:
 tcp_router_nsx_lb_pool_name:
 tcp_router_nsx_lb_security_group:
 tcp_router_nsx_lb_port:
-router_nsx_security_group:
 router_nsx_lb_edge_name:
 router_nsx_lb_pool_name:
 router_nsx_lb_security_group:
 router_nsx_lb_port:
-diego_brain_nsx_security_group:
 diego_brain_nsx_lb_edge_name:
 diego_brain_nsx_lb_pool_name:
 diego_brain_nsx_lb_security_group:
 diego_brain_nsx_lb_port:
+mysql_nsx_lb_edge_name:
+mysql_nsx_lb_pool_name:
+mysql_nsx_lb_security_group:
+mysql_nsx_lb_port:
 
 cf_uaa_credential_references: ".uaa.admin_credentials,.uaa.admin_client_credentials,.uaa.tcp_emitter_credentials"
 
