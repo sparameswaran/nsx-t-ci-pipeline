@@ -1,0 +1,896 @@
+groups:
+- jobs: [deploy-opsman, configure-director, deploy-director, upload-pks, deploy-pks,
+    config-pks-controller]
+  name: full-pks-install
+- jobs: [upload-harbor, deploy-harbor, config-harbor-app]
+  name: harbor-install-standalone
+- jobs: [delete-clusters]
+  name: delete-pks-clusters
+- jobs: [deploy-opsman, configure-director, deploy-director]
+  name: ops-mgr-install
+- jobs: [upload-pks-standalone, deploy-pks-standalone, config-pks-controller-standalone]
+  name: pks-install-standalone
+- jobs: [config-pks-controller-after-install]
+  name: config-pks-controller-after-install
+- jobs: [delete-clusters, wipe-env]
+  name: wipe
+harbor_config_api_nats_params: &id001 {HABBOR_TILE_PROPERTIES: ((harbor_properties)),
+  HARBOR_APP_DOMAIN: ((harbor_tile_app_domain)), HARBOR_APP_DOMAIN_IP: ((harbor_tile_app_domain_ip)),
+  NSX_API_MANAGER: ((nsx_address)), NSX_API_PASSWORD: ((nsx_password)), NSX_API_USER: ((nsx_username)),
+  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)), OPSMAN_PASSWORD: ((opsman_admin_password)),
+  OPSMAN_USERNAME: ((opsman_admin_username)), PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))}
+jobs:
+- name: deploy-opsman
+  plan:
+  - aggregate:
+    - {get: pcf-pipelines-tarball}
+    - {get: pcfnorm-rootfs-1.0.17-docker-tarball}
+    - get: pcf-ops-manager
+      params:
+        globs: ['*.ova']
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-pipelines-tarball}
+      - {name: pcf-ops-manager}
+      outputs:
+      - {name: pivnet-opsman-product}
+      - {name: pcf-pipelines}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd pcf-pipelines;
+            tar -zxf ../pcf-pipelines-tarball/*.tgz; find .  -size 0 -exec rm {} \;
+            ; cd ..;cd pivnet-opsman-product; mv ../pcf-ops-manager/* .; cd ..;for
+            token in $(env | grep ''='' | grep "^[A-Z]*" | grep ''=null$'' | sed -e
+            ''s/=.*//g'');do export ${token}="";  done;echo Starting main task execution!!;pcf-pipelines/install-pcf/vsphere/tasks/import-opsman/task.sh']
+        path: /bin/bash
+    params: {GOVC_CA_CERT: ((vcenter_ca_cert)), GOVC_DATACENTER: ((vcenter_data_center)),
+      GOVC_DATASTORE: ((om_data_store)), GOVC_HOST: ((om_vm_host)), GOVC_INSECURE: ((vcenter_insecure)),
+      GOVC_NETWORK: ((om_vm_network)), GOVC_PASSWORD: ((vcenter_pwd)), GOVC_RESOURCE_POOL: ((om_resource_pool)),
+      GOVC_URL: ((vcenter_host)), GOVC_USERNAME: ((vcenter_usr)), OM_DNS_SERVERS: ((om_dns_servers)),
+      OM_GATEWAY: ((om_gateway)), OM_IP: ((om_ip)), OM_NETMASK: ((om_netmask)), OM_NTP_SERVERS: ((om_ntp_servers)),
+      OM_RESOURCE_POOL: ((om_resource_pool)), OM_VM_FOLDER: null, OM_VM_NAME: ((om_vm_name)),
+      OM_VM_NETWORK: ((om_vm_network)), OM_VM_POWER_STATE: ((om_vm_power_state)),
+      OPSMAN_DISK_TYPE: ((opsman_disk_type)), OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPS_MGR_SSH_PWD: ((om_ssh_pwd))}
+    task: offlined-deploy
+- name: configure-director
+  plan:
+  - aggregate:
+    - {get: pcf-pipelines-tarball}
+    - {get: pcfnorm-rootfs-1.0.17-docker-tarball}
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-cflinuxfs2-latest-docker-tarball}
+    - get: pcf-ops-manager
+      params:
+        globs: []
+      passed: [deploy-opsman]
+      trigger: true
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-pipelines-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      - {name: pcf-ops-manager}
+      outputs:
+      - {name: pcf-pipelines}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd pcf-pipelines;
+            tar -zxf ../pcf-pipelines-tarball/*.tgz; find .  -size 0 -exec rm {} \;
+            ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep ''=null$''
+            | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting main
+            task execution!!;pcf-pipelines/tasks/config-opsman/task.sh']
+        path: /bin/bash
+    params: {OM_DECRYPTION_PWD: ((om_decryption_pwd)), OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      OPS_MGR_PWD: ((opsman_admin_password)), OPS_MGR_USR: ((opsman_admin_username))}
+    task: offlined-config-opsman-auth
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-pipelines-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      - {name: pcf-ops-manager}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-opsdir-2.0/task.sh']
+        path: /bin/bash
+    params: &id005 {AZ_1: ((az_1_name)), AZ_1_CLUSTER_NAME: ((az_1_cluster_name)),
+      AZ_1_RP_NAME: ((az_1_rp_name)), AZ_2: ((az_2_name)), AZ_2_CLUSTER_NAME: ((az_2_cluster_name)),
+      AZ_2_RP_NAME: ((az_2_rp_name)), AZ_3: ((az_3_name)), AZ_3_CLUSTER_NAME: ((az_3_cluster_name)),
+      AZ_3_RP_NAME: ((az_3_rp_name)),
+      BOSH_DISK_PATH: ((bosh_disk_path)), BOSH_TEMPLATE_FOLDER: ((bosh_template_folder)),
+      BOSH_VM_FOLDER: ((bosh_vm_folder)), DEPLOYMENT_EXCLUDED_RANGE: null, DEPLOYMENT_NETWORK_NAME: null,
+      DEPLOYMENT_NW_AZS: null, DEPLOYMENT_NW_CIDR: null, DEPLOYMENT_NW_DNS: null,
+      DEPLOYMENT_NW_GATEWAY: null, DEPLOYMENT_VCENTER_NETWORK: null, DYNAMIC_SERVICES_EXCLUDED_RANGE: null,
+      DYNAMIC_SERVICES_NETWORK_NAME: null, DYNAMIC_SERVICES_NW_AZS: null, DYNAMIC_SERVICES_NW_CIDR: null,
+      DYNAMIC_SERVICES_NW_DNS: null, DYNAMIC_SERVICES_NW_GATEWAY: null, DYNAMIC_SERVICES_VCENTER_NETWORK: null,
+      ENABLE_VM_RESURRECTOR: ((enable_vm_resurrector)), EPHEMERAL_STORAGE_NAMES: ((ephemeral_storage_names)),
+      ICMP_CHECKS_ENABLED: ((icmp_checks_enabled)), INFRA_EXCLUDED_RANGE: ((infra_excluded_range)),
+      INFRA_NETWORK_NAME: ((infra_network_name)), INFRA_NW_AZS: ((infra_nw_azs)),
+      INFRA_NW_CIDR: ((infra_nw_cidr)), INFRA_NW_DNS: ((infra_nw_dns)), INFRA_NW_GATEWAY: ((infra_nw_gateway)),
+      INFRA_VCENTER_NETWORK: ((infra_vsphere_network)), MAX_THREADS: ((max_threads)),
+      NSX_ADDRESS: ((nsx_address)), NSX_CA_CERTIFICATE: null, NSX_MODE: ((nsx_mode)),
+      NSX_NETWORKING_ENABLED: ((nsx_networking_enabled)), NSX_PASSWORD: ((nsx_password)),
+      NSX_USERNAME: ((nsx_username)), NTP_SERVERS: ((ntp_servers)), OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      PERSISTENT_STORAGE_NAMES: ((persistent_storage_names)), PKS_EXCLUDED_RANGE: ((pks_excluded_range)),
+      PKS_NETWORK_NAME: ((pks_network_name)), PKS_NW_AZS: ((pks_nw_azs)), PKS_NW_CIDR: ((pks_nw_cidr)),
+      PKS_NW_DNS: ((pks_nw_dns)), PKS_NW_GATEWAY: ((pks_nw_gateway)), PKS_VCENTER_NETWORK: ((pks_vsphere_network)),
+      SERVICES_EXCLUDED_RANGE: null, SERVICES_NETWORK_NAME: null, SERVICES_NW_AZS: null,
+      SERVICES_NW_CIDR: null, SERVICES_NW_DNS: null, SERVICES_NW_GATEWAY: null, SERVICES_VCENTER_NETWORK: null,
+      TRUSTED_CERTIFICATES: ((trusted_certificates)), VCENTER_DATA_CENTER: ((vcenter_data_center)),
+      VCENTER_DISK_TYPE: ((vm_disk_type)), VCENTER_HOST: ((vcenter_host)), VCENTER_PWD: ((vcenter_pwd)),
+      VCENTER_USR: ((vcenter_usr))}
+    task: offlined-configure-director
+- name: deploy-director
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-cflinuxfs2-latest-docker-tarball}
+    - get: pcf-ops-manager
+      params:
+        globs: []
+      passed: [configure-director]
+      trigger: true
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-ops-manager}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/apply-changes/task.sh']
+        path: /bin/bash
+    params: {OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)), OPSMAN_PASSWORD: ((opsman_admin_password)),
+      OPSMAN_USERNAME: ((opsman_admin_username))}
+    task: offlined-apply-changes
+- name: upload-pks
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-cflinuxfs2-latest-docker-tarball}
+    - get: pivotal-container-service-tarball
+      params:
+        globs: []
+    - get: pcf-ops-manager
+      params:
+        globs: []
+      passed: [deploy-director]
+      trigger: true
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-ops-manager}
+      - {name: pivotal-container-service-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: pivnet-product}
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;cd pivnet-product; tar -zxf ../pivotal-container-service-tarball/*.tgz;
+            find .  -size 0 -exec rm {} \; ; cd ..;for token in $(env | grep ''=''
+            | grep "^[A-Z]*" | grep ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo
+            Starting main task execution!!;nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.sh']
+        path: /bin/bash
+    params: {IAAS: vsphere, OM_IP: ((om_ip)), OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      PIVNET_API_TOKEN: ((pivnet_token))}
+    task: offlined-upload-tile
+- name: deploy-pks
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-cflinuxfs2-latest-docker-tarball}
+    - get: pcf-ops-manager
+      params:
+        globs: []
+      passed: [upload-pks]
+      trigger: true
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-ops-manager}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks/task.sh']
+        path: /bin/bash
+    params: &id002 {IAAS: vsphere, NSX_API_CA_CERT: null, NSX_API_MANAGER: ((nsx_address)),
+      NSX_API_PASSWORD: ((nsx_password)), NSX_API_USER: ((nsx_username)), NSX_SKIP_SSL_VERIFICATION: ((pks_tile_nsx_skip_ssl_verification)),
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)), OPSMAN_PASSWORD: ((opsman_admin_password)),
+      OPSMAN_USERNAME: ((opsman_admin_username)), PKS_ALLOW_PUBLIC_IP: ((pks_tile_allow_public_ip)),
+      PKS_CLI_EMAIL: ((pks_tile_cli_useremail)), PKS_CLI_PASSWORD: ((pks_tile_cli_password)),
+      PKS_CLI_USER: ((pks_tile_cli_username)), PKS_CLUSTER_SERVICE_NETWORK_NAME: ((pks_tile_cluster_service_network_name)),
+      PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name)), PKS_DEPLOYMENT_NETWORK_NAME: ((pks_tile_deployment_network_name)),
+      PKS_DISABLE_NSX_T_PRECHECK_ERRAND: ((pks_tile_disable_nsx_t_precheck_errand)),
+      PKS_ENABLE_HTTP_PROXY: ((pks_tile_enable_http_proxy)), PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name)),
+      PKS_HTTPS_PROXY_PASSWORD: ((pks_tile_https_proxy_password)), PKS_HTTPS_PROXY_URL: ((pks_tile_https_proxy_url)),
+      PKS_HTTPS_PROXY_USER: ((pks_tile_https_proxy_user)), PKS_HTTP_PROXY_PASSWORD: ((pks_tile_http_proxy_password)),
+      PKS_HTTP_PROXY_URL: ((pks_tile_http_proxy_url)), PKS_HTTP_PROXY_USER: ((pks_tile_http_proxy_user)),
+      PKS_LDAP_EMAIL_DOMAINS: ((pks_tile_ldap_email_domains)), PKS_LDAP_FIRST_NAME_ATTRIBUTE: ((pks_tile_ldap_first_name_attribute)),
+      PKS_LDAP_GROUP_SEARCH_BASE: ((pks_tile_ldap_group_search_base)), PKS_LDAP_LAST_NAME_ATTRIBUTE: ((pks_tile_ldap_last_name_attribute)),
+      PKS_LDAP_PASSWORD: ((pks_tile_ldap_password)), PKS_LDAP_SEARCH_BASE: ((pks_tile_ldap_search_base)),
+      PKS_LDAP_SERVER_SSL_CERT: ((pks_tile_ldap_server_ssl_cert)), PKS_LDAP_SERVER_SSL_CERT_ALIAS: ((pks_tile_ldap_server_ssl_cert_alias)),
+      PKS_LDAP_URL: ((pks_tile_ldap_url)), PKS_LDAP_USER: ((pks_tile_ldap_user)),
+      PKS_NODES_DNS_LIST: ((pks_tile_nodes_dns_list)), PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name)),
+      PKS_NO_PROXY: ((pks_tile_no_proxy)), PKS_NSX_NAT_MODE: ((pks_tile_nsx_nat_mode)),
+      PKS_NW_AZS: ((pks_tile_nw_azs)), PKS_PLAN_DETAILS: ((pks_tile_plan_details)),
+      PKS_SINGLETON_JOB_AZ: ((pks_tile_singleton_job_az)), PKS_SSL_CERT: ((pks_tile_cert_pem)),
+      PKS_SSL_PRIVATE_KEY: ((pks_tile_private_key_pem)), PKS_SYSLOG_ADDRESS: ((pks_tile_syslog_address)),
+      PKS_SYSLOG_CA_CERT: ((pks_tile_syslog_ca_cert)), PKS_SYSLOG_MIGRATION_ENABLED: ((pks_tile_syslog_migration_enabled)),
+      PKS_SYSLOG_PEER: ((pks_tile_syslog_peer)), PKS_SYSLOG_PORT: ((pks_tile_syslog_port)),
+      PKS_SYSLOG_TLS_ENABLED: ((pks_tile_syslog_tls_enabled)), PKS_SYSLOG_TRANSPORT_PROTOCOL: ((pks_tile_syslog_transport_protocol)),
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain)), PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name)),
+      PKS_TELEMETRY: ((pks_tile_telemetry)), PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix)),
+      PKS_UAA_USE_LDAP: ((pks_tile_uaa_use_ldap)), PKS_VCENTER_CLUSTER: ((pks_tile_vcenter_cluster)),
+      PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list)), PKS_VCENTER_DATASTORE: ((pks_tile_vcenter_datastore)),
+      PKS_VCENTER_DATA_CENTER: ((pks_tile_vcenter_data_center)), PKS_VCENTER_HOST: ((pks_tile_vcenter_host)),
+      PKS_VCENTER_PWD: ((pks_tile_vcenter_pwd)), PKS_VCENTER_USR: ((pks_tile_vcenter_usr)),
+      PKS_VM_FOLDER: ((pks_tile_vm_folder)), PKS_VRLI_CA_CERT: ((pks_tile_vrli_ca_cert)),
+      PKS_VRLI_ENABLED: ((pks_tile_vrli_enabled)), PKS_VRLI_HOST: ((pks_tile_vrli_host)),
+      PKS_VRLI_RATE_LIMIT: ((pks_tile_vrli_rate_limit)), PKS_VRLI_SKIP_CERT_VERIFY: ((pks_tile_vrli_skip_cert_verify)),
+      PKS_VRLI_USE_SSL: ((pks_tile_vrli_use_ssl)), PKS_WAVEFRONT_ALERT_TARGETS: ((pks_tile_wavefront_alert_targets)),
+      PKS_WAVEFRONT_API_URL: ((pks_tile_wavefront_api_url)), PKS_WAVEFRONT_TOKEN: ((pks_tile_wavefront_token))}
+    task: offlined-configure-pks
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-ops-manager}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/apply-changes/task.sh']
+        path: /bin/bash
+    params: {OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)), OPSMAN_PASSWORD: ((opsman_admin_password)),
+      OPSMAN_USERNAME: ((opsman_admin_username))}
+    task: offlined-deploy-pks
+- name: config-pks-controller
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline-tarball
+      params:
+        globs: []
+      passed: [deploy-pks]
+      trigger: true
+    - {get: czero-rootfs-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.sh']
+        path: /bin/bash
+    params: &id003 {NSX_API_MANAGER: ((nsx_address)), NSX_API_PASSWORD: ((nsx_password)),
+      NSX_API_USER: ((nsx_username)), OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain)), PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name)),
+      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix)), PKS_UAA_SYSTEM_DOMAIN_IP: ((pks_tile_uaa_system_domain_ip))}
+    task: offlined-config-pks-api-nats
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.sh']
+        path: /bin/bash
+    params: &id004 {OPSMAN_CLIENT_ID: null, OPSMAN_CLIENT_SECRET: null, OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      PKS_CLI_PASSWORD: ((pks_tile_cli_password)), PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail)),
+      PKS_CLI_USERNAME: ((pks_tile_cli_username)), PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain)),
+      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))}
+    task: offlined-config-pks-cli-user
+- name: upload-harbor
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-cflinuxfs2-latest-docker-tarball}
+    - get: harbor-container-registry-tarball
+      params:
+        globs: []
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: harbor-container-registry-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: pivnet-product}
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;cd pivnet-product; tar -zxf ../harbor-container-registry-tarball/*.tgz;
+            find .  -size 0 -exec rm {} \; ; cd ..;for token in $(env | grep ''=''
+            | grep "^[A-Z]*" | grep ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo
+            Starting main task execution!!;nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.sh']
+        path: /bin/bash
+    params: {IAAS: vsphere, OM_IP: ((om_ip)), OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      PIVNET_API_TOKEN: ((pivnet_token))}
+    task: offlined-upload-tile
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: harbor-container-registry-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      - {name: pivnet-product}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;cd pivnet-product; tar -zxf ../harbor-container-registry-tarball/*.tgz;
+            find .  -size 0 -exec rm {} \; ; cd ..;for token in $(env | grep ''=''
+            | grep "^[A-Z]*" | grep ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo
+            Starting main task execution!!;nsx-t-ci-pipeline/tasks/stage-product/task.sh']
+        path: /bin/bash
+    params: {OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)), OPSMAN_PASSWORD: ((opsman_admin_password)),
+      OPSMAN_USERNAME: ((opsman_admin_username))}
+    task: offlined-stage-harbor
+- name: deploy-harbor
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: pcf-pipelines-tarball}
+    - {get: pcfnorm-rootfs-1.0.17-docker-tarball}
+    - {get: pcf-pipelines-utils-tarball}
+    - {get: czero-rootfs-latest-docker-tarball}
+    - get: harbor-container-registry-tarball
+      params:
+        globs: []
+      passed: [upload-harbor]
+      trigger: true
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-pipelines-tarball}
+      - {name: pcf-pipelines-utils-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      - {name: harbor-container-registry-tarball}
+      outputs:
+      - {name: pcf-pipelines-utils}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd pcf-pipelines-utils;
+            tar -zxf ../pcf-pipelines-utils-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;pcf-pipelines-utils/tasks/pcf/configure-tile/task.sh']
+        path: /bin/bash
+    params: {OPSMAN_CLIENT_ID: null, OPSMAN_CLIENT_SECRET: null, OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      TILE_NETWORK: ((harbor_networks)), TILE_PRODUCT_NAME: harbor-container-registry,
+      TILE_PROPERTIES: ((harbor_properties)), TILE_RESOURCES: ((harbor_resources))}
+    task: offlined-configure-harbor
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-pipelines-tarball}
+      - {name: pcf-pipelines-utils-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      - {name: harbor-container-registry-tarball}
+      outputs:
+      - {name: pcf-pipelines}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd pcf-pipelines;
+            tar -zxf ../pcf-pipelines-tarball/*.tgz; find .  -size 0 -exec rm {} \;
+            ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep ''=null$''
+            | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting main
+            task execution!!;pcf-pipelines/tasks/disable-errands/task.sh']
+        path: /bin/bash
+    params: {ERRANDS_TO_DISABLE: ((harbor_errands_to_disable)), OPSMAN_CLIENT_ID: null,
+      OPSMAN_CLIENT_SECRET: null, OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      PRODUCT_NAME: harbor-container-registry}
+    task: offlined-disable-harbor-errands
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-pipelines-tarball}
+      - {name: pcf-pipelines-utils-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      - {name: harbor-container-registry-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/apply-changes/task.sh']
+        path: /bin/bash
+    params: {OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)), OPSMAN_PASSWORD: ((opsman_admin_password)),
+      OPSMAN_USERNAME: ((opsman_admin_username))}
+    task: offlined-deploy-harbor
+- name: config-harbor-app
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline-tarball
+      params:
+        globs: []
+      passed: [deploy-harbor]
+      trigger: true
+    - {get: czero-rootfs-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-harbor-nats/task.sh']
+        path: /bin/bash
+    params: *id001
+    task: offlined-config-harbor-nats
+- name: upload-pks-standalone
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-cflinuxfs2-latest-docker-tarball}
+    - get: pivotal-container-service-tarball
+      params:
+        globs: []
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pivotal-container-service-tarball}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: pivnet-product}
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;cd pivnet-product; tar -zxf ../pivotal-container-service-tarball/*.tgz;
+            find .  -size 0 -exec rm {} \; ; cd ..;for token in $(env | grep ''=''
+            | grep "^[A-Z]*" | grep ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo
+            Starting main task execution!!;nsx-t-ci-pipeline/tasks/upload-product-and-stemcell/task.sh']
+        path: /bin/bash
+    params: {IAAS: vsphere, OM_IP: ((om_ip)), OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
+      PIVNET_API_TOKEN: ((pivnet_token))}
+    task: offlined-upload-tile
+- name: deploy-pks-standalone
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline-tarball
+      params:
+        globs: []
+      passed: [upload-pks-standalone]
+      trigger: true
+    - {get: czero-cflinuxfs2-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks/task.sh']
+        path: /bin/bash
+    params: *id002
+    task: offlined-configure-pks
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/apply-changes/task.sh']
+        path: /bin/bash
+    params: {OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)), OPSMAN_PASSWORD: ((opsman_admin_password)),
+      OPSMAN_USERNAME: ((opsman_admin_username))}
+    task: offlined-deploy-pks
+- name: config-pks-controller-standalone
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline-tarball
+      params:
+        globs: []
+      passed: [deploy-pks-standalone]
+      trigger: true
+    - {get: czero-rootfs-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.sh']
+        path: /bin/bash
+    params: *id003
+    task: offlined-config-pks-api-nats
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.sh']
+        path: /bin/bash
+    params: *id004
+    task: offlined-config-pks-cli-user
+- name: config-pks-controller-after-install
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-rootfs-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks-api-nats/task.sh']
+        path: /bin/bash
+    params: *id003
+    task: offlined-config-pks-api-nats
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.sh']
+        path: /bin/bash
+    params: *id004
+    task: offlined-config-pks-cli-user
+- name: delete-clusters
+  plan:
+  - aggregate:
+    - {get: pcf-pipelines-utils-tarball}
+    - {get: pivotalservices-pks-kubectl-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-pipelines-utils-tarball}
+      outputs:
+      - {name: pcf-pipelines-utils}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd pcf-pipelines-utils;
+            tar -zxf ../pcf-pipelines-utils-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;pcf-pipelines-utils/tasks/pcf/pks/delete-all-pks-clusters/task.sh']
+        path: /bin/bash
+    params: {DEBUG: false, PCF_PKS_API: ((pks_tile_uaa_domain_prefix)).((pks_tile_system_domain)),
+      PKS_CLI_PASSWORD: ((pks_tile_cli_password)), PKS_CLI_USERNAME: ((pks_tile_cli_username))}
+    task: offlined-delete-all-pks-clusters
+- name: wipe-env
+  plan:
+  - aggregate:
+    - {get: nsx-t-ci-pipeline-tarball}
+    - {get: czero-rootfs-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/wipe-env/task.sh']
+        path: /bin/bash
+    params: {GOVC_CA_CERT: ((vcenter_ca_cert)), GOVC_DATACENTER: ((vcenter_data_center)),
+      GOVC_DATASTORE: ((om_data_store)), GOVC_HOST: ((om_vm_host)), GOVC_INSECURE: ((vcenter_insecure)),
+      GOVC_NETWORK: ((om_vm_network)), GOVC_PASSWORD: ((vcenter_pwd)), GOVC_RESOURCE_POOL: ((om_resource_pool)),
+      GOVC_URL: ((vcenter_host)), GOVC_USERNAME: ((vcenter_usr)), OPSMAN_CLIENT_ID: null,
+      OPSMAN_CLIENT_SECRET: null, OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address)),
+      OPSMAN_IP: ((om_ip)), OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username))}
+    task: offlined-wipe
+ops_dir_config_params: *id005
+pks_cli_config_params: *id004
+pks_config_params: *id002
+pks_config_pks_api_nats: *id003
+resource_types: []
+resources:
+- name: pcf-pipelines-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/pcf-pipelines-tar(.*).tgz,
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: nsx-t-ci-pipeline-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/nsx-t-ci-pipeline-tar(.*).tgz,
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: pcf-ops-manager
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-non-tile/pcf-ops-manager-(.*),
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: pivotal-container-service-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-tile/pivotal-container-service-tarball/(.*).tgz,
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: pcf-pipelines-utils-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/git/pcf-pipelines-utils-tar(.*).tgz,
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: harbor-container-registry-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/pivnet-tile/harbor-container-registry-tarball/(.*).tgz,
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: pcfnorm-rootfs-1.0.17-docker-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pcfnorm-rootfs-1.0.17-docker.(.*),
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: czero-cflinuxfs2-latest-docker-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: czero-rootfs-latest-docker-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-rootfs-latest-docker.(.*),
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3
+- name: pivotalservices-pks-kubectl-latest-docker-tarball
+  source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+    endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/pivotalservices-pks-kubectl-latest-docker.(.*),
+    secret_access_key: ((final_s3_secret_access_key))}
+  type: s3

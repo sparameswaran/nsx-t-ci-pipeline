@@ -574,30 +574,54 @@ cf_network=$(
 
 )
 
-cf_resources=$(
-  jq -n \
+
+JOB_RESOURCES_CONFIG='{ }'
+JOB_INSTANCE_COUNT_CONFIG='{ }'
+
+# Need to get the individual job resources defn to get instance count, persistent disk, security groups etc.
+for job_name_id in $(om-linux   \
+                  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+                  -u $OPSMAN_USERNAME   \
+                  -p $OPSMAN_PASSWORD   \
+                  --skip-ssl-validation -k \
+                  curl -p "/api/v0/staged/products/${PRODUCT_GUID}"/jobs \
+                  | jq -r '.jobs[] | .name + ":" + .guid ' \
+                  2>/dev/null )
+do
+  JOB_NAME=$(echo $job_name_id | awk -F ':' '{print $1 }' )
+  JOB_ID=$(echo $job_name_id | awk -F ':' '{print $2 }' )
+  JOB_CONFIG=$(om-linux   \
+                    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+                    -u $OPSMAN_USERNAME   \
+                    -p $OPSMAN_PASSWORD   \
+                    --skip-ssl-validation -k \
+                    curl -p "/api/v0/staged/products/${PRODUCT_GUID}/jobs/${JOB_ID}/resource_config" )
+  JOB_RESOURCES_CONFIG=$(echo "$JOB_RESOURCES_CONFIG { \"$JOB_NAME\" : $JOB_CONFIG }" | jq -s add)
+  #echo modififed JOB_RESOURCES_CONFIG is $JOB_RESOURCES_CONFIG
+  
+  # We can only set instance count for those that are defined as part of the tile
+  # Sometimes the job names changes...
+  JOB_INSTANCES_COUNT_VARIABLE=$(echo "${JOB_NAME}_INSTANCES" | awk '{ print toupper($0) }' | sed -e 's/-/_/g')
+
+  # Only set instance count for those that are defined
+  set +e
+    variable_defined=$(env | grep $JOB_INSTANCES_COUNT_VARIABLE)
+    if [ "$variable_defined" != "" ]; then
+      JOB_INSTANCES_COUNT=${!JOB_INSTANCES_COUNT_VARIABLE}
+      JOB_INSTANCE_COUNT_CONFIG=$(echo "$JOB_INSTANCE_COUNT_CONFIG { \"$JOB_NAME\" : { \"instances\": $JOB_INSTANCES_COUNT } }" | jq -s add)
+    fi
+  set -e
+done
+
+echo $JOB_RESOURCES_CONFIG > original_resource_config.json
+echo $JOB_INSTANCE_COUNT_CONFIG > job_instances_config.json
+
+# Merge the default resource config with actual instances
+JOB_RESOURCES_CONFIG=$(jq -s '.[0] * .[1]' original_resource_config.json job_instances_config.json )
+
+# We need full set of parameters for a given job before we can apply the security group, instances along with persistent disk etc.
+cf_resources=$(jq -n \
     --arg iaas "$IAAS" \
-    --argjson consul_server_instances $CONSUL_SERVER_INSTANCES \
-    --argjson nats_instances $NATS_INSTANCES \
-    --argjson nfs_server_instances $NFS_SERVER_INSTANCES \
-    --argjson mysql_proxy_instances $MYSQL_PROXY_INSTANCES \
-    --argjson mysql_instances $MYSQL_INSTANCES \
-    --argjson backup_prepare_instances $BACKUP_PREPARE_INSTANCES \
-    --argjson diego_database_instances $DIEGO_DATABASE_INSTANCES \
-    --argjson uaa_instances $UAA_INSTANCES \
-    --argjson cloud_controller_instances $CLOUD_CONTROLLER_INSTANCES \
-    --argjson ha_proxy_instances $HA_PROXY_INSTANCES \
-    --argjson router_instances $ROUTER_INSTANCES \
-    --argjson mysql_monitor_instances $MYSQL_MONITOR_INSTANCES \
-    --argjson clock_global_instances $CLOCK_GLOBAL_INSTANCES \
-    --argjson cloud_controller_worker_instances $CLOUD_CONTROLLER_WORKER_INSTANCES \
-    --argjson diego_brain_instances $DIEGO_BRAIN_INSTANCES \
-    --argjson diego_cell_instances $DIEGO_CELL_INSTANCES \
-    --argjson loggregator_tc_instances $LOGGREGATOR_TC_INSTANCES \
-    --argjson tcp_router_instances $TCP_ROUTER_INSTANCES \
-    --argjson syslog_adapter_instances $SYSLOG_ADAPTER_INSTANCES \
-    --argjson doppler_instances $DOPPLER_INSTANCES \
-    --argjson internet_connected $INTERNET_CONNECTED \
     --arg ha_proxy_elb_name "$HA_PROXY_LB_NAME" \
     --arg ha_proxy_floating_ips "$HAPROXY_FLOATING_IPS" \
     --arg tcp_router_nsx_security_group "${TCP_ROUTER_NSX_SECURITY_GROUP}" \
@@ -615,31 +639,15 @@ cf_resources=$(
     --arg diego_brain_nsx_lb_pool_name "${DIEGO_BRAIN_NSX_LB_POOL_NAME}" \
     --arg diego_brain_nsx_lb_security_group "${DIEGO_BRAIN_NSX_LB_SECURITY_GROUP}" \
     --arg diego_brain_nsx_lb_port "${DIEGO_BRAIN_NSX_LB_PORT}" \
+    --arg mysql_nsx_security_group "${MYSQL_NSX_SECURITY_GROUP}" \
+    --arg mysql_nsx_lb_edge_name "${MYSQL_NSX_LB_EDGE_NAME}" \
+    --arg mysql_nsx_lb_pool_name "${MYSQL_NSX_LB_POOL_NAME}" \
+    --arg mysql_nsx_lb_security_group "${MYSQL_NSX_LB_SECURITY_GROUP}" \
+    --arg mysql_nsx_lb_port "${MYSQL_NSX_LB_PORT}" \
+    --argjson job_resources_config "${JOB_RESOURCES_CONFIG}" \
     '
-    {
-      "consul_server": { "instances": $consul_server_instances },
-      "nats": { "instances": $nats_instances },
-      "nfs_server": { "instances": $nfs_server_instances },
-      "mysql_proxy": { "instances": $mysql_proxy_instances },
-      "mysql": { "instances": $mysql_instances },
-      "backup-prepare": { "instances": $backup_prepare_instances },
-      "diego_database": { "instances": $diego_database_instances },
-      "uaa": { "instances": $uaa_instances },
-      "cloud_controller": { "instances": $cloud_controller_instances },
-      "ha_proxy": { "instances": $ha_proxy_instances },
-      "router": { "instances": $router_instances },
-      "mysql_monitor": { "instances": $mysql_monitor_instances },
-      "clock_global": { "instances": $clock_global_instances },
-      "cloud_controller_worker": { "instances": $cloud_controller_worker_instances },
-      "diego_brain": { "instances": $diego_brain_instances },
-      "diego_cell": { "instances": $diego_cell_instances },
-      "loggregator_trafficcontroller": { "instances": $loggregator_tc_instances },
-      "tcp_router": { "instances": $tcp_router_instances },
-      "syslog_adapter": { "instances": $syslog_adapter_instances },
-      "doppler": { "instances": $doppler_instances }
-    }
-
-    +
+    $job_resources_config
+    |
 
     if $ha_proxy_elb_name != "" and $ha_proxy_elb_name != "null" then
       .ha_proxy |= . + { "elb_names": [ $ha_proxy_elb_name ] }
@@ -647,7 +655,7 @@ cf_resources=$(
       .
     end
 
-    +
+    |
 
     if $ha_proxy_floating_ips != "" and $ha_proxy_floating_ips != "null" then
       .ha_proxy |= . + { "floating_ips": $ha_proxy_floating_ips }
@@ -655,13 +663,22 @@ cf_resources=$(
       .
     end
 
-    +
+    |
 
     # NSX LBs
 
+    if $tcp_router_nsx_security_group != "" and $tcp_router_nsx_security_group != "null" then
+      .tcp_router |= . + {
+        "nsx_security_groups": ($tcp_router_nsx_security_group| split(",") )
+      }
+    else
+      .
+    end
+
+    |
+
     if $tcp_router_nsx_lb_edge_name != "" and $tcp_router_nsx_lb_edge_name != "null" then
       .tcp_router |= . + {
-        "nsx_security_groups": [$tcp_router_nsx_security_group],
         "nsx_lbs": [
           {
             "edge_name": $tcp_router_nsx_lb_edge_name,
@@ -675,11 +692,20 @@ cf_resources=$(
       .
     end
 
-    +
+    |
+
+    if $router_nsx_security_group != "" and $router_nsx_security_group != "null" then
+      .router |= . + {
+        "nsx_security_groups": ($router_nsx_security_group | split(",") )
+      }
+    else
+      .
+    end
+
+    |
 
     if $router_nsx_lb_edge_name != "" and $router_nsx_lb_edge_name != "null" then
       .router |= . + {
-        "nsx_security_groups": [$router_nsx_security_group],
         "nsx_lbs": [
           {
             "edge_name": $router_nsx_lb_edge_name,
@@ -693,17 +719,55 @@ cf_resources=$(
       .
     end
 
-    +
+    |
+
+    if $diego_brain_nsx_security_group != "" and $diego_brain_nsx_security_group != "null" then
+      .diego_brain |= . + {
+        "nsx_security_groups": ($diego_brain_nsx_security_group | split(",") )
+      }
+    else
+      .
+    end
+
+    |
 
     if $diego_brain_nsx_lb_edge_name != "" and $diego_brain_nsx_lb_edge_name != "null" then
       .diego_brain |= . + {
-        "nsx_security_groups": [$diego_brain_nsx_security_group],
         "nsx_lbs": [
           {
             "edge_name": $diego_brain_nsx_lb_edge_name,
             "pool_name": $diego_brain_nsx_lb_pool_name,
             "security_group": $diego_brain_nsx_lb_security_group,
             "port": $diego_brain_nsx_lb_port
+          }
+        ]
+      }
+    else
+      .
+    end
+
+    |
+
+    # MySQL
+
+    if $mysql_nsx_security_group != "" and $mysql_nsx_security_group != "null" then
+      .mysql |= . + {
+        "nsx_security_groups": ($mysql_nsx_security_group | split(",") )
+      }
+    else
+      .
+    end
+
+    |
+
+    if $mysql_nsx_lb_edge_name != ""  and $mysql_nsx_lb_edge_name != "null" then
+      .mysql |= . + {
+        "nsx_lbs": [
+          {
+            "edge_name": $mysql_nsx_lb_edge_name,
+            "pool_name": $mysql_nsx_lb_pool_name,
+            "security_group": $mysql_nsx_lb_security_group,
+            "port": $mysql_nsx_lb_port
           }
         ]
       }

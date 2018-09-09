@@ -152,6 +152,7 @@ ert_config_params: &ert-config-params
   HA_PROXY_INSTANCES: ((ha_proxy_instances))
   ROUTER_INSTANCES: ((router_instances))
   MYSQL_MONITOR_INSTANCES: ((mysql_monitor_instances))
+  CREDHUB_INSTANCES: ((credhub_instances))
   CLOCK_GLOBAL_INSTANCES: ((clock_global_instances))
   CLOUD_CONTROLLER_WORKER_INSTANCES: ((cloud_controller_worker_instances))
   DIEGO_DATABASE_INSTANCES: ((diego_database_instances))
@@ -161,6 +162,7 @@ ert_config_params: &ert-config-params
   LOGGREGATOR_TC_INSTANCES: ((loggregator_traffic_controller_instances))
   TCP_ROUTER_INSTANCES: ((tcp_router_instances))
   SYSLOG_ADAPTER_INSTANCES: ((syslog_adapter_instances))
+  SYSLOG_SCHEDULER_INSTANCES: ((syslog_scheduler_instances))
   INTERNET_CONNECTED: ((internet_connected))
   CONTAINER_NETWORKING_NW_CIDR: ((container_networking_nw_cidr))
   TCP_ROUTER_NSX_SECURITY_GROUP: ((tcp_router_nsx_security_group))
@@ -178,6 +180,11 @@ ert_config_params: &ert-config-params
   DIEGO_BRAIN_NSX_LB_POOL_NAME: ((diego_brain_nsx_lb_pool_name))
   DIEGO_BRAIN_NSX_LB_SECURITY_GROUP: ((diego_brain_nsx_lb_security_group))
   DIEGO_BRAIN_NSX_LB_PORT: ((diego_brain_nsx_lb_port))
+  MYSQL_NSX_SECURITY_GROUP: ((mysql_nsx_security_group))
+  MYSQL_NSX_LB_EDGE_NAME: ((mysql_nsx_lb_edge_name))
+  MYSQL_NSX_LB_POOL_NAME: ((mysql_nsx_lb_pool_name))
+  MYSQL_NSX_LB_SECURITY_GROUP: ((mysql_nsx_lb_security_group))
+  MYSQL_NSX_LB_PORT: ((mysql_nsx_lb_port))
   HA_PROXY_LB_NAME: ""
   HAPROXY_FLOATING_IPS: ""
   CONTAINER_NETWORKING_INTERFACE_PLUGIN: ((container_networking_interface_plugin))
