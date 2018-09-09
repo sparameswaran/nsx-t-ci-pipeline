@@ -574,7 +574,34 @@ cf_network=$(
 
 )
 
-JOB_RESOURCE_CONFIG="{
+
+JOB_RESOURCES_CONFIG='{ }'
+
+# Need to get the individual job resources defn to get instance count, persistent disk, security groups etc.
+for job_name_id in $(om-linux   \
+                  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+                  -u $OPSMAN_USERNAME   \
+                  -p $OPSMAN_PASSWORD   \
+                  --skip-ssl-validation -k \
+                  curl -p "/api/v0/staged/products/${PRODUCT_GUID}"/jobs \
+                  | jq -r '.jobs[] | .name + ":" + .guid ' \
+                  2>/dev/null )
+do
+  JOB_NAME=$(echo $job_name_id | awk -F ':' '{print $1 }' )
+  JOB_ID=$(echo $job_name_id | awk -F ':' '{print $2 }' )
+  JOB_CONFIG=$(om-linux   \
+                    -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+                    -u $OPSMAN_USERNAME   \
+                    -p $OPSMAN_PASSWORD   \
+                    --skip-ssl-validation -k \
+                    curl -p "/api/v0/staged/products/${PRODUCT_GUID}/jobs/${JOB_ID}/resource_config" )
+  JOB_RESOURCES_CONFIG=$(echo "$JOB_RESOURCES_CONFIG { \"$JOB_NAME\" : $JOB_CONFIG }" | jq -s add)
+  #echo modififed JOB_RESOURCES_CONFIG is $JOB_RESOURCES_CONFIG
+done
+
+echo $JOB_RESOURCES_CONFIG > original_resource_config.json
+
+echo "{
   \"backup_restore\": { \"instances\": $BACKUP_PREPARE_INSTANCES },
   \"clock_global\": { \"instances\": $CLOCK_GLOBAL_INSTANCES },
   \"cloud_controller\": { \"instances\": $CLOUD_CONTROLLER_INSTANCES },
@@ -597,9 +624,14 @@ JOB_RESOURCE_CONFIG="{
   \"syslog_scheduler\": { \"instances\": $SYSLOG_SCHEDULER_INSTANCES },
   \"tcp_router\": { \"instances\": $TCP_ROUTER_INSTANCES },
   \"uaa\": { \"instances\": $UAA_INSTANCES }
-}"
+} " > > job_instances_config.json
 
+# Merge the default resource config with actual instances
+JOB_RESOURCES_CONFIG=$(jq -s '.[0] * .[1]' original_resource_config.json job_instances_config.json )
+
+# We need full set of parameters for a given job before we can apply the security group, instances along with persistent disk etc.
 cf_resources=$(
+  echo $
   jq -n \
     --arg iaas "$IAAS" \
     --arg ha_proxy_elb_name "$HA_PROXY_LB_NAME" \
@@ -624,9 +656,9 @@ cf_resources=$(
     --arg mysql_nsx_lb_pool_name "${MYSQL_NSX_LB_POOL_NAME}" \
     --arg mysql_nsx_lb_security_group "${MYSQL_NSX_LB_SECURITY_GROUP}" \
     --arg mysql_nsx_lb_port "${MYSQL_NSX_LB_PORT}" \
-    --argjson job_resource_config "${JOB_RESOURCE_CONFIG}" \
+    --argjson job_resources_config "${JOB_RESOURCES_CONFIG}" \
     '
-    $job_resource_config
+    $job_resources_config
     |
 
     if $ha_proxy_elb_name != "" and $ha_proxy_elb_name != "null" then
