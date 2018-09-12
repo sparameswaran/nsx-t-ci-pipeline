@@ -595,10 +595,11 @@ do
                     -u $OPSMAN_USERNAME   \
                     -p $OPSMAN_PASSWORD   \
                     --skip-ssl-validation -k \
-                    curl -p "/api/v0/staged/products/${PRODUCT_GUID}/jobs/${JOB_ID}/resource_config" )
+                    curl -p "/api/v0/staged/products/${PRODUCT_GUID}/jobs/${JOB_ID}/resource_config" \
+                    2>/dev/null )
   JOB_RESOURCES_CONFIG=$(echo "$JOB_RESOURCES_CONFIG { \"$JOB_NAME\" : $JOB_CONFIG }" | jq -s add)
   #echo modififed JOB_RESOURCES_CONFIG is $JOB_RESOURCES_CONFIG
-  
+
   # We can only set instance count for those that are defined as part of the tile
   # Sometimes the job names changes...
   JOB_INSTANCES_COUNT_VARIABLE=$(echo "${JOB_NAME}_INSTANCES" | awk '{ print toupper($0) }' | sed -e 's/-/_/g')
@@ -608,7 +609,9 @@ do
     variable_defined=$(env | grep $JOB_INSTANCES_COUNT_VARIABLE)
     if [ "$variable_defined" != "" ]; then
       JOB_INSTANCES_COUNT=${!JOB_INSTANCES_COUNT_VARIABLE}
-      JOB_INSTANCE_COUNT_CONFIG=$(echo "$JOB_INSTANCE_COUNT_CONFIG { \"$JOB_NAME\" : { \"instances\": $JOB_INSTANCES_COUNT } }" | jq -s add)
+      if [ "$JOB_INSTANCES_COUNT" != "" -a "$JOB_INSTANCES_COUNT" != "null" ]; then
+        JOB_INSTANCE_COUNT_CONFIG=$(echo "$JOB_INSTANCE_COUNT_CONFIG { \"$JOB_NAME\" : { \"instances\": $JOB_INSTANCES_COUNT } }" | jq -s add)
+      fi
     fi
   set -e
 done
