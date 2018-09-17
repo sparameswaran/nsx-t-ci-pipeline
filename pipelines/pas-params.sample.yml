@@ -108,13 +108,13 @@ deployment_nw_gateway: 192.168.2.1        # Deployment network Gateway
 deployment_nw_azs: az1,az2,az3            # Comma separated list of AZ's to be associated with this network
 
 # Additional network for PKS Controller & Harbor - set to empty "" string for the vsphere network if its not required
-pks_network_name: "PKS-Services"             # Logical switch for PKS deployment
-pks_vsphere_network: "pks"             # vCenter Deployment network name for PKS - if empty quotes, then this network would be skipped
-pks_nw_cidr: 172.23.2.0/24          # Deployment network CIDR, ex: 10.0.0.0/22
-pks_excluded_range: 172.23.2.1      # Deployment network exclusion range
-pks_nw_dns: 10.1.1.2                # Deployment network DNS
-pks_nw_gateway: 172.23.2.1          # Deployment network Gateway
-pks_nw_azs: az1,az2,az3             # Comma separated list of AZ's to be associated with this network
+# pks_network_name: "PKS-Services"             # Logical switch for PKS deployment
+# pks_vsphere_network: "pks"             # vCenter Deployment network name for PKS - if empty quotes, then this network would be skipped
+# pks_nw_cidr: 172.23.2.0/24          # Deployment network CIDR, ex: 10.0.0.0/22
+# pks_excluded_range: 172.23.2.1      # Deployment network exclusion range
+# pks_nw_dns: 10.1.1.2                # Deployment network DNS
+# pks_nw_gateway: 172.23.2.1          # Deployment network Gateway
+# pks_nw_azs: az1,az2,az3             # Comma separated list of AZ's to be associated with this network
 
 services_network_name: "SERVICES"
 services_vsphere_network: services   # vCenter Services network name  - if empty quotes, then this network would be skipped
@@ -311,17 +311,17 @@ ert_errands_to_run_on_change: all
 internet_connected: true
 
 # Sample association of PAS Components with NSX-T NS Groups
-# router_nsx_security_group: PAS1-Router443-NSG,PAS1-Router80-NSG   # defined on the NSX-T side
+# router_nsx_security_group: PAS1-GoRouter-NSG  # defined on the NSX-T side
 router_nsx_security_group:
 
 # diego_brain_nsx_security_group: PAS1-SSHProxy2222-NSG         # defined on the NSX-T side
 diego_brain_nsx_security_group:
 
-# tcp_router_nsx_security_group: PAS1-TcpRouter-NSG             # defined on the NSX-T side
+# tcp_router_nsx_security_group: PAS1-TCPRouter-NSG             # defined on the NSX-T side
 tcp_router_nsx_security_group:
 
-# mysql_nsx_security_group: PAS1-Mysql-NSG
-mysql_nsx_security_group:
+# mysql_proxy_nsx_security_group: PAS1-MySQLProxy-NSG
+mysql_proxy_nsx_security_group:
 
 # leave nsx fields empty if you are not leveraging the nsx features for a given component
 tcp_router_nsx_lb_edge_name:
@@ -336,11 +336,11 @@ diego_brain_nsx_lb_edge_name:
 diego_brain_nsx_lb_pool_name:
 diego_brain_nsx_lb_security_group:
 diego_brain_nsx_lb_port:
-mysql_nsx_lb_edge_name:
-mysql_nsx_lb_pool_name:
-mysql_nsx_lb_security_group:
-mysql_nsx_lb_port:
-
+mysql_proxy_nsx_lb_edge_name:
+mysql_proxy_nsx_lb_pool_name:
+mysql_proxy_nsx_lb_security_group:
+mysql_proxy_nsx_lb_port:
+  
 cf_uaa_credential_references: ".uaa.admin_credentials,.uaa.admin_client_credentials,.uaa.tcp_emitter_credentials"
 
 cats_config: |

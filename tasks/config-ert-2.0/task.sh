@@ -642,11 +642,11 @@ cf_resources=$(jq -n \
     --arg diego_brain_nsx_lb_pool_name "${DIEGO_BRAIN_NSX_LB_POOL_NAME}" \
     --arg diego_brain_nsx_lb_security_group "${DIEGO_BRAIN_NSX_LB_SECURITY_GROUP}" \
     --arg diego_brain_nsx_lb_port "${DIEGO_BRAIN_NSX_LB_PORT}" \
-    --arg mysql_nsx_security_group "${MYSQL_NSX_SECURITY_GROUP}" \
-    --arg mysql_nsx_lb_edge_name "${MYSQL_NSX_LB_EDGE_NAME}" \
-    --arg mysql_nsx_lb_pool_name "${MYSQL_NSX_LB_POOL_NAME}" \
-    --arg mysql_nsx_lb_security_group "${MYSQL_NSX_LB_SECURITY_GROUP}" \
-    --arg mysql_nsx_lb_port "${MYSQL_NSX_LB_PORT}" \
+    --arg mysql_proxy_nsx_security_group "${MYSQL_PROXY_NSX_SECURITY_GROUP}" \
+    --arg mysql_proxy_nsx_lb_edge_name "${MYSQL_PROXY_NSX_LB_EDGE_NAME}" \
+    --arg mysql_proxy_nsx_lb_pool_name "${MYSQL_PROXY_NSX_LB_POOL_NAME}" \
+    --arg mysql_proxy_nsx_lb_security_group "${MYSQL_PROXY_NSX_LB_SECURITY_GROUP}" \
+    --arg mysql_proxy_nsx_lb_port "${MYSQL_PROXY_NSX_LB_PORT}" \
     --argjson job_resources_config "${JOB_RESOURCES_CONFIG}" \
     '
     $job_resources_config
@@ -753,9 +753,9 @@ cf_resources=$(jq -n \
 
     # MySQL
 
-    if $mysql_nsx_security_group != "" and $mysql_nsx_security_group != "null" then
-      .mysql |= . + {
-        "nsx_security_groups": ($mysql_nsx_security_group | split(",") )
+    if $mysql_proxy_nsx_security_group != "" and $mysql_proxy_nsx_security_group != "null" then
+      .mysql_proxy |= . + {
+        "nsx_security_groups": ($mysql_proxy_nsx_security_group | split(",") )
       }
     else
       .
@@ -763,14 +763,14 @@ cf_resources=$(jq -n \
 
     |
 
-    if $mysql_nsx_lb_edge_name != ""  and $mysql_nsx_lb_edge_name != "null" then
-      .mysql |= . + {
+    if $mysql_proxy_nsx_lb_edge_name != ""  and $mysql_proxy_nsx_lb_edge_name != "null" then
+      .mysql_proxy |= . + {
         "nsx_lbs": [
           {
-            "edge_name": $mysql_nsx_lb_edge_name,
-            "pool_name": $mysql_nsx_lb_pool_name,
-            "security_group": $mysql_nsx_lb_security_group,
-            "port": $mysql_nsx_lb_port
+            "edge_name": $mysql_proxy_nsx_lb_edge_name,
+            "pool_name": $mysql_proxy_nsx_lb_pool_name,
+            "security_group": $mysql_proxy_nsx_lb_security_group,
+            "port": $mysql_proxy_nsx_lb_port
           }
         ]
       }
