@@ -126,8 +126,7 @@ jobs:
     params: &id005 {AZ_1: ((az_1_name)), AZ_1_CLUSTER_NAME: ((az_1_cluster_name)),
       AZ_1_RP_NAME: ((az_1_rp_name)), AZ_2: ((az_2_name)), AZ_2_CLUSTER_NAME: ((az_2_cluster_name)),
       AZ_2_RP_NAME: ((az_2_rp_name)), AZ_3: ((az_3_name)), AZ_3_CLUSTER_NAME: ((az_3_cluster_name)),
-      AZ_3_RP_NAME: ((az_3_rp_name)),
-      BOSH_DISK_PATH: ((bosh_disk_path)), BOSH_TEMPLATE_FOLDER: ((bosh_template_folder)),
+      AZ_3_RP_NAME: ((az_3_rp_name)), BOSH_DISK_PATH: ((bosh_disk_path)), BOSH_TEMPLATE_FOLDER: ((bosh_template_folder)),
       BOSH_VM_FOLDER: ((bosh_vm_folder)), DEPLOYMENT_EXCLUDED_RANGE: null, DEPLOYMENT_NETWORK_NAME: null,
       DEPLOYMENT_NW_AZS: null, DEPLOYMENT_NW_CIDR: null, DEPLOYMENT_NW_DNS: null,
       DEPLOYMENT_NW_GATEWAY: null, DEPLOYMENT_VCENTER_NETWORK: null, DYNAMIC_SERVICES_EXCLUDED_RANGE: null,
@@ -238,6 +237,34 @@ jobs:
         globs: []
       passed: [upload-pks]
       trigger: true
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: pcf-ops-manager}
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/validate-nsx-t-for-pks/task.sh']
+        path: /bin/bash
+    params: {NSX_API_MANAGER: ((nsx_address)), NSX_API_PASSWORD: ((nsx_password)),
+      NSX_API_USER: ((nsx_username)), PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name)),
+      PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name)), PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name)),
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain)), PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name)),
+      PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list)), VALIDATE_FOR_PAS: null}
+    task: offlined-validate-nsx-config-for-pks
   - config:
       image_resource:
         params: {unpack: true}
@@ -383,7 +410,7 @@ jobs:
       OPSMAN_PASSWORD: ((opsman_admin_password)), OPSMAN_USERNAME: ((opsman_admin_username)),
       PKS_CLI_PASSWORD: ((pks_tile_cli_password)), PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail)),
       PKS_CLI_USERNAME: ((pks_tile_cli_username)), PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain)),
-      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))}
+      PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix)), PKS_UAA_SYSTEM_DOMAIN_IP: ((pks_tile_uaa_system_domain_ip))}
     task: offlined-config-pks-cli-user
 - name: upload-harbor
   plan:
@@ -623,6 +650,33 @@ jobs:
       passed: [upload-pks-standalone]
       trigger: true
     - {get: czero-cflinuxfs2-latest-docker-tarball}
+  - config:
+      image_resource:
+        params: {unpack: true}
+        source: {access_key_id: ((final_s3_access_key_id)), bucket: ((final_s3_bucket)),
+          endpoint: ((final_s3_endpoint)), regexp: ((offline_run_id))/resources/docker/czero-cflinuxfs2-latest-docker.(.*),
+          secret_access_key: ((final_s3_secret_access_key))}
+        type: s3
+      inputs:
+      - {name: nsx-t-ci-pipeline-tarball}
+      outputs:
+      - {name: nsx-t-ci-pipeline}
+      platform: linux
+      run:
+        args: [-ec, 'find . -name "version" -exec rm {} \; ;find . -name "url" -exec
+            rm {} \; ;for file in $(find . -name "*-1.0");do new_file=$(echo $file
+            | sed -e ''s/-1.0$//g'');mv ${file} ${new_file};done;ls -R;cd nsx-t-ci-pipeline;
+            tar -zxf ../nsx-t-ci-pipeline-tarball/*.tgz; find .  -size 0 -exec rm
+            {} \; ; cd ..;for token in $(env | grep ''='' | grep "^[A-Z]*" | grep
+            ''=null$'' | sed -e ''s/=.*//g'');do export ${token}="";  done;echo Starting
+            main task execution!!;nsx-t-ci-pipeline/tasks/validate-nsx-t-for-pks/task.sh']
+        path: /bin/bash
+    params: {NSX_API_MANAGER: ((nsx_address)), NSX_API_PASSWORD: ((nsx_password)),
+      NSX_API_USER: ((nsx_username)), PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name)),
+      PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name)), PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name)),
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain)), PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name)),
+      PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list)), VALIDATE_FOR_PAS: null}
+    task: offlined-validate-nsx-config-for-pks
   - config:
       image_resource:
         params: {unpack: true}
