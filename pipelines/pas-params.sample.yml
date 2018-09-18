@@ -323,24 +323,6 @@ tcp_router_nsx_security_group:
 # mysql_proxy_nsx_security_group: PAS1-MySQLProxy-NSG
 mysql_proxy_nsx_security_group:
 
-# leave nsx fields empty if you are not leveraging the nsx features for a given component
-tcp_router_nsx_lb_edge_name:
-tcp_router_nsx_lb_pool_name:
-tcp_router_nsx_lb_security_group:
-tcp_router_nsx_lb_port:
-router_nsx_lb_edge_name:
-router_nsx_lb_pool_name:
-router_nsx_lb_security_group:
-router_nsx_lb_port:
-diego_brain_nsx_lb_edge_name:
-diego_brain_nsx_lb_pool_name:
-diego_brain_nsx_lb_security_group:
-diego_brain_nsx_lb_port:
-mysql_proxy_nsx_lb_edge_name:
-mysql_proxy_nsx_lb_pool_name:
-mysql_proxy_nsx_lb_security_group:
-mysql_proxy_nsx_lb_port:
-  
 cf_uaa_credential_references: ".uaa.admin_credentials,.uaa.admin_client_credentials,.uaa.tcp_emitter_credentials"
 
 cats_config: |
