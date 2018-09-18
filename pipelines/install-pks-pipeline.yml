@@ -357,6 +357,19 @@ jobs:
       passed: [upload-pks]
       trigger: true
 
+  - task: validate-nsx-config-for-pks
+    file: nsx-t-ci-pipeline/tasks/validate-nsx-t-for-pks/task.yml
+    params:
+      NSX_API_MANAGER: ((nsx_address))
+      NSX_API_USER: ((nsx_username))
+      NSX_API_PASSWORD: ((nsx_password))
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
+      PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
+      PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name))
+      PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name))
+      PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name))
+      PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list))
+
   - task: configure-pks
     file: nsx-t-ci-pipeline/tasks/config-pks/task.yml
     params: *pks-config-params
@@ -486,6 +499,19 @@ jobs:
       passed: [upload-pks-standalone]
       trigger: true
 
+  - task: validate-nsx-config-for-pks
+    file: nsx-t-ci-pipeline/tasks/validate-nsx-t-for-pks/task.yml
+    params:
+      NSX_API_MANAGER: ((nsx_address))
+      NSX_API_USER: ((nsx_username))
+      NSX_API_PASSWORD: ((nsx_password))
+      PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
+      PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
+      PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name))
+      PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name))
+      PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name))
+      PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list))
+      
   - task: configure-pks
     file: nsx-t-ci-pipeline/tasks/config-pks/task.yml
     params: *pks-config-params

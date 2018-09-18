@@ -27,13 +27,13 @@ ops_dir_config_params: &ops-dir-config-params
   DEPLOYMENT_NW_DNS: ((deployment_nw_dns))
   DEPLOYMENT_NW_GATEWAY: ((deployment_nw_gateway))
   DEPLOYMENT_NW_AZS: ((deployment_nw_azs))
-  PKS_NETWORK_NAME: ((pks_network_name))
-  PKS_VCENTER_NETWORK: ((pks_vsphere_network))
-  PKS_NW_CIDR: ((pks_nw_cidr))
-  PKS_EXCLUDED_RANGE: ((pks_excluded_range))
-  PKS_NW_DNS: ((pks_nw_dns))
-  PKS_NW_GATEWAY: ((pks_nw_gateway))
-  PKS_NW_AZS: ((pks_nw_azs))
+  # PKS_NETWORK_NAME: ( (pks_network_name) )
+  # PKS_VCENTER_NETWORK: ( (pks_vsphere_network) )
+  # PKS_NW_CIDR: ( (pks_nw_cidr) )
+  # PKS_EXCLUDED_RANGE: ( (pks_excluded_range) )
+  # PKS_NW_DNS: ( (pks_nw_dns) )
+  # PKS_NW_GATEWAY: ( (pks_nw_gateway) )
+  # PKS_NW_AZS: ( (pks_nw_azs) )
   SERVICES_NETWORK_NAME: ((services_network_name))
   SERVICES_VCENTER_NETWORK: ((services_vsphere_network))
   SERVICES_NW_CIDR: ((services_nw_cidr))
@@ -165,26 +165,10 @@ ert_config_params: &ert-config-params
   SYSLOG_SCHEDULER_INSTANCES: ((syslog_scheduler_instances))
   INTERNET_CONNECTED: ((internet_connected))
   CONTAINER_NETWORKING_NW_CIDR: ((container_networking_nw_cidr))
-  TCP_ROUTER_NSX_SECURITY_GROUP: ((tcp_router_nsx_security_group))
-  TCP_ROUTER_NSX_LB_EDGE_NAME: ((tcp_router_nsx_lb_edge_name))
-  TCP_ROUTER_NSX_LB_POOL_NAME: ((tcp_router_nsx_lb_pool_name))
-  TCP_ROUTER_NSX_LB_SECURITY_GROUP: ((tcp_router_nsx_lb_security_group))
-  TCP_ROUTER_NSX_LB_PORT: ((tcp_router_nsx_lb_port))
   ROUTER_NSX_SECURITY_GROUP: ((router_nsx_security_group))
-  ROUTER_NSX_LB_EDGE_NAME: ((router_nsx_lb_edge_name))
-  ROUTER_NSX_LB_POOL_NAME: ((router_nsx_lb_pool_name))
-  ROUTER_NSX_LB_SECURITY_GROUP: ((router_nsx_lb_security_group))
-  ROUTER_NSX_LB_PORT: ((router_nsx_lb_port))
+  TCP_ROUTER_NSX_SECURITY_GROUP: ((tcp_router_nsx_security_group))
   DIEGO_BRAIN_NSX_SECURITY_GROUP: ((diego_brain_nsx_security_group))
-  DIEGO_BRAIN_NSX_LB_EDGE_NAME: ((diego_brain_nsx_lb_edge_name))
-  DIEGO_BRAIN_NSX_LB_POOL_NAME: ((diego_brain_nsx_lb_pool_name))
-  DIEGO_BRAIN_NSX_LB_SECURITY_GROUP: ((diego_brain_nsx_lb_security_group))
-  DIEGO_BRAIN_NSX_LB_PORT: ((diego_brain_nsx_lb_port))
-  MYSQL_NSX_SECURITY_GROUP: ((mysql_nsx_security_group))
-  MYSQL_NSX_LB_EDGE_NAME: ((mysql_nsx_lb_edge_name))
-  MYSQL_NSX_LB_POOL_NAME: ((mysql_nsx_lb_pool_name))
-  MYSQL_NSX_LB_SECURITY_GROUP: ((mysql_nsx_lb_security_group))
-  MYSQL_NSX_LB_PORT: ((mysql_nsx_lb_port))
+  MYSQL_PROXY_NSX_SECURITY_GROUP: ((mysql_proxy_nsx_security_group))
   HA_PROXY_LB_NAME: ""
   HAPROXY_FLOATING_IPS: ""
   CONTAINER_NETWORKING_INTERFACE_PLUGIN: ((container_networking_interface_plugin))
@@ -387,6 +371,18 @@ jobs:
     - get: pivnet-product
       resource: nsx-t-add-on-tile
       params: {globs: []}
+
+  - task: validate-nsx-config-for-pas
+    file: nsx-t-ci-pipeline/tasks/validate-nsx-t-for-pas/task.yml
+    params:
+      NSX_API_MANAGER: ((nsx_address))
+      NSX_API_USER: ((nsx_username))
+      NSX_API_PASSWORD: ((nsx_password))
+      NSX_FOUNDATION_NAME: ((nsx_foundation_name))
+      NSX_T_OVERLAY_TRANSPORT_ZONE: ((nsx_t_overlay_transport_zone))
+      NSX_T_T0ROUTER_NAME: ((nsx_t_t0router_name))
+      NSX_T_CONTAINER_IP_BLOCK_SPEC: ((nsx_t_container_ip_block_spec))
+      NSX_T_EXTERNAL_IP_POOL_SPEC: ((nsx_t_external_ip_pool_spec))
 
   - task: configure-nsx
     file: nsx-t-ci-pipeline/tasks/config-nsx-t/task.yml

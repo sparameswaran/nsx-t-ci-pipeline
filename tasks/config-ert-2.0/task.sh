@@ -628,25 +628,9 @@ cf_resources=$(jq -n \
     --arg ha_proxy_elb_name "$HA_PROXY_LB_NAME" \
     --arg ha_proxy_floating_ips "$HAPROXY_FLOATING_IPS" \
     --arg tcp_router_nsx_security_group "${TCP_ROUTER_NSX_SECURITY_GROUP}" \
-    --arg tcp_router_nsx_lb_edge_name "${TCP_ROUTER_NSX_LB_EDGE_NAME}" \
-    --arg tcp_router_nsx_lb_pool_name "${TCP_ROUTER_NSX_LB_POOL_NAME}" \
-    --arg tcp_router_nsx_lb_security_group "${TCP_ROUTER_NSX_LB_SECURITY_GROUP}" \
-    --arg tcp_router_nsx_lb_port "${TCP_ROUTER_NSX_LB_PORT}" \
     --arg router_nsx_security_group "${ROUTER_NSX_SECURITY_GROUP}" \
-    --arg router_nsx_lb_edge_name "${ROUTER_NSX_LB_EDGE_NAME}" \
-    --arg router_nsx_lb_pool_name "${ROUTER_NSX_LB_POOL_NAME}" \
-    --arg router_nsx_lb_security_group "${ROUTER_NSX_LB_SECURITY_GROUP}" \
-    --arg router_nsx_lb_port "${ROUTER_NSX_LB_PORT}" \
     --arg diego_brain_nsx_security_group "${DIEGO_BRAIN_NSX_SECURITY_GROUP}" \
-    --arg diego_brain_nsx_lb_edge_name "${DIEGO_BRAIN_NSX_LB_EDGE_NAME}" \
-    --arg diego_brain_nsx_lb_pool_name "${DIEGO_BRAIN_NSX_LB_POOL_NAME}" \
-    --arg diego_brain_nsx_lb_security_group "${DIEGO_BRAIN_NSX_LB_SECURITY_GROUP}" \
-    --arg diego_brain_nsx_lb_port "${DIEGO_BRAIN_NSX_LB_PORT}" \
-    --arg mysql_nsx_security_group "${MYSQL_NSX_SECURITY_GROUP}" \
-    --arg mysql_nsx_lb_edge_name "${MYSQL_NSX_LB_EDGE_NAME}" \
-    --arg mysql_nsx_lb_pool_name "${MYSQL_NSX_LB_POOL_NAME}" \
-    --arg mysql_nsx_lb_security_group "${MYSQL_NSX_LB_SECURITY_GROUP}" \
-    --arg mysql_nsx_lb_port "${MYSQL_NSX_LB_PORT}" \
+    --arg mysql_proxy_nsx_security_group "${MYSQL_PROXY_NSX_SECURITY_GROUP}" \
     --argjson job_resources_config "${JOB_RESOURCES_CONFIG}" \
     '
     $job_resources_config
@@ -680,43 +664,9 @@ cf_resources=$(jq -n \
 
     |
 
-    if $tcp_router_nsx_lb_edge_name != "" and $tcp_router_nsx_lb_edge_name != "null" then
-      .tcp_router |= . + {
-        "nsx_lbs": [
-          {
-            "edge_name": $tcp_router_nsx_lb_edge_name,
-            "pool_name": $tcp_router_nsx_lb_pool_name,
-            "security_group": $tcp_router_nsx_lb_security_group,
-            "port": $tcp_router_nsx_lb_port
-          }
-        ]
-      }
-    else
-      .
-    end
-
-    |
-
     if $router_nsx_security_group != "" and $router_nsx_security_group != "null" then
       .router |= . + {
         "nsx_security_groups": ($router_nsx_security_group | split(",") )
-      }
-    else
-      .
-    end
-
-    |
-
-    if $router_nsx_lb_edge_name != "" and $router_nsx_lb_edge_name != "null" then
-      .router |= . + {
-        "nsx_lbs": [
-          {
-            "edge_name": $router_nsx_lb_edge_name,
-            "pool_name": $router_nsx_lb_pool_name,
-            "security_group": $router_nsx_lb_security_group,
-            "port": $router_nsx_lb_port
-          }
-        ]
       }
     else
       .
@@ -734,51 +684,101 @@ cf_resources=$(jq -n \
 
     |
 
-    if $diego_brain_nsx_lb_edge_name != "" and $diego_brain_nsx_lb_edge_name != "null" then
-      .diego_brain |= . + {
-        "nsx_lbs": [
-          {
-            "edge_name": $diego_brain_nsx_lb_edge_name,
-            "pool_name": $diego_brain_nsx_lb_pool_name,
-            "security_group": $diego_brain_nsx_lb_security_group,
-            "port": $diego_brain_nsx_lb_port
-          }
-        ]
-      }
-    else
-      .
-    end
-
-    |
-
     # MySQL
 
-    if $mysql_nsx_security_group != "" and $mysql_nsx_security_group != "null" then
-      .mysql |= . + {
-        "nsx_security_groups": ($mysql_nsx_security_group | split(",") )
-      }
-    else
-      .
-    end
-
-    |
-
-    if $mysql_nsx_lb_edge_name != ""  and $mysql_nsx_lb_edge_name != "null" then
-      .mysql |= . + {
-        "nsx_lbs": [
-          {
-            "edge_name": $mysql_nsx_lb_edge_name,
-            "pool_name": $mysql_nsx_lb_pool_name,
-            "security_group": $mysql_nsx_lb_security_group,
-            "port": $mysql_nsx_lb_port
-          }
-        ]
+    if $mysql_proxy_nsx_security_group != "" and $mysql_proxy_nsx_security_group != "null" then
+      .mysql_proxy |= . + {
+        "nsx_security_groups": ($mysql_proxy_nsx_security_group | split(",") )
       }
     else
       .
     end
     '
 )
+
+# Removing the lbr and edge association as its not needed for NSX-T
+# --arg mysql_proxy_nsx_lb_edge_name "${MYSQL_PROXY_NSX_LB_EDGE_NAME}" \
+# --arg mysql_proxy_nsx_lb_pool_name "${MYSQL_PROXY_NSX_LB_POOL_NAME}" \
+# --arg mysql_proxy_nsx_lb_security_group "${MYSQL_PROXY_NSX_LB_SECURITY_GROUP}" \
+# --arg mysql_proxy_nsx_lb_port "${MYSQL_PROXY_NSX_LB_PORT}" \
+# --arg tcp_router_nsx_lb_edge_name "${TCP_ROUTER_NSX_LB_EDGE_NAME}" \
+# --arg tcp_router_nsx_lb_pool_name "${TCP_ROUTER_NSX_LB_POOL_NAME}" \
+# --arg tcp_router_nsx_lb_security_group "${TCP_ROUTER_NSX_LB_SECURITY_GROUP}" \
+# --arg tcp_router_nsx_lb_port "${TCP_ROUTER_NSX_LB_PORT}" \
+# --arg router_nsx_lb_edge_name "${ROUTER_NSX_LB_EDGE_NAME}" \
+# --arg router_nsx_lb_pool_name "${ROUTER_NSX_LB_POOL_NAME}" \
+# --arg router_nsx_lb_security_group "${ROUTER_NSX_LB_SECURITY_GROUP}" \
+# --arg router_nsx_lb_port "${ROUTER_NSX_LB_PORT}" \
+# --arg diego_brain_nsx_lb_edge_name "${DIEGO_BRAIN_NSX_LB_EDGE_NAME}" \
+# --arg diego_brain_nsx_lb_pool_name "${DIEGO_BRAIN_NSX_LB_POOL_NAME}" \
+# --arg diego_brain_nsx_lb_security_group "${DIEGO_BRAIN_NSX_LB_SECURITY_GROUP}" \
+# --arg diego_brain_nsx_lb_port "${DIEGO_BRAIN_NSX_LB_PORT}" \
+# if $router_nsx_lb_edge_name != "" and $router_nsx_lb_edge_name != "null" then
+#   .router |= . + {
+#     "nsx_lbs": [
+#       {
+#         "edge_name": $router_nsx_lb_edge_name,
+#         "pool_name": $router_nsx_lb_pool_name,
+#         "security_group": $router_nsx_lb_security_group,
+#         "port": $router_nsx_lb_port
+#       }
+#     ]
+#   }
+# else
+#   .
+# end
+#
+# |
+#
+# if $diego_brain_nsx_lb_edge_name != "" and $diego_brain_nsx_lb_edge_name != "null" then
+#   .diego_brain |= . + {
+#     "nsx_lbs": [
+#       {
+#         "edge_name": $diego_brain_nsx_lb_edge_name,
+#         "pool_name": $diego_brain_nsx_lb_pool_name,
+#         "security_group": $diego_brain_nsx_lb_security_group,
+#         "port": $diego_brain_nsx_lb_port
+#       }
+#     ]
+#   }
+# else
+#   .
+# end
+#
+# |
+#
+# if $tcp_router_nsx_lb_edge_name != "" and $tcp_router_nsx_lb_edge_name != "null" then
+#   .tcp_router |= . + {
+#     "nsx_lbs": [
+#       {
+#         "edge_name": $tcp_router_nsx_lb_edge_name,
+#         "pool_name": $tcp_router_nsx_lb_pool_name,
+#         "security_group": $tcp_router_nsx_lb_security_group,
+#         "port": $tcp_router_nsx_lb_port
+#       }
+#     ]
+#   }
+# else
+#   .
+# end
+#
+# |
+#
+# if $mysql_proxy_nsx_lb_edge_name != ""  and $mysql_proxy_nsx_lb_edge_name != "null" then
+#   .mysql_proxy |= . + {
+#     "nsx_lbs": [
+#       {
+#         "edge_name": $mysql_proxy_nsx_lb_edge_name,
+#         "pool_name": $mysql_proxy_nsx_lb_pool_name,
+#         "security_group": $mysql_proxy_nsx_lb_security_group,
+#         "port": $mysql_proxy_nsx_lb_port
+#       }
+#     ]
+#   }
+# else
+#   .
+# end
+#
 
 om-linux \
   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
