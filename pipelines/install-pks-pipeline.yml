@@ -128,6 +128,7 @@ pks_cli_config_params: &pks-cli-config-params
   #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
   PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
   PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
+  PKS_UAA_SYSTEM_DOMAIN_IP: ((pks_tile_uaa_system_domain_ip))
   PKS_CLI_USERNAME: ((pks_tile_cli_username))
   PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
   PKS_CLI_PASSWORD: ((pks_tile_cli_password))
@@ -511,7 +512,7 @@ jobs:
       PKS_NODES_IP_BLOCK_NAME: ((pks_tile_nodes_ip_block_name))
       PKS_EXTERNAL_IP_POOL_NAME: ((pks_tile_external_ip_pool_name))
       PKS_VCENTER_CLUSTER_LIST: ((pks_tile_vcenter_cluster_list))
-      
+
   - task: configure-pks
     file: nsx-t-ci-pipeline/tasks/config-pks/task.yml
     params: *pks-config-params
