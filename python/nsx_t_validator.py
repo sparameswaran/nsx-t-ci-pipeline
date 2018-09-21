@@ -134,24 +134,20 @@ def check_cluster_name_against_router(t0_router_name, given_foundation_name):
         if t0_router_name == router['display_name']:
             tags = router.get('tags')
             if not tags:
-                failed = True
-                print 'Error!! T0 Router: {} not tagged correctly!!'
+                print 'Warning!! No tags associated with T0 Router: {} !!\n'.format(t0_router_name)
                 return
 
+            foundation_found = False
             for tag_entry in tags:
                 if tag_entry.get('scope') == 'ncp/cluster':
-                    if given_foundation_name != tag_entry.get('tag'):
-                        failed = True
-                        print 'Error!! Specified foundation name: {} not tagged for T0 Router: {} not correctly tagged' \
-                                    ' with \'ncp/cluster\' scope!!\n'.format(given_foundation_name, t0_router_name)
-                        return
-                    else:
+                    if given_foundation_name == tag_entry.get('tag'):
                         print 'Specified foundation name: {} tagged correctly against T0 Router: {} ' \
                                     ' with \'ncp/cluster\' scope!!\n'.format(given_foundation_name, t0_router_name)
                         return
 
-            failed = True
-            print 'Error!! T0 Router: {} not correctly tagged with \'ncp/cluster\' scope!!\n'.format(t0_router_name)
+
+            print 'Warning!! Specified foundation name: {} not tagged for T0 Router: {} ' \
+                        ' with \'ncp/cluster\' scope!!\n'.format(given_foundation_name, t0_router_name)
             return
 
 def check_for_routers(given_names):
@@ -213,7 +209,7 @@ def get_names_from_yaml_payload(yaml_payload, nested_element):
 def run_pas_validate():
     global failed
     print 'Running PAS validation!!'
-    
+
     overlay_zone = os.getenv('NSX_T_OVERLAY_TRANSPORT_ZONE')
     if overlay_zone == '' or not overlay_zone:
         print 'Transport Zone set to be empty'
