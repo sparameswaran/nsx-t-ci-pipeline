@@ -281,34 +281,34 @@ if [ "$DYNAMIC_SERVICES_VCENTER_NETWORK" != "" -a "$DYNAMIC_SERVICES_VCENTER_NET
 
 fi
 
-# if [ "$PKS_VCENTER_NETWORK" != "" -a "$PKS_VCENTER_NETWORK" != "null" ]; then
-#   network_configuration=$(echo $network_configuration | jq \
-#     --arg pks_network_name "$PKS_NETWORK_NAME" \
-#     --arg pks_vcenter_network "$PKS_VCENTER_NETWORK" \
-#     --arg pks_network_cidr "$PKS_NW_CIDR" \
-#     --arg pks_reserved_ip_ranges "$PKS_EXCLUDED_RANGE" \
-#     --arg pks_dns "$PKS_NW_DNS" \
-#     --arg pks_gateway "$PKS_NW_GATEWAY" \
-#     --arg pks_availability_zones "$PKS_NW_AZS" \
-# ' .networks +=
-#         [{
-#           "name": $pks_network_name,
-#           "service_network": true,
-#           "subnets": [
-#             {
-#               "iaas_identifier": $pks_vcenter_network,
-#               "cidr": $pks_network_cidr,
-#               "reserved_ip_ranges": $pks_reserved_ip_ranges,
-#               "dns": $pks_dns,
-#               "gateway": $pks_gateway,
-#               "availability_zone_names": ($pks_availability_zones | split(","))
-#             }
-#           ]
-#         }]
-# '
-# )
-#
-# fi
+if [ "$PKS_VCENTER_NETWORK" != "" -a "$PKS_VCENTER_NETWORK" != "null" ]; then
+  network_configuration=$(echo $network_configuration | jq \
+    --arg pks_network_name "$PKS_NETWORK_NAME" \
+    --arg pks_vcenter_network "$PKS_VCENTER_NETWORK" \
+    --arg pks_network_cidr "$PKS_NW_CIDR" \
+    --arg pks_reserved_ip_ranges "$PKS_EXCLUDED_RANGE" \
+    --arg pks_dns "$PKS_NW_DNS" \
+    --arg pks_gateway "$PKS_NW_GATEWAY" \
+    --arg pks_availability_zones "$PKS_NW_AZS" \
+' .networks +=
+        [{
+          "name": $pks_network_name,
+          "service_network": true,
+          "subnets": [
+            {
+              "iaas_identifier": $pks_vcenter_network,
+              "cidr": $pks_network_cidr,
+              "reserved_ip_ranges": $pks_reserved_ip_ranges,
+              "dns": $pks_dns,
+              "gateway": $pks_gateway,
+              "availability_zone_names": ($pks_availability_zones | split(","))
+            }
+          ]
+        }]
+'
+)
+
+fi
 
 
 director_config=$(cat <<-EOF
