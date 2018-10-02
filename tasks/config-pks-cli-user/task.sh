@@ -94,5 +94,5 @@ fi
 echo ""
 echo "Next, download the PKS CLI from Pivotal Network and login to the PKS API to create a new K8s cluster [https://docs.pivotal.io/runtimes/pks/1-0/create-cluster.html]"
 echo "Example: "
-echo "   pks login -a https://${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN}:<pks-controller-port> -k -u $PKS_CLI_USERNAME -p <pks-cli-password-provided>"
+echo "   pks login -a ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} -k -u $PKS_CLI_USERNAME -p <pks-cli-password-provided>"
 echo "Note: PKS Controller Port can be 8443 or 9021 based on version of PKS Tile"

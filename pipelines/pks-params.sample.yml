@@ -1,6 +1,6 @@
 # Pipeline resource configuration
 pivnet_token: Xsd...23KS    # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
-opsman_major_minor_version: ^2\.1\.6.*$   # PCF Ops Manager minor version to track
+opsman_major_minor_version: ^2\.2.*$   # PCF Ops Manager minor version to track
 pks_major_minor_version: ^1\..*$         # use PKS v1.1
 
 # vCenter configuration
@@ -237,7 +237,7 @@ pks_tile_plan_details:
     persistent_disk_type: "10240" # Used in PKS 1.0
     master_persistent_disk_type: "10240" # Used in PKS 1.1+
     worker_persistent_disk_type: "10240" # Used in PKS 1.1+
-    master_instances: 2    # The number of K8s worker instances
+    master_instances: 3    # The number of K8s worker instances
     worker_instances: 5    # The number of K8s worker instances
     errand_vm_type: micro
     addons_spec: "" # Kubernetes yml that contains specifications of addons to run on every cluster. This is an experimental feature. Please consider carefully before applying this to your plan

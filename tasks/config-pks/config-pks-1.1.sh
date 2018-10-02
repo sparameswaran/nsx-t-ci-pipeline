@@ -70,7 +70,7 @@ if [ "$PKS_ENABLE_HTTP_PROXY" == "true" ]; then
     --arg pks_no_proxy "$PKS_NO_PROXY" \
       '{
           ".properties.proxy_selector": {
-            "value": "enabled"
+            "value": "Enabled"
           },
           ".properties.proxy_selector.enabled.http_proxy_url": {
             "value": $pks_http_proxy_url
