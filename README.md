@@ -9,6 +9,12 @@ Also supports installing PKS v1.x and Harbor Tile with Pivotal Ops Mgr.
 
 ![](docs/nsx-t-ci-pipeline.png)
 
+# DISCLAIMER
+
+This pipeline is not supported or maintained going forward as of Oct 17th, 2018. This was a best-effort, unofficial, unsupported work at best. All development work has now stopped.
+
+Kindly use the official [Pivotal PCF Pipelines](https://github.com/pivotal-cf/pcf-pipelines) and the [PCF Automation toolkit] (https://network.pivotal.io/products/pcf-automation).
+
 ## Installing Concourse
 
 Edit the scripts and templates under Concourse to setup a BOSH Director and use that to deploy Concourse.
