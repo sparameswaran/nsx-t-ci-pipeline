@@ -9,7 +9,7 @@ Also supports installing PKS and Harbor v1.x Tiles with Pivotal Ops Mgr.
 
 ![](docs/nsx-t-ci-pipeline.png)
 
-# DISCLAIMER
+# DEPRECATED
 
 This pipeline is not supported or maintained going forward as of Oct 17th, 2018. This was a best-effort, unofficial, unsupported work at best. All development work has now stopped.
 
