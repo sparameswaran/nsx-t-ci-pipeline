@@ -49,7 +49,9 @@ function upload_stemcells() (
         elif [[ "$stemcell_os" =~ "xenial" ]]; then
           product_slug="stemcells-ubuntu-xenial"
         fi
-
+        
+        pivnet-cli accept-eula -p "$product_slug" -r $stemcell_version_reqd    
+        
         pivnet-cli download-product-files -p "$product_slug" -r $stemcell_version_reqd -g "*${IAAS}*" --accept-eula
         if [ $? != 0 ]; then
           min_version=$(echo $stemcell_version_reqd | awk -F '.' '{print $2}')
@@ -57,6 +59,7 @@ function upload_stemcells() (
           if [ "$min_version" == "" ]; then
             for min_version in $(seq 100 -1 0)
             do
+               pivnet-cli accept-eula -p "$product_slug" -r $major_version.$min_version
                pivnet-cli download-product-files -p "$product_slug" -r $major_version.$min_version -g "*${IAAS}*" --accept-eula && break
             done
           else
