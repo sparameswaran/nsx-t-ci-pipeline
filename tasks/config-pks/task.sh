@@ -218,15 +218,15 @@ echo "Finished configuring network properties"
 #  )
 
 
-om-linux \
-  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  -u $OPSMAN_USERNAME \
-  -p $OPSMAN_PASSWORD \
-  --skip-ssl-validation \
-  configure-product \
-  --product-name pivotal-container-service \
-  --product-properties "$pks_syslog_properties"
-echo "Finished configuring syslog properties"
+#om-linux \
+#  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+#  -u $OPSMAN_USERNAME \
+#  -p $OPSMAN_PASSWORD \
+#  --skip-ssl-validation \
+#  configure-product \
+#  --product-name pivotal-container-service \
+#  --product-properties "$pks_syslog_properties"
+#echo "Finished configuring syslog properties"
 
 # Check if product is older 1.0 or not
 if [[ "$PRODUCT_VERSION" =~ ^1.0 ]]; then
