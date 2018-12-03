@@ -55,7 +55,7 @@ export BOSH_CLIENT_SECRET=$(echo $BOSH_CREDS | tr ' ' '\n' |grep 'BOSH_CLIENT_SE
 #  --product-properties "$pks_vrli_properties"
 #  echo "Finished configuring vRealize Log Insight properties"
 
-fi
+#fi
 
 if [ "$PKS_ENABLE_HTTP_PROXY" == "true" ]; then
 
