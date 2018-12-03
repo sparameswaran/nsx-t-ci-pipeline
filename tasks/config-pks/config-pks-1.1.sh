@@ -45,15 +45,15 @@ export BOSH_CLIENT_SECRET=$(echo $BOSH_CREDS | tr ' ' '\n' |grep 'BOSH_CLIENT_SE
 #      '
 #  )
 
-  om-linux \
-  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  -u $OPSMAN_USERNAME \
-  -p $OPSMAN_PASSWORD \
-  --skip-ssl-validation \
-  configure-product \
-  --product-name pivotal-container-service \
-  --product-properties "$pks_vrli_properties"
-  echo "Finished configuring vRealize Log Insight properties"
+#  om-linux \
+#  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+#  -u $OPSMAN_USERNAME \
+#  -p $OPSMAN_PASSWORD \
+#  --skip-ssl-validation \
+#  configure-product \
+#  --product-name pivotal-container-service \
+#  --product-properties "$pks_vrli_properties"
+#  echo "Finished configuring vRealize Log Insight properties"
 
 fi
 
