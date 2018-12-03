@@ -13,37 +13,37 @@ BOSH_CREDS=$(om-linux  \
 export BOSH_CLIENT_ID=$(echo $BOSH_CREDS | tr ' ' '\n' | grep 'BOSH_CLIENT=' | awk -F '=' '{print $2}' | tr -d ' ')
 export BOSH_CLIENT_SECRET=$(echo $BOSH_CREDS | tr ' ' '\n' |grep 'BOSH_CLIENT_SECRET=' | awk -F '=' '{print $2}' | tr -d ' ')
 
-if [ "$PKS_VRLI_ENABLED" == "true" ]; then
+#if [ "$PKS_VRLI_ENABLED" == "true" ]; then
 
-  pks_vrli_properties=$(
-    jq -n \
-    --arg pks_vrli_host "$PKS_VRLI_HOST" \
-    --arg pks_vrli_use_ssl "$PKS_VRLI_USE_SSL" \
-    --arg pks_vrli_skip_cert_verify "$PKS_VRLI_SKIP_CERT_VERIFY" \
-    --arg pks_vrli_ca_cert "$PKS_VRLI_CA_CERT" \
-    --arg pks_vrli_rate_limit "$PKS_VRLI_RATE_LIMIT" \
-      '{
-          ".properties.pks-vrli": {
-            "value": "enabled"
-          },
-          ".properties.pks-vrli.enabled.host": {
-            "value": $pks_vrli_host
-          },
-          ".properties.pks-vrli.enabled.use_ssl": {
-            "value": $pks_vrli_use_ssl
-          },
-          ".properties.pks-vrli.enabled.skip_cert_verify": {
-            "value": $pks_vrli_skip_cert_verify
-          },
-          ".properties.pks-vrli.enabled.ca_cert": {
-            "value": $pks_vrli_ca_cert
-          },
-          ".properties.pks-vrli.enabled.rate_limit_msec": {
-            "value": $pks_vrli_rate_limit
-          }
-        }
-      '
-  )
+#  pks_vrli_properties=$(
+#    jq -n \
+#    --arg pks_vrli_host "$PKS_VRLI_HOST" \
+#    --arg pks_vrli_use_ssl "$PKS_VRLI_USE_SSL" \
+#    --arg pks_vrli_skip_cert_verify "$PKS_VRLI_SKIP_CERT_VERIFY" \
+#    --arg pks_vrli_ca_cert "$PKS_VRLI_CA_CERT" \
+#    --arg pks_vrli_rate_limit "$PKS_VRLI_RATE_LIMIT" \
+#      '{
+#          ".properties.pks-vrli": {
+#            "value": "enabled"
+#          },
+#          ".properties.pks-vrli.enabled.host": {
+#            "value": $pks_vrli_host
+#          },
+#          ".properties.pks-vrli.enabled.use_ssl": {
+#            "value": $pks_vrli_use_ssl
+#          },
+#          ".properties.pks-vrli.enabled.skip_cert_verify": {
+#            "value": $pks_vrli_skip_cert_verify
+#          },
+#          ".properties.pks-vrli.enabled.ca_cert": {
+#            "value": $pks_vrli_ca_cert
+#          },
+#          ".properties.pks-vrli.enabled.rate_limit_msec": {
+#            "value": $pks_vrli_rate_limit
+#          }
+#        }
+#      '
+#  )
 
   om-linux \
   -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
