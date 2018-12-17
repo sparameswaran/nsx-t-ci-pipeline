@@ -194,7 +194,7 @@ resources:
 - name: nsx-t-ci-pipeline
   type: git
   source:
-    uri: https://github.com/sparameswaran/nsx-t-ci-pipeline.git
+    uri: https://github.com/rpletka/nsx-t-ci-pipeline.git
     branch: master
 
 - name: pcf-ops-manager
