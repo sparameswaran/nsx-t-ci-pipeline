@@ -209,7 +209,7 @@ echo "Finished configuring network properties"
         }
       else
         {
-          ".properties.syslog_migration_selector": {
+          ".properties.syslog_selector": {
             "value": "disabled"
           }
         }
