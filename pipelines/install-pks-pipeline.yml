@@ -162,7 +162,7 @@ resource_types:
   type: docker-image
   source:
     repository: pivotalcf/pivnet-resource
-    tag: latest-final
+    tag: v0.31.15
 
 resources:
 - name: pcf-pipelines
