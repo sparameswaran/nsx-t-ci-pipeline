@@ -37,10 +37,10 @@ if [ "$PKS_VRLI_ENABLED" == "true" ]; then
           },
           ".properties.pks-vrli.enabled.ca_cert": {
             "value": $pks_vrli_ca_cert
-          },
-          ".properties.pks-vrli.enabled.rate_limit_msec": {
-            "value": $pks_vrli_rate_limit
           }
+#          ".properties.pks-vrli.enabled.rate_limit_msec": {
+#            "value": $pks_vrli_rate_limit
+#          }
         }
       '
   )
