@@ -188,22 +188,22 @@ echo "Finished configuring network properties"
       # Syslog
       if $pks_syslog_migration_enabled == "enabled" then
         {
-          ".properties.syslog_migration_selector.enabled.address": {
+          ".properties.syslog_selector.enabled.address": {
             "value": $pks_syslog_address
           },
-          ".properties.syslog_migration_selector.enabled.port": {
+          ".properties.syslog_selector.enabled.port": {
             "value": $pks_syslog_port
           },
-          ".properties.syslog_migration_selector.enabled.transport_protocol": {
+          ".properties.syslog_selector.enabled.transport_protocol": {
             "value": $pks_syslog_transport_protocol
           },
-          ".properties.syslog_migration_selector.enabled.tls_enabled": {
+          ".properties.syslog_selector.enabled.tls_enabled": {
             "value": $pks_syslog_tls_enabled
           },
-          ".properties.syslog_migration_selector.enabled.permitted_peer": {
+          ".properties.syslog_selector.enabled.permitted_peer": {
             "value": $pks_syslog_peer
           },
-          ".properties.syslog_migration_selector.enabled.ca_cert": {
+          ".properties.syslog_selector.enabled.ca_cert": {
             "value": $pks_syslog_ca_cert
           }
         }
