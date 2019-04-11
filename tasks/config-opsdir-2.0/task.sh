@@ -326,6 +326,7 @@ EOF
 
 security_configuration=$(
   jq -n \
+    --arg include_opsmanager_root_ca_in_trusted_certficates "true" \
     --arg trusted_certificates "$TRUSTED_CERTIFICATES" \
     '
     {
