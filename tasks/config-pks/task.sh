@@ -188,7 +188,7 @@ echo "Finished configuring network properties"
       # Syslog
       if $pks_syslog_enabled == "enabled" then
         {
-          ".properties.syslog_selector.enabled.address": {
+          ".properties.syslog_migration_selector.enabled.address": {
             "value": $pks_syslog_address
           },
           ".properties.syslog_selector.enabled.port": {
