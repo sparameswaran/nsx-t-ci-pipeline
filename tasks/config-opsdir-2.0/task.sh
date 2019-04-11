@@ -326,11 +326,11 @@ EOF
 
 security_configuration=$(
   jq -n \
-    --arg include_opsmanager_root_ca_in_trusted_certficates "1" \
     --arg trusted_certificates "$TRUSTED_CERTIFICATES" \
     '
     {
       "trusted_certificates": $trusted_certificates,
+      "include_opsmanager_root_ca_in_trusted_certficates": "true"
       "vm_password_type": "generate"
     }'
 )
