@@ -330,8 +330,8 @@ security_configuration=$(
     '
     {
       "trusted_certificates": $trusted_certificates,
-      "include_opsmanager_root_ca_in_trusted_certficates": true,
-      "vm_password_type": "bosh_default"
+      "security_tokens_include_opsmanager_root_ca_in_trusted_certficates": true,
+      "vm_password_type": "generate"
     }'
 )
 
