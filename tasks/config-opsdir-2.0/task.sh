@@ -430,6 +430,21 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
+  curl -p '/api/v0/staged/director/properties' \
+  -x PUT -d  "{“security_configuration”:{“opsmanager_root_ca_trusted_certs”: true}}’ --silent=true" \
+  2>/dev/null
+
+# Check for errors
+if [ $? != 0 ]; then
+  echo "IaaS configuration failed!!"
+  exit 1
+fi
+
+om-linux \
+  --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  --skip-ssl-validation \
+  --username $OPSMAN_USERNAME \
+  --password $OPSMAN_PASSWORD \
   curl -p "/api/v0/staged/director/availability_zones" \
   -x PUT -d "$az_configuration" \
   2>/dev/null
