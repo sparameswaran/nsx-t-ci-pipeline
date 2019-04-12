@@ -141,7 +141,7 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
             "value": "cn{0}"
           },
           ".properties.uaa.ldap.group_search_base": {
-            "value": pks_ldap_group_search_base
+            "value": $pks_ldap_group_search_base
           },
           ".properties.uaa.ldap.group_search_filter": {
             "value": "member={0}"
