@@ -329,9 +329,11 @@ security_configuration=$(
     --arg trusted_certificates "$TRUSTED_CERTIFICATES" \
     '
     {
-      "trusted_certificates": $trusted_certificates,
-      "generate_vm_passwords": false,
-      "opsmanager_root_ca_trusted_certs": true
+        "security_configuration": {
+            "trusted_certificates": $trusted_certificates,
+            "generate_vm_passwords": true,
+            "opsmanager_root_ca_trusted_certs": true
+        }
     }'
 )
 
@@ -431,8 +433,7 @@ om-linux \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
   curl -p "/api/v0/staged/director/properties" \
-  -x PUT -d  "$security_configuration" \
-  2>/dev/null
+  -x PUT -d  "$security_configuration"
 
 # Check for errors
 if [ $? != 0 ]; then
