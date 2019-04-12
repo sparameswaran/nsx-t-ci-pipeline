@@ -430,7 +430,7 @@ om-linux \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
-  curl -p '/api/v0/staged/director/properties' \
+  curl -p "/api/v0/staged/director/properties" \
   -x PUT -d  "$security_configuration" \
   2>/dev/null
 
