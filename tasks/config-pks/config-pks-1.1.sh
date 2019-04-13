@@ -117,7 +117,7 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
     --arg pks_ldap_search_base "$PKS_LDAP_SEARCH_BASE" \
     --arp pks_ldap_search_filter "$PKS_LDAP_SEARCH_FILTER" \
     --arg pks_ldap_group_search_base "$PKS_LDAP_GROUP_SEARCH_BASE" \
-    --arg pks_ldap_group_search_filter "PKS_LDAP_GROUP_SEARCH_FILTER" \
+    --arg pks_ldap_group_search_filter "$PKS_LDAP_GROUP_SEARCH_FILTER" \
     --arg pks_ldap_server_ssl_cert "$PKS_LDAP_SERVER_SSL_CERT" \
     --arg pks_ldap_server_ssl_cert_alias "$PKS_LDAP_SERVER_SSL_CERT_ALIAS" \
     --arg pks_ldap_email_domains "$PKS_LDAP_EMAIL_DOMAINS" \
