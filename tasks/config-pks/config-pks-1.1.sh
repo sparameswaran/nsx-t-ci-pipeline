@@ -112,6 +112,7 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
   pks_uaa_properties=$(
     jq -n \
     --arg pks_ldap_url "$PKS_LDAP_URL" \
+    --arg pks_ldap_use_oidc "$PKS_LDAP_USE_OIDC" \
     --arg pks_ldap_user "$PKS_LDAP_USER" \
     --arg pks_ldap_password "$PKS_LDAP_PASSWORD" \
     --arg pks_ldap_search_base "$PKS_LDAP_SEARCH_BASE" \
@@ -128,7 +129,7 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
             "value": "ldap"
           },
           ".properties.uaa_oidc": {
-            "value": "true"
+            "value": $pks_ldap_use_oidc
           },        
           ".properties.uaa.ldap.url": {
             "value": $pks_ldap_url
