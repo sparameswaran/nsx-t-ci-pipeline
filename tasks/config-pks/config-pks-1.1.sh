@@ -127,6 +127,9 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
           ".properties.uaa": {
             "value": "ldap"
           },
+          ".properties.uaa_oidc": {
+            "value": "true"
+          },        
           ".properties.uaa.ldap.url": {
             "value": $pks_ldap_url
           },
