@@ -104,6 +104,7 @@ pks_config_params: &pks-config-params
   PKS_HTTPS_PROXY_PASSWORD: ((pks_tile_https_proxy_password))
   PKS_NO_PROXY: ((pks_tile_no_proxy))
   PKS_UAA_USE_LDAP: ((pks_tile_uaa_use_ldap))
+  PKS_LDAP_USE_OIDC: ((pks_tile_ldap_use_oidc))
   PKS_LDAP_URL: ((pks_tile_ldap_url))
   PKS_LDAP_USER: ((pks_tile_ldap_user))
   PKS_LDAP_PASSWORD: ((pks_tile_ldap_password))
