@@ -13,49 +13,49 @@ BOSH_CREDS=$(om-linux  \
 export BOSH_CLIENT_ID=$(echo $BOSH_CREDS | tr ' ' '\n' | grep 'BOSH_CLIENT=' | awk -F '=' '{print $2}' | tr -d ' ')
 export BOSH_CLIENT_SECRET=$(echo $BOSH_CREDS | tr ' ' '\n' |grep 'BOSH_CLIENT_SECRET=' | awk -F '=' '{print $2}' | tr -d ' ')
 
-#if [ "$PKS_VRLI_ENABLED" == "true" ]; then
+if [ "$PKS_VRLI_ENABLED" == "true" ]; then
 
-#  pks_vrli_properties=$(
-#    jq -n \
-#    --arg pks_vrli_host "$PKS_VRLI_HOST" \
-#    --arg pks_vrli_use_ssl "$PKS_VRLI_USE_SSL" \
-#    --arg pks_vrli_skip_cert_verify "$PKS_VRLI_SKIP_CERT_VERIFY" \
-#    --arg pks_vrli_ca_cert "$PKS_VRLI_CA_CERT" \
-#    --arg pks_vrli_rate_limit "$PKS_VRLI_RATE_LIMIT" \
-#      '{
-#          ".properties.pks-vrli": {
-#            "value": "enabled"
-#          },
-#          ".properties.pks-vrli.enabled.host": {
-#            "value": $pks_vrli_host
-#          },
-#          ".properties.pks-vrli.enabled.use_ssl": {
-#            "value": $pks_vrli_use_ssl
-#          },
-#          ".properties.pks-vrli.enabled.skip_cert_verify": {
-#            "value": $pks_vrli_skip_cert_verify
-#          },
-#          ".properties.pks-vrli.enabled.ca_cert": {
-#            "value": $pks_vrli_ca_cert
-#          },
+  pks_vrli_properties=$(
+    jq -n \
+    --arg pks_vrli_host "$PKS_VRLI_HOST" \
+    --arg pks_vrli_use_ssl "$PKS_VRLI_USE_SSL" \
+    --arg pks_vrli_skip_cert_verify "$PKS_VRLI_SKIP_CERT_VERIFY" \
+    --arg pks_vrli_ca_cert "$PKS_VRLI_CA_CERT" \
+    --arg pks_vrli_rate_limit "$PKS_VRLI_RATE_LIMIT" \
+      '{
+          ".properties.pks-vrli": {
+            "value": "enabled"
+          },
+          ".properties.pks-vrli.enabled.host": {
+            "value": $pks_vrli_host
+          },
+          ".properties.pks-vrli.enabled.use_ssl": {
+            "value": $pks_vrli_use_ssl
+          },
+          ".properties.pks-vrli.enabled.skip_cert_verify": {
+            "value": $pks_vrli_skip_cert_verify
+          },
+          ".properties.pks-vrli.enabled.ca_cert": {
+            "value": $pks_vrli_ca_cert
+          }
 #          ".properties.pks-vrli.enabled.rate_limit_msec": {
 #            "value": $pks_vrli_rate_limit
 #          }
-#        }
-#      '
-#  )
+        }
+      '
+  )
 
-#  om-linux \
-#  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-#  -u $OPSMAN_USERNAME \
-#  -p $OPSMAN_PASSWORD \
-#  --skip-ssl-validation \
-#  configure-product \
-#  --product-name pivotal-container-service \
-#  --product-properties "$pks_vrli_properties"
-#  echo "Finished configuring vRealize Log Insight properties"
+  om-linux \
+  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
+  --skip-ssl-validation \
+  configure-product \
+  --product-name pivotal-container-service \
+  --product-properties "$pks_vrli_properties"
+  echo "Finished configuring vRealize Log Insight properties"
 
-#fi
+fi
 
 if [ "$PKS_ENABLE_HTTP_PROXY" == "true" ]; then
 
@@ -112,10 +112,13 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
   pks_uaa_properties=$(
     jq -n \
     --arg pks_ldap_url "$PKS_LDAP_URL" \
+    --arg pks_ldap_use_oidc "$PKS_LDAP_USE_OIDC" \
     --arg pks_ldap_user "$PKS_LDAP_USER" \
     --arg pks_ldap_password "$PKS_LDAP_PASSWORD" \
     --arg pks_ldap_search_base "$PKS_LDAP_SEARCH_BASE" \
+    --arg pks_ldap_search_filter "$PKS_LDAP_SEARCH_FILTER" \
     --arg pks_ldap_group_search_base "$PKS_LDAP_GROUP_SEARCH_BASE" \
+    --arg pks_ldap_group_search_filter "$PKS_LDAP_GROUP_SEARCH_FILTER" \
     --arg pks_ldap_server_ssl_cert "$PKS_LDAP_SERVER_SSL_CERT" \
     --arg pks_ldap_server_ssl_cert_alias "$PKS_LDAP_SERVER_SSL_CERT_ALIAS" \
     --arg pks_ldap_email_domains "$PKS_LDAP_EMAIL_DOMAINS" \
@@ -125,6 +128,9 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
           ".properties.uaa": {
             "value": "ldap"
           },
+          ".properties.uaa_oidc": {
+            "value": $pks_ldap_use_oidc
+          },        
           ".properties.uaa.ldap.url": {
             "value": $pks_ldap_url
           },
@@ -138,13 +144,13 @@ if [ "$PKS_UAA_USE_LDAP" == "ldap" ]; then
             "value": $pks_ldap_search_base
           },
           ".properties.uaa.ldap.search_filter": {
-            "value": "cn{0}"
+            "value": $pks_ldap_search_filter
           },
           ".properties.uaa.ldap.group_search_base": {
-            "value": pks_ldap_group_search_base
+            "value": $pks_ldap_group_search_base
           },
           ".properties.uaa.ldap.group_search_filter": {
-            "value": "member={0}"
+            "value": $pks_ldap_group_search_filter
           },
           ".properties.uaa.ldap.server_ssl_cert": {
             "value": $pks_ldap_server_ssl_cert

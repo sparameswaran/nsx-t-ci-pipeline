@@ -329,8 +329,11 @@ security_configuration=$(
     --arg trusted_certificates "$TRUSTED_CERTIFICATES" \
     '
     {
-      "trusted_certificates": $trusted_certificates,
-      "vm_password_type": "generate"
+        "security_configuration": {
+            "trusted_certificates": $trusted_certificates,
+            "generate_vm_passwords": true,
+            "opsmanager_root_ca_trusted_certs": true
+        }
     }'
 )
 
@@ -410,14 +413,28 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
+#om-linux \
+#  --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+#  --skip-ssl-validation \
+#  --username $OPSMAN_USERNAME \
+#  --password $OPSMAN_PASSWORD \
+#  configure-bosh \
+#  --security-configuration "$security_configuration" \
+#  2>/dev/null
+# Check for errors
+#if [ $? != 0 ]; then
+#  echo "Bosh Security configuration failed!!"
+#  exit 1
+#fi
+
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   --skip-ssl-validation \
   --username $OPSMAN_USERNAME \
   --password $OPSMAN_PASSWORD \
-  configure-bosh \
-  --security-configuration "$security_configuration" \
-  2>/dev/null
+  curl -p "/api/v0/staged/director/properties" \
+  -x PUT -d  "$security_configuration"
+
 # Check for errors
 if [ $? != 0 ]; then
   echo "Bosh Security configuration failed!!"

@@ -174,59 +174,62 @@ om-linux \
 
 echo "Finished configuring network properties"
 
-#  pks_syslog_properties=$(
-#    jq -n \
-#    --arg pks_syslog_migration_enabled "$PKS_SYSLOG_MIGRATION_ENABLED" \
-#    --arg pks_syslog_address "$PKS_SYSLOG_ADDRESS" \
-#    --arg pks_syslog_port "$PKS_SYSLOG_PORT" \
-#    --arg pks_syslog_transport_protocol "$PKS_SYSLOG_TRANSPORT_PROTOCOL" \
-#    --arg pks_syslog_tls_enabled "$PKS_SYSLOG_TLS_ENABLED" \
-#    --arg pks_syslog_peer "$PKS_SYSLOG_PEER" \
-#    --arg pks_syslog_ca_cert "$PKS_SYSLOG_CA_CERT" \
-#      '
+  pks_syslog_properties=$(
+    jq -n \
+    --arg pks_syslog_enabled "$PKS_SYSLOG_MIGRATION_ENABLED" \
+    --arg pks_syslog_address "$PKS_SYSLOG_ADDRESS" \
+    --arg pks_syslog_port "$PKS_SYSLOG_PORT" \
+    --arg pks_syslog_transport_protocol "$PKS_SYSLOG_TRANSPORT_PROTOCOL" \
+    --arg pks_syslog_tls_enabled "$PKS_SYSLOG_TLS_ENABLED" \
+    --arg pks_syslog_peer "$PKS_SYSLOG_PEER" \
+    --arg pks_syslog_ca_cert "$PKS_SYSLOG_CA_CERT" \
+      '
 
       # Syslog
-#      if $pks_syslog_migration_enabled == "enabled" then
-#        {
-#          ".properties.syslog_migration_selector.enabled.address": {
-#            "value": $pks_syslog_address
-#          },
-#          ".properties.syslog_migration_selector.enabled.port": {
-#            "value": $pks_syslog_port
-#          },
-#          ".properties.syslog_migration_selector.enabled.transport_protocol": {
-#            "value": $pks_syslog_transport_protocol
-#          },
-#          ".properties.syslog_migration_selector.enabled.tls_enabled": {
-#            "value": $pks_syslog_tls_enabled
-#          },
-#          ".properties.syslog_migration_selector.enabled.permitted_peer": {
-#            "value": $pks_syslog_peer
-#          },
-#          ".properties.syslog_migration_selector.enabled.ca_cert": {
-#            "value": $pks_syslog_ca_cert
-#          }
-#        }
-#      else
-#        {
-#          ".properties.syslog_migration_selector": {
-#            "value": "disabled"
-#          }
-#        }
-#      end
-#      '
-#  )
+      if $pks_syslog_enabled == "enabled" then
+        {
+          ".properties.syslog_selector": {
+            "value": "enabled"
+          },
+          ".properties.syslog_selector.enabled.address": {
+            "value": $pks_syslog_address
+          }, 
+          ".properties.syslog_selector.enabled.port": {
+            "value": $pks_syslog_port
+          },
+          ".properties.syslog_selector.enabled.transport_protocol": {
+            "value": $pks_syslog_transport_protocol
+          },
+          ".properties.syslog_selector.enabled.tls_enabled": {
+            "value": $pks_syslog_tls_enabled
+          },
+          ".properties.syslog_selector.enabled.permitted_peer": {
+            "value": $pks_syslog_peer
+          },
+          ".properties.syslog_selector.enabled.ca_cert": {
+            "value": $pks_syslog_ca_cert
+          }
+        }
+      else
+        {
+          ".properties.syslog_selector": {
+            "value": "disabled"
+          }
+        }
+      end
+      '
+  )
 
 
-#om-linux \
-#  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-#  -u $OPSMAN_USERNAME \
-#  -p $OPSMAN_PASSWORD \
-#  --skip-ssl-validation \
-#  configure-product \
-#  --product-name pivotal-container-service \
-#  --product-properties "$pks_syslog_properties"
-#echo "Finished configuring syslog properties"
+om-linux \
+  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
+  --skip-ssl-validation \
+  configure-product \
+  --product-name pivotal-container-service \
+  --product-properties "$pks_syslog_properties"
+echo "Finished configuring syslog properties"
 
 # Check if product is older 1.0 or not
 if [[ "$PRODUCT_VERSION" =~ ^1.0 ]]; then
