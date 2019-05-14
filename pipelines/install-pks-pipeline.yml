@@ -121,6 +121,7 @@ pks_config_params: &pks-config-params
   PKS_WAVEFRONT_TOKEN: ((pks_tile_wavefront_token))
   PKS_WAVEFRONT_ALERT_TARGETS: ((pks_tile_wavefront_alert_targets))
   PKS_TELEMETRY: ((pks_tile_telemetry))
+  PKS_ENABLE_CADVISOR: ((pks_enable_cadvisor))
   PKS_DISABLE_NSX_T_PRECHECK_ERRAND: ((pks_tile_disable_nsx_t_precheck_errand))
 
 pks_cli_config_params: &pks-cli-config-params
