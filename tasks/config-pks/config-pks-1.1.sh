@@ -231,6 +231,28 @@ if [ "$PKS_WAVEFRONT_API_URL" != "" -a "$PKS_WAVEFRONT_API_URL" != "null" ]; the
   echo "Finished configuring Wavefront Monitoring properties"
 fi
 
+if [ "$PKS_ENABLE_CADVISOR" == "true" ]; then
+  pks_vrops_properties=$(
+    jq -n \
+    --arg pks_vrops_cadvisor "enabled" \
+    '{
+          ".properties.pks-vrops": {
+            "value": "enabled"
+          }
+        }
+      '
+    )
+  om-linux \
+  -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
+  -u $OPSMAN_USERNAME \
+  -p $OPSMAN_PASSWORD \
+  --skip-ssl-validation \
+  configure-product \
+  --product-name pivotal-container-service \
+  --product-properties "$pks_vrops_properties"
+  echo "Finished configuring vROPS properties"
+fi
+
 has_bosh_client_creds=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".properties.network_selector.nsx.bosh-client" | wc -l || true)
 has_vcenter_worker_creds=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".cloud_provider.vsphere.vcenter_worker_creds" | wc -l || true)
 has_nsx_t_superuser_certificate=$(cat "/tmp/staged_product_${PRODUCT_GUID}.json" | jq . | grep ".nsx-t-superuser-certificate" | wc -l || true)
