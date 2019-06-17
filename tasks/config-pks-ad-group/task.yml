@@ -1,0 +1,26 @@
+---
+# Source: https://github.com/pivotalservices/concourse-pipeline-samples/blob/master/tasks/pcf/pks/configure-pks-cli-user/task.yml
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/rootfs
+
+inputs:
+- name: nsx-t-ci-pipeline
+
+run:
+  path: nsx-t-ci-pipeline/tasks/config-pks-ad-group/task.sh
+
+params:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPSMAN_USERNAME:
+  OPSMAN_PASSWORD:
+  OPSMAN_CLIENT_ID:
+  OPSMAN_CLIENT_SECRET:
+  PKS_UAA_DOMAIN_PREFIX:
+  PKS_SYSTEM_DOMAIN:
+  PKS_ADMIN_ADGROUP:
+  PKS_MANAGE_ADGROUP:
+  PKS_UAA_SYSTEM_DOMAIN_IP:
