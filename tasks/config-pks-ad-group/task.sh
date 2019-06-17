@@ -78,8 +78,14 @@ if [ "$pks_admin_scope" == "" ]; then
   echo "PKS CLI administrator user [$PKS_ADMIN_ADGROUP] given scope: pks.clusters.admin."
 fi
 
+pks_manage_scope=$(uaac user get "$PKS_MANAGE_ADGROUP" | grep "pks.clusters.manage" ||true )
+if [ "$pks_manage_scope" == "" ]; then
+  uaac group map --name pks.clusters.manage "$PKS_MANAGE_ADGROUP"|| true
+  echo "PKS CLI administrator user [$PKS_MANAGE_ADGROUP] given scope: pks.clusters.manage."
+fi
+
 echo ""
 echo "Next, download the PKS CLI from Pivotal Network and login to the PKS API to create a new K8s cluster [https://docs.pivotal.io/runtimes/pks/1-0/create-cluster.html]"
 echo "Example: "
-echo "   pks login -a ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} -k -u $PKS_ADMIN_ADGROUP -p <pks-cli-password-provided>"
+echo "   pks login -a ${PKS_UAA_DOMAIN_PREFIX}.${PKS_SYSTEM_DOMAIN} -k -u <user> -p <pks-cli-password-provided>"
 echo "Note: PKS Controller Port can be 8443 or 9021 based on version of PKS Tile"
