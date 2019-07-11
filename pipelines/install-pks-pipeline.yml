@@ -193,7 +193,7 @@ resources:
   type: git
   source:
     uri: https://github.com/nvpnathan/nsx-t-ci-pipeline.git
-    branch: ad_groups
+    branch: opsman26
 
 - name: pcf-ops-manager
   type: pivnet
