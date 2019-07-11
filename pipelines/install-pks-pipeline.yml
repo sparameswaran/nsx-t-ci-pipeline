@@ -275,13 +275,13 @@ jobs:
 - name: deploy-opsman
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pivnet-opsman-product
       resource: pcf-ops-manager
       params: {globs: ["*.ova"]}
 
   - task: deploy
-    file: pcf-pipelines/install-pcf/vsphere/tasks/import-opsman/task.yml
+    file: nsx-t-ci-pipeline/tasks/import-opsman/task.yml
     params:
       GOVC_INSECURE: ((vcenter_insecure))
       GOVC_CA_CERT: ((vcenter_ca_cert))
