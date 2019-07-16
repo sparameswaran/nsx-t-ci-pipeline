@@ -9,7 +9,7 @@ om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
          upload-product -p $FILE_PATH
 
 
-SC_FILE_PATH=$(find . -name "bosh*.tgz" | sort | tail -1 || true)
+SC_FILE_PATH=$(find . -name "bosh*.tgz" | sort | head -1 || true)
 if [ "$SC_FILE_PATH" != "" ]; then
   echo "Uploading cached stemcell: $SC_FILE_PATH to Ops Mgr"
   om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
