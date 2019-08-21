@@ -22,6 +22,9 @@ fi
 
 STEMCELL_VERSION_FROM_PRODUCT_METADATA=""
 if [ -e "./pivnet-product/metadata.json" ]; then
+  echo "Reading metadata.json"
+  METADATA_FROM_FILE=$(cat ./pivnet-product/metadata.json)
+  echo "$METADATA_FROM_FILE" 
   STEMCELL_VERSION_FROM_PRODUCT_METADATA=$(
     cat ./pivnet-product/metadata.json |
     jq --raw-output \
@@ -42,7 +45,8 @@ fi
 
 tile_metadata=$(unzip -l pivnet-product/*.pivotal | grep "metadata" | grep "ml$" | awk '{print $NF}')
 STEMCELL_VERSION_FROM_TILE=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A5 "stemcell_criteria:"  \
-                                  | grep "version:" | grep -Ei "[0-9]+{2}" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
+                                  | grep "version:" | grep -Ei "[-+]?[0-9]*\.?[0-9]*" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
+
 STEMCELL_OS_FROM_TILE=$(unzip -p pivnet-product/*.pivotal $tile_metadata | grep -A5 "stemcell_criteria:"  \
                                   | grep "os:" | awk '{print $NF}' | sed "s/'//g;s/\"//g" )
 
@@ -52,5 +56,10 @@ if [ "$STEMCELL_OS_FROM_TILE" == "" -o "$STEMCELL_VERSION_FROM_TILE" == "" ]; th
 fi
 
 source nsx-t-ci-pipeline/functions/upload_stemcell.sh
-echo "No cached stemcell; Will download and then upload stemcell: $SC_FILE_PATH to Ops Mgr"
-upload_stemcells "$STEMCELL_OS_FROM_TILE" "$STEMCELL_VERSION_FROM_TILE $STEMCELL_VERSION_FROM_PRODUCT_METADATA"
+echo "No cached stemcell; Will download and then upload minimum required stemcell: $STEMCELL_VERSION_FROM_TILE"
+
+if [ $STEMCELL_VERSION_FROM_PRODUCT_METADATA == $STEMCELL_VERSION_FROM_TILE ]; then
+  upload_stemcells "$STEMCELL_OS_FROM_TILE" "$STEMCELL_VERSION_FROM_TILE"
+else 
+  upload_stemcells "$STEMCELL_OS_FROM_TILE" "$STEMCELL_VERSION_FROM_TILE $STEMCELL_VERSION_FROM_PRODUCT_METADATA"
+fi

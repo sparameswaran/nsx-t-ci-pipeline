@@ -76,6 +76,8 @@ pks_config_params: &pks-config-params
   PKS_CLI_USER: ((pks_tile_cli_username))
   PKS_CLI_PASSWORD: ((pks_tile_cli_password))
   PKS_CLI_EMAIL: ((pks_tile_cli_useremail))
+  PKS_ADMIN_ADGROUP: ((pks_tile_admin_ad_group))
+  PKS_MANAGE_ADGROUP: ((pks_tile_manage_ad_group))
   PKS_PLAN_DETAILS: ((pks_tile_plan_details))
   PKS_T0_ROUTER_NAME: ((pks_tile_t0_router_name))
   PKS_CONTAINER_IP_BLOCK_NAME: ((pks_tile_container_ip_block_name))
@@ -124,6 +126,7 @@ pks_config_params: &pks-config-params
   PKS_WAVEFRONT_TOKEN: ((pks_tile_wavefront_token))
   PKS_WAVEFRONT_ALERT_TARGETS: ((pks_tile_wavefront_alert_targets))
   PKS_TELEMETRY: ((pks_tile_telemetry))
+  PKS_ENABLE_CADVISOR: ((pks_enable_cadvisor))
   PKS_DISABLE_NSX_T_PRECHECK_ERRAND: ((pks_tile_disable_nsx_t_precheck_errand))
 
 pks_cli_config_params: &pks-cli-config-params
@@ -138,6 +141,18 @@ pks_cli_config_params: &pks-cli-config-params
   PKS_CLI_USERNAME: ((pks_tile_cli_username))
   PKS_CLI_USEREMAIL: ((pks_tile_cli_useremail))
   PKS_CLI_PASSWORD: ((pks_tile_cli_password))
+
+pks_ad_config_params: &pks-ad-config-params
+  OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
+  OPSMAN_USERNAME: ((opsman_admin_username))
+  OPSMAN_PASSWORD: ((opsman_admin_password))
+  #OPSMAN_CLIENT_ID: ((opsman_client_id))
+  #OPSMAN_CLIENT_SECRET: ((opsman_client_secret))
+  PKS_UAA_DOMAIN_PREFIX: ((pks_tile_uaa_domain_prefix))
+  PKS_SYSTEM_DOMAIN: ((pks_tile_system_domain))
+  PKS_UAA_SYSTEM_DOMAIN_IP: ((pks_tile_uaa_system_domain_ip))
+  PKS_ADMIN_ADGROUP: ((pks_tile_admin_ad_group))
+  PKS_MANAGE_ADGROUP: ((pks_tile_manage_ad_group))
 
 pks_config_pks_api_nats: &pks-config-pks-api-nats-params
   OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
@@ -181,7 +196,7 @@ resources:
   type: git
   source:
     uri: https://github.com/nvpnathan/nsx-t-ci-pipeline.git
-    branch: master
+    branch: opsman26
 
 - name: pcf-ops-manager
   type: pivnet
@@ -251,6 +266,7 @@ groups:
 - name: config-pks-controller-after-install
   jobs:
   - config-pks-controller-after-install
+  - config-pks-controller-ad-groups
 
 - name: wipe
   jobs:
@@ -262,13 +278,13 @@ jobs:
 - name: deploy-opsman
   plan:
   - aggregate:
-    - get: pcf-pipelines
+    - get: nsx-t-ci-pipeline
     - get: pivnet-opsman-product
       resource: pcf-ops-manager
       params: {globs: ["*.ova"]}
 
   - task: deploy
-    file: pcf-pipelines/install-pcf/vsphere/tasks/import-opsman/task.yml
+    file: nsx-t-ci-pipeline/tasks/import-opsman/task.yml
     params:
       GOVC_INSECURE: ((vcenter_insecure))
       GOVC_CA_CERT: ((vcenter_ca_cert))
@@ -281,7 +297,7 @@ jobs:
       GOVC_RESOURCE_POOL: ((om_resource_pool))
       GOVC_HOST: ((om_vm_host))
       OPSMAN_DOMAIN_OR_IP_ADDRESS: ((opsman_domain_or_ip_address))
-      OPS_MGR_SSH_PWD: ((om_ssh_pwd))
+      OPS_MGR_SSH_KEY: ((om_ssh_key))
       OM_NTP_SERVERS: ((om_ntp_servers))
       OM_DNS_SERVERS: ((om_dns_servers))
       OM_GATEWAY: ((om_gateway))
@@ -558,6 +574,15 @@ jobs:
   - task: config-pks-cli-user
     file: nsx-t-ci-pipeline/tasks/config-pks-cli-user/task.yml
     params: *pks-cli-config-params
+
+- name: config-pks-controller-ad-groups
+  plan:
+  - aggregate:
+    - get: nsx-t-ci-pipeline
+
+  - task: config-pks-admin-ad-group
+    file: nsx-t-ci-pipeline/tasks/config-pks-ad-group/task.yml
+    params: *pks-ad-config-params
 
 - name: delete-clusters
   plan:
