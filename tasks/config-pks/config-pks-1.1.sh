@@ -471,10 +471,10 @@ pks_telemetry_properties=$(
     --arg pks_ceip_level "$PKS_CEIP_LEVEL" \
     --arg pks_purpose "$PKS_PURPOSE" \
   '{
-      ".properties.telemetry.selector": {
+      ".properties.telemetry_selector": {
         "value": "$pks_ceip_level"
       },
-      ".properties.telemetry_installation_purpose": {
+      ".properties.telemetry_installation_purpose_selector": {
         "value": "$pks_purpose"
       }
     }
