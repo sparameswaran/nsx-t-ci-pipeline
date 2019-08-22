@@ -468,11 +468,11 @@ echo "Finished configuring NSX/vCenter properties"
 #echo "Finished configuring Telemetry properties"
 pks_telemetry_properties=$(
   jq -n \
-    --arg ceip_level "$CEIP_LEVEL" \
+    --arg pks_ceip_level "$PKS_CEIP_LEVEL" \
     --arg pks_purpose "$PKS_PURPOSE"
   '{
       ".properties.telemetry.selector": {
-        "value": "$ceip_level"
+        "value": "$pks_ceip_level"
       },
       ".properties.telemetry_installation_purpose": {
         "value": "$pks_purpose"
