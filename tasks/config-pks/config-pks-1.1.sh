@@ -476,6 +476,7 @@ pks_telemetry_properties=$(
       },
       ".properties.telemetry_installation_purpose": {
         "value": "$pks_purpose"
+      }
     }
   '
 )
