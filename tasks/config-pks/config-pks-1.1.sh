@@ -181,6 +181,9 @@ else
   '{
     ".properties.uaa": {
       "value": "internal"
+    },
+    ".properties.oidc_selector": {
+      "value": $pks_ldap_use_oidc
     }
   }'
   )
