@@ -86,9 +86,10 @@ fi
 
 pks_admin_scope=$(uaac user get "$PKS_CLI_USERNAME" | grep "pks.clusters.admin" ||true )
 if [ "$pks_admin_scope" == "" ]; then
-  uaac member add pks.clusters.admin "$PKS_CLI_USERNAME"
+  #uaac member add pks.clusters.admin "$PKS_CLI_USERNAME"
   uaac member add pks.clusters.manage "$PKS_CLI_USERNAME" || true
-  echo "PKS CLI administrator user [$PKS_CLI_USERNAME] given scope: pks.clusters.admin, pks.clusters.manage"
+  #echo "PKS CLI administrator user [$PKS_CLI_USERNAME] given scope: pks.clusters.admin, pks.clusters.manage"
+  echo "PKS CLI administrator user [$PKS_CLI_USERNAME] given scope: pks.clusters.manage"
 fi
 
 echo ""
